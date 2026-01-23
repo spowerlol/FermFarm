@@ -14,7 +14,7 @@ screen = pygame.display.set_mode(
     (info.current_w, info.current_h),
     pygame.FULLSCREEN
 )
-pygame.display.set_caption("FerFarm")
+pygame.display.set_caption("FermFarm")
 
 # --- virtual render surface
 virtual = pygame.Surface((VIRTUAL_WIDTH, VIRTUAL_HEIGHT))
@@ -45,7 +45,7 @@ ROWS = 3
 current_column = 0
 current_row = 0
 
-MOVE_INTERVAL = 60_000  # 1 minute = 1 day
+MOVE_INTERVAL = 5_000  # 1 minute = 1 day
 last_move_time = pygame.time.get_ticks()
 
 # --- day counter
@@ -59,7 +59,7 @@ running = True
 
 while running:
     clock.tick(FPS)
-
+    print(days_passed)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
