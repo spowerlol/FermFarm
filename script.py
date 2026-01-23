@@ -1,9 +1,8 @@
 import pygame
 import sys
 from texture import load_textures
-
+#hello world
 pygame.init()
-
 # --- virtual resolution (pixel art size)
 VIRTUAL_WIDTH = 240
 VIRTUAL_HEIGHT = 135
