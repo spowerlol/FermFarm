@@ -1,183 +1,121 @@
 import pygame
 import sys
-import random
-from textures import load_textures
-
-# =====================
-# INSTELLINGEN
-# =====================
-
-GRID_BREEDTE = 8
-GRID_HOOGTE = 6
-VAKJE_GROOTTE = 64
-
-GROEI_TIJD = 10_000
-GROEI_KANS = 0.5
-FPS = 60
-
-# =====================
-# PYGAME
-# =====================
+from texture import load_textures
 
 pygame.init()
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-pygame.display.set_caption("Farming Sim")
 
-SCHERM_BREEDTE, SCHERM_HOOGTE = screen.get_size()
+# --- virtual resolution (pixel art size)
+VIRTUAL_WIDTH = 240
+VIRTUAL_HEIGHT = 135
+FPS = 60
+
+# --- fullscreen window
+info = pygame.display.Info()
+screen = pygame.display.set_mode(
+    (info.current_w, info.current_h),
+    pygame.FULLSCREEN
+)
+pygame.display.set_caption("FerFarm")
+
+# --- virtual render surface
+virtual = pygame.Surface((VIRTUAL_WIDTH, VIRTUAL_HEIGHT))
+
+# --- load textures
+textures = load_textures()
+
+# --- force background to exact virtual size
+background = pygame.transform.scale(
+    textures["background"],
+    (VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
+)
+
+# --- sprite
+sprite = textures["CalendarCircle"]
+
+# --- sprite start position
+START_X = 175
+START_Y = 87
+sprite_x = START_X
+sprite_y = START_Y
+
+# --- calendar movement setup
+STEP = 16
+COLUMNS = 4
+ROWS = 3
+
+current_column = 0
+current_row = 0
+
+MOVE_INTERVAL = 60_000  # 1 minute = 1 day
+last_move_time = pygame.time.get_ticks()
+
+# --- day counter
+days_passed = 0
+
+# --- font (pixel-friendly size)
+font = pygame.font.Font(None, 14)
+
 clock = pygame.time.Clock()
-
-textures = load_textures(VAKJE_GROOTTE)
-font = pygame.font.SysFont(None, 24)
-small_font = pygame.font.SysFont(None, 18)
-
-# =====================
-# AFMETINGEN
-# =====================
-
-FARM_W = GRID_BREEDTE * VAKJE_GROOTTE
-FARM_H = GRID_HOOGTE * VAKJE_GROOTTE
-
-RECHTS_X = SCHERM_BREEDTE - 320
-
-# =====================
-# POSITIES
-# =====================
-
-# Farm
-FARM_X = 20
-FARM_Y = SCHERM_HOOGTE - FARM_H - 20
-
-# Shed (boven farm, zelfde breedte)
-SHED_X = FARM_X
-SHED_Y = 20
-
-# Geld
-GELD_X = RECHTS_X + 80
-GELD_Y = 20
-GELD_W = 200
-GELD_H = 60
-
-# TV
-TV_X = RECHTS_X + 40
-TV_Y = 120
-TV_W = 240
-TV_H = 160
-
-# Shop
-SHOP_X = RECHTS_X + 80
-SHOP_Y = TV_Y + TV_H + 20
-SHOP_W = 200
-SHOP_H = 60
-
-# Kalender
-CAL_X = RECHTS_X + 20
-CAL_Y = SHOP_Y + SHOP_H + 20
-CAL_W = 280
-CAL_H = 200
-
-# =====================
-# DATA
-# =====================
-
-grid = [[1 for _ in range(GRID_BREEDTE)] for _ in range(GRID_HOOGTE)]
-laatste_groei = pygame.time.get_ticks()
-geld = 0
-
-# =====================
-# FUNCTIES
-# =====================
-
-def box(x, y, w, h, titel=None):
-    pygame.draw.rect(screen, (150, 150, 150), (x, y, w, h), border_radius=10)
-    pygame.draw.rect(screen, (60, 60, 60), (x, y, w, h), 2, border_radius=10)
-    if titel:
-        t = font.render(titel, True, (0, 0, 0))
-        screen.blit(t, (x + 10, y + 10))
-
-def kalender_tekenen():
-    rows, cols = 4, 4
-    cel_w = CAL_W // cols
-    cel_h = CAL_H // rows
-
-    for r in range(rows):
-        for c in range(cols):
-            x = CAL_X + c * cel_w
-            y = CAL_Y + r * cel_h
-            pygame.draw.rect(screen, (200, 200, 200), (x, y, cel_w, cel_h), 1)
-            dag = r * cols + c + 1
-            txt = small_font.render(str(dag), True, (0, 0, 0))
-            screen.blit(txt, (x + 5, y + 5))
-
-# =====================
-# HOOFDLOOP
-# =====================
-
 running = True
+
 while running:
     clock.tick(FPS)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             running = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            mx, my = event.pos
-
-            if (FARM_X <= mx < FARM_X + FARM_W and
-                FARM_Y <= my < FARM_Y + FARM_H):
-
-                gx = (mx - FARM_X) // VAKJE_GROOTTE
-                gy = (my - FARM_Y) // VAKJE_GROOTTE
-
-                if grid[gy][gx] == 4:
-                    grid[gy][gx] = 1
-                    geld += 1
-
-    # Groei
+    # --- calendar sprite timed movement ---
     now = pygame.time.get_ticks()
-    if now - laatste_groei >= GROEI_TIJD:
-        laatste_groei = now
-        for y in range(GRID_HOOGTE):
-            for x in range(GRID_BREEDTE):
-                if grid[y][x] < 4 and random.random() < GROEI_KANS:
-                    grid[y][x] += 1
+    if now - last_move_time >= MOVE_INTERVAL:
+        last_move_time = now
 
-    # =====================
-    # TEKENEN
-    # =====================
+        days_passed += 1  # count days
 
-    screen.fill((120, 180, 100))
+        # move right
+        sprite_x += STEP
+        current_column += 1
 
-    # Shed
-    box(SHED_X, SHED_Y, FARM_W, FARM_H, "SHED")
+        # end of row
+        if current_column >= COLUMNS:
+            current_column = 0
+            sprite_x = START_X
 
-    # Farm
-    for y in range(GRID_HOOGTE):
-        for x in range(GRID_BREEDTE):
-            screen.blit(
-                textures[grid[y][x]],
-                (FARM_X + x * VAKJE_GROOTTE,
-                 FARM_Y + y * VAKJE_GROOTTE)
-            )
+            sprite_y += STEP
+            current_row += 1
 
-    # Geld
-    box(GELD_X, GELD_Y, GELD_W, GELD_H)
-    geld_txt = font.render(f"{geld:02}", True, (0, 0, 0))
-    screen.blit(geld_txt, (GELD_X + 80, GELD_Y + 15))
+            # end of 3rd row -> full visual reset
+            if current_row >= ROWS:
+                current_row = 0
+                sprite_x = START_X
+                sprite_y = START_Y
 
-    # TV
-    box(TV_X, TV_Y, TV_W, TV_H, "TV")
+    # --- DRAW ORDER ---
+    virtual.blit(background, (0, 0))
+    virtual.blit(sprite, (sprite_x, sprite_y))
 
-    # Shop
-    box(SHOP_X, SHOP_Y, SHOP_W, SHOP_H, "SHOP")
 
-    # Kalender
-    box(CAL_X, CAL_Y, CAL_W, CAL_H, "CALENDAR")
-    kalender_tekenen()
 
+    # --- integer scaling ---
+    screen_w, screen_h = screen.get_size()
+    scale = min(
+        screen_w // VIRTUAL_WIDTH,
+        screen_h // VIRTUAL_HEIGHT
+    )
+
+    scaled_surface = pygame.transform.scale(
+        virtual,
+        (VIRTUAL_WIDTH * scale, VIRTUAL_HEIGHT * scale)
+    )
+
+    # --- center with letterboxing ---
+    x_offset = (screen_w - scaled_surface.get_width()) // 2
+    y_offset = (screen_h - scaled_surface.get_height()) // 2
+
+    screen.fill((0, 0, 0))
+    screen.blit(scaled_surface, (x_offset, y_offset))
     pygame.display.flip()
 
 pygame.quit()
