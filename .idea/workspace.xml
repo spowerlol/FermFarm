@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="95692660-6345-4587-9403-603976ea4ae0" name="Changes" comment="planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/script.py" beforeDir="false" afterPath="$PROJECT_DIR$/script.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sprites/backgroundconcept.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/backgroundconcept.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +98,7 @@
       <workItem from="1769159302479" duration="278000" />
       <workItem from="1769177686048" duration="1194000" />
       <workItem from="1769178945906" duration="388000" />
-      <workItem from="1769509336635" duration="5228000" />
+      <workItem from="1769509336635" duration="9440000" />
     </task>
     <task id="LOCAL-00001" summary="transitioning from sceled to grid">
       <option name="closed" value="true" />
@@ -130,7 +132,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769520493805</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag">
+      <option name="closed" value="true" />
+      <created>1769522358478</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1769522358478</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -144,7 +154,7 @@
     <option name="LAST_COMMIT_MESSAGE" value="planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/FermFarm$script.coverage" NAME="script Coverage Results" MODIFIED="1769522065286" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FermFarm$script.coverage" NAME="script Coverage Results" MODIFIED="1769528038902" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FermFarm$textures.coverage" NAME="textures Coverage Results" MODIFIED="1769091608851" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
