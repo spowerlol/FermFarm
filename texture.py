@@ -14,8 +14,19 @@ def load_textures():
         os.path.join(ASSETS_PATH, "Sprite-CalendarCircle.png")
     ).convert_alpha()
 
+    textures["TomaatPlant0"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-TomaatPlant0.png")
+    ).convert_alpha()
+
     textures["TomaatPlant1"] = pygame.image.load(
         os.path.join(ASSETS_PATH, "Sprite-TomaatPlant1.png")
     ).convert_alpha()
 
+    textures["TomaatPlant2"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-TomaatPlant2.png")
+    ).convert_alpha()
+
+    textures["TomaatPlant3"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-TomaatPlant3.png")
+    ).convert_alpha()
     return textures

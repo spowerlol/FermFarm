@@ -1,6 +1,7 @@
 import pygame
 import sys
 from texture import load_textures
+from crop import load_crops
 
 pygame.init()
 
@@ -28,16 +29,16 @@ virtual = pygame.Surface((VIRTUAL_WIDTH, VIRTUAL_HEIGHT))
 clock = pygame.time.Clock()
 
 # =========================================================
-# LOAD TEXTURES
+# LOAD TEXTURES & CROPS
 # =========================================================
 textures = load_textures()
+crops = load_crops(textures)
 
 background = pygame.transform.scale(
     textures["background"],
     (VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 )
 
-plant_sprite = textures["TomaatPlant1"]
 calendar_sprite = textures["CalendarCircle"]
 
 # =========================================================
@@ -50,7 +51,6 @@ GRID_ROWS = 3
 GRID_START_X = 0
 GRID_START_Y = 87
 
-# each cell will store: None or {"seed": str, "sprite": Surface}
 grid = [[None for _ in range(GRID_ROWS)] for _ in range(GRID_COLS)]
 
 # =========================================================
@@ -74,7 +74,7 @@ ROWS = 3
 current_column = 0
 current_row = 0
 
-MOVE_INTERVAL = 60_000
+MOVE_INTERVAL = 60_000  # 1 day = 60 seconds
 last_move_time = pygame.time.get_ticks()
 days_passed = 0
 
@@ -118,21 +118,33 @@ while running:
                 if 0 <= gx < GRID_COLS and 0 <= gy < GRID_ROWS:
                     if grid[gx][gy] is None:
                         grid[gx][gy] = {
-                            "seed": "tomato",
-                            "sprite": plant_sprite,
-                            "day_planted": days_passed
+                            "crop": "tomato",
+                            "day_planted": days_passed,
+                            "stage": 0
                         }
 
                         TomaatZaad = False  # consume seed
 
     # =====================================================
-    # CALENDAR TIMED MOVEMENT
+    # CALENDAR TIMED MOVEMENT + PLANT GROWTH
     # =====================================================
     now = pygame.time.get_ticks()
     if now - last_move_time >= MOVE_INTERVAL:
         last_move_time = now
         days_passed += 1
 
+        # grow all plants
+        for x in range(GRID_COLS):
+            for y in range(GRID_ROWS):
+                cell = grid[x][y]
+                if cell is not None:
+                    crop = crops[cell["crop"]]
+
+                    age = days_passed - cell["day_planted"]
+                    stage = age // crop["growth_days_per_stage"]
+                    cell["stage"] = min(stage, crop["max_stage"])
+
+        # move calendar
         sprite_x += STEP
         current_column += 1
 
@@ -157,8 +169,9 @@ while running:
         for y in range(GRID_ROWS):
             cell = grid[x][y]
             if cell is not None:
+                crop = crops[cell["crop"]]
                 virtual.blit(
-                    cell["sprite"],
+                    crop["stages"][cell["stage"]],
                     (
                         GRID_START_X + x * CELL_SIZE,
                         GRID_START_Y + y * CELL_SIZE
