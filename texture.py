@@ -29,4 +29,9 @@ def load_textures():
     textures["TomaatPlant3"] = pygame.image.load(
         os.path.join(ASSETS_PATH, "Sprite-TomaatPlant3.png")
     ).convert_alpha()
+
+    textures["NumberFont"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-font.png")
+    ).convert_alpha()
+
     return textures

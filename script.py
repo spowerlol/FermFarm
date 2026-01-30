@@ -2,6 +2,8 @@ import pygame
 import sys
 from texture import load_textures
 from crop import load_crops
+from money_ui import init_money_ui, draw_money
+from cropHarvesting import harvest
 
 pygame.init()
 
@@ -32,7 +34,25 @@ clock = pygame.time.Clock()
 # LOAD TEXTURES & CROPS
 # =========================================================
 textures = load_textures()
+init_money_ui(textures)
 crops = load_crops(textures)
+
+# =========================================================
+# MONEY COUNTER
+# =========================================================
+money = 0
+
+DIGIT_WIDTH = 8    # adjust to your sprite
+DIGIT_HEIGHT = 8
+MAX_DIGITS = 5
+
+number_font = {}
+font_img = textures["NumberFont"]
+for i in range(10):
+    number_font[str(i)] = font_img.subsurface(
+        i * DIGIT_WIDTH, 0,
+        DIGIT_WIDTH, DIGIT_HEIGHT
+    )
 
 background = pygame.transform.scale(
     textures["background"],
@@ -47,10 +67,8 @@ calendar_sprite = textures["CalendarCircle"]
 CELL_SIZE = 16
 GRID_COLS = 7
 GRID_ROWS = 3
-
 GRID_START_X = 0
 GRID_START_Y = 87
-
 grid = [[None for _ in range(GRID_ROWS)] for _ in range(GRID_COLS)]
 
 # =========================================================
@@ -74,7 +92,7 @@ ROWS = 3
 current_column = 0
 current_row = 0
 
-MOVE_INTERVAL = 60_000  # 1 day = 60 seconds
+MOVE_INTERVAL = 3_000  # 1 day = 60 seconds
 last_move_time = pygame.time.get_ticks()
 days_passed = 0
 
@@ -93,19 +111,13 @@ while running:
             running = False
 
         # -------------------------------------------------
-        # PLACE PLANT
+        # PLACE PLANT (LEFT CLICK)
         # -------------------------------------------------
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if TomaatZaad and itemheld:
                 mx, my = pygame.mouse.get_pos()
-
-                # screen → virtual coords
                 screen_w, screen_h = screen.get_size()
-                scale = min(
-                    screen_w // VIRTUAL_WIDTH,
-                    screen_h // VIRTUAL_HEIGHT
-                )
-
+                scale = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)
                 x_offset = (screen_w - VIRTUAL_WIDTH * scale) // 2
                 y_offset = (screen_h - VIRTUAL_HEIGHT * scale) // 2
 
@@ -122,8 +134,25 @@ while running:
                             "day_planted": days_passed,
                             "stage": 0
                         }
-
                         TomaatZaad = False  # consume seed
+
+        # -------------------------------------------------
+        # HARVEST PLANT (RIGHT CLICK)
+        # -------------------------------------------------
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+            mx, my = pygame.mouse.get_pos()
+            screen_w, screen_h = screen.get_size()
+            scale = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)
+            x_offset = (screen_w - VIRTUAL_WIDTH * scale) // 2
+            y_offset = (screen_h - VIRTUAL_HEIGHT * scale) // 2
+
+            vx = (mx - x_offset) // scale
+            vy = (my - y_offset) // scale
+
+            gx = (vx - GRID_START_X) // CELL_SIZE
+            gy = (vy - GRID_START_Y) // CELL_SIZE
+
+            money += harvest(grid, gx, gy, crops)
 
     # =====================================================
     # CALENDAR TIMED MOVEMENT + PLANT GROWTH
@@ -139,7 +168,6 @@ while running:
                 cell = grid[x][y]
                 if cell is not None:
                     crop = crops[cell["crop"]]
-
                     age = days_passed - cell["day_planted"]
                     stage = age // crop["growth_days_per_stage"]
                     cell["stage"] = min(stage, crop["max_stage"])
@@ -163,6 +191,7 @@ while running:
     # DRAW (VIRTUAL)
     # =====================================================
     virtual.blit(background, (0, 0))
+    draw_money(virtual, money, VIRTUAL_WIDTH)
 
     # draw plants
     for x in range(GRID_COLS):
@@ -172,10 +201,7 @@ while running:
                 crop = crops[cell["crop"]]
                 virtual.blit(
                     crop["stages"][cell["stage"]],
-                    (
-                        GRID_START_X + x * CELL_SIZE,
-                        GRID_START_Y + y * CELL_SIZE
-                    )
+                    (GRID_START_X + x * CELL_SIZE, GRID_START_Y + y * CELL_SIZE)
                 )
 
     # draw calendar
@@ -185,19 +211,10 @@ while running:
     # SCALE TO SCREEN
     # =====================================================
     screen_w, screen_h = screen.get_size()
-    scale = min(
-        screen_w // VIRTUAL_WIDTH,
-        screen_h // VIRTUAL_HEIGHT
-    )
-
-    scaled = pygame.transform.scale(
-        virtual,
-        (VIRTUAL_WIDTH * scale, VIRTUAL_HEIGHT * scale)
-    )
-
+    scale = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)
+    scaled = pygame.transform.scale(virtual, (VIRTUAL_WIDTH * scale, VIRTUAL_HEIGHT * scale))
     x_offset = (screen_w - scaled.get_width()) // 2
     y_offset = (screen_h - scaled.get_height()) // 2
-
     screen.fill((0, 0, 0))
     screen.blit(scaled, (x_offset, y_offset))
     pygame.display.flip()

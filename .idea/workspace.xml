@@ -4,10 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="95692660-6345-4587-9403-603976ea4ae0" name="Changes" comment="planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag">
+    <list default="true" id="95692660-6345-4587-9403-603976ea4ae0" name="Changes" comment="farmland texture and background change shed">
+      <change afterPath="$PROJECT_DIR$/cropHarvesting.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/money_ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script.py" beforeDir="false" afterPath="$PROJECT_DIR$/script.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sprites/backgroundconcept.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/backgroundconcept.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/texture.py" beforeDir="false" afterPath="$PROJECT_DIR$/texture.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,31 +51,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.script.executor&quot;: &quot;Run&quot;,
-    &quot;Python.textures.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/stijn/PycharmProjects/FermFarm/sprites&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.script.executor": "Run",
+    "Python.texture.executor": "Run",
+    "Python.textures.executor": "Run",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "ai.playground.ignore.import.keys.banner.in.settings": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "C:/Users/stijn/PycharmProjects/FermFarm/sprites",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\stijn\PycharmProjects\FermFarm\sprites" />
@@ -98,7 +102,8 @@
       <workItem from="1769159302479" duration="278000" />
       <workItem from="1769177686048" duration="1194000" />
       <workItem from="1769178945906" duration="388000" />
-      <workItem from="1769509336635" duration="9440000" />
+      <workItem from="1769509336635" duration="15631000" />
+      <workItem from="1769608926106" duration="5664000" />
     </task>
     <task id="LOCAL-00001" summary="transitioning from sceled to grid">
       <option name="closed" value="true" />
@@ -140,7 +145,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769522358478</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="farmland texture and background change shed">
+      <option name="closed" value="true" />
+      <created>1769528233745</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1769528233745</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -151,10 +164,12 @@
     <MESSAGE value="adding all current sprites" />
     <MESSAGE value="planten neerzetten WIP maar klaar voor groei en shop" />
     <MESSAGE value="planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag" />
-    <option name="LAST_COMMIT_MESSAGE" value="planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag" />
+    <MESSAGE value="farmland texture and background change shed" />
+    <option name="LAST_COMMIT_MESSAGE" value="farmland texture and background change shed" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/FermFarm$script.coverage" NAME="script Coverage Results" MODIFIED="1769528038902" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FermFarm$script.coverage" NAME="script Coverage Results" MODIFIED="1769766118069" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FermFarm$texture.coverage" NAME="texture Coverage Results" MODIFIED="1769765302072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FermFarm$textures.coverage" NAME="textures Coverage Results" MODIFIED="1769091608851" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
