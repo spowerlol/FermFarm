@@ -15,8 +15,9 @@ VIRTUAL_HEIGHT = 135
 FPS = 60
 
 # =========================================================
-# FULLSCREEN WINDOW
+# FULLSCREEN / WINDOWED
 # =========================================================
+fullscreen = True
 info = pygame.display.Info()
 screen = pygame.display.set_mode(
     (info.current_w, info.current_h),
@@ -58,7 +59,7 @@ crops = load_crops(textures)
 # =========================================================
 money = 0
 
-DIGIT_WIDTH = 8    # adjust to your sprite
+DIGIT_WIDTH = 8
 DIGIT_HEIGHT = 8
 MAX_DIGITS = 5
 
@@ -74,7 +75,6 @@ background = pygame.transform.scale(
     textures["background"],
     (VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 )
-
 calendar_sprite = textures["CalendarCircle"]
 
 # =========================================================
@@ -108,7 +108,7 @@ ROWS = 3
 current_column = 0
 current_row = 0
 
-MOVE_INTERVAL = 3_000  # 1 day = 60 seconds
+MOVE_INTERVAL = 60_000  # 1 day = 60 seconds
 last_move_time = pygame.time.get_ticks()
 days_passed = 0
 
@@ -123,8 +123,31 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            running = False
+        # ESC to quit
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False
+
+            # F11 to toggle fullscreen/windowed
+            if event.key == pygame.K_F11:
+                fullscreen = not fullscreen
+                if fullscreen:
+                    screen = pygame.display.set_mode(
+                        (info.current_w, info.current_h),
+                        pygame.FULLSCREEN
+                    )
+                else:
+                    screen = pygame.display.set_mode(
+                        (VIRTUAL_WIDTH * 4, VIRTUAL_HEIGHT * 4),
+                        pygame.RESIZABLE
+                    )
+
+        # Handle window resize in windowed mode
+        if event.type == pygame.VIDEORESIZE and not fullscreen:
+            screen = pygame.display.set_mode(
+                (event.w, event.h),
+                pygame.RESIZABLE
+            )
 
         # -------------------------------------------------
         # PLACE PLANT (LEFT CLICK)
@@ -134,12 +157,17 @@ while running:
             if TomaatZaad and itemheld:
                 mx, my = pygame.mouse.get_pos()
                 screen_w, screen_h = screen.get_size()
-                scale = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)
-                x_offset = (screen_w - VIRTUAL_WIDTH * scale) // 2
-                y_offset = (screen_h - VIRTUAL_HEIGHT * scale) // 2
 
-                vx = (mx - x_offset) // scale
-                vy = (my - y_offset) // scale
+                if fullscreen:
+                    # scale to full screen
+                    vx = mx * VIRTUAL_WIDTH // screen_w
+                    vy = my * VIRTUAL_HEIGHT // screen_h
+                else:
+                    scale = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)
+                    x_offset = (screen_w - VIRTUAL_WIDTH * scale) // 2
+                    y_offset = (screen_h - VIRTUAL_HEIGHT * scale) // 2
+                    vx = (mx - x_offset) // scale
+                    vy = (my - y_offset) // scale
 
                 gx = (vx - GRID_START_X) // CELL_SIZE
                 gy = (vy - GRID_START_Y) // CELL_SIZE
@@ -159,12 +187,16 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
             mx, my = pygame.mouse.get_pos()
             screen_w, screen_h = screen.get_size()
-            scale = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)
-            x_offset = (screen_w - VIRTUAL_WIDTH * scale) // 2
-            y_offset = (screen_h - VIRTUAL_HEIGHT * scale) // 2
 
-            vx = (mx - x_offset) // scale
-            vy = (my - y_offset) // scale
+            if fullscreen:
+                vx = mx * VIRTUAL_WIDTH // screen_w
+                vy = my * VIRTUAL_HEIGHT // screen_h
+            else:
+                scale = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)
+                x_offset = (screen_w - VIRTUAL_WIDTH * scale) // 2
+                y_offset = (screen_h - VIRTUAL_HEIGHT * scale) // 2
+                vx = (mx - x_offset) // scale
+                vy = (my - y_offset) // scale
 
             gx = (vx - GRID_START_X) // CELL_SIZE
             gy = (vy - GRID_START_Y) // CELL_SIZE
@@ -236,12 +268,22 @@ while running:
     # SCALE TO SCREEN
     # =====================================================
     screen_w, screen_h = screen.get_size()
-    scale = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)
-    scaled = pygame.transform.scale(virtual, (VIRTUAL_WIDTH * scale, VIRTUAL_HEIGHT * scale))
-    x_offset = (screen_w - scaled.get_width()) // 2
-    y_offset = (screen_h - scaled.get_height()) // 2
-    screen.fill((0, 0, 0))
-    screen.blit(scaled, (x_offset, y_offset))
+
+    if fullscreen:
+        # stretch to fullscreen
+        scaled = pygame.transform.scale(virtual, (screen_w, screen_h))
+        screen.blit(scaled, (0, 0))
+    else:
+        # scale with correct aspect ratio
+        scale = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)
+        scaled_width = VIRTUAL_WIDTH * scale
+        scaled_height = VIRTUAL_HEIGHT * scale
+        scaled = pygame.transform.scale(virtual, (scaled_width, scaled_height))
+        x_offset = (screen_w - scaled_width) // 2
+        y_offset = (screen_h - scaled_height) // 2
+        screen.fill((0, 0, 0))
+        screen.blit(scaled, (x_offset, y_offset))
+
     pygame.display.flip()
 
 pygame.quit()
