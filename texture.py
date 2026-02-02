@@ -34,4 +34,16 @@ def load_textures():
         os.path.join(ASSETS_PATH, "Sprite-font.png")
     ).convert_alpha()
 
+    textures["shopplanken"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-shopplanken.png")
+    ).convert_alpha()
+
+    textures["fermpotklein"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-fermpot1.png")
+    ).convert_alpha()
+
+    textures["fermpotgroot"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-fermpot2.png")
+    ).convert_alpha()
+
     return textures

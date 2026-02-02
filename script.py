@@ -34,6 +34,22 @@ clock = pygame.time.Clock()
 # LOAD TEXTURES & CROPS
 # =========================================================
 textures = load_textures()
+
+#coördinaten van de shopplanken
+shopplanken_img = textures["shopplanken"]
+shopplanken_x = 185
+shopplanken_y = 50
+
+#Coördinaten van fermpot1
+fermpotklein_img = textures["fermpotklein"]
+fermpotklein_x = 205
+fermpotklein_y = 44
+
+#coördinaten van fermpot2
+fermpotgroot_img = textures["fermpotgroot"]
+fermpotgroot_x = 208
+fermpotgroot_y = 62
+
 init_money_ui(textures)
 crops = load_crops(textures)
 
@@ -114,6 +130,7 @@ while running:
         # PLACE PLANT (LEFT CLICK)
         # -------------------------------------------------
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+
             if TomaatZaad and itemheld:
                 mx, my = pygame.mouse.get_pos()
                 screen_w, screen_h = screen.get_size()
@@ -191,6 +208,14 @@ while running:
     # DRAW (VIRTUAL)
     # =====================================================
     virtual.blit(background, (0, 0))
+
+    #Draw shopplanken
+    virtual.blit(shopplanken_img, (shopplanken_x, shopplanken_y))
+
+    #Draw fermentatie potten
+    virtual.blit(fermpotklein_img, (fermpotklein_x, fermpotklein_y))
+    virtual.blit(fermpotgroot_img, (fermpotgroot_x, fermpotgroot_y))
+
     draw_money(virtual, money, VIRTUAL_WIDTH)
 
     # draw plants
