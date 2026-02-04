@@ -51,6 +51,27 @@ fermpotgroot_img = textures["fermpotgroot"]
 fermpotgroot_x = 208
 fermpotgroot_y = 62
 
+#coördinaten van wortelzzak
+wortelzzak_img = textures["wortelzzak"]
+wortelzzak_x = 186
+wortelzzak_y = 54
+
+#Coördinaten van tomatenzak
+tomatenzak_img = textures["tomatenzak"]
+tomatenzak_x = 198
+tomatenzak_y = 54
+
+#Coördinaten van chilizak
+chilizak_img = textures["chilizak"]
+chilizak_x = 186
+chilizak_y = 67
+
+#Coördinaten van komkommerzak
+komkommerzak_img = textures["komkommerzak"]
+komkommerzak_x = 210
+komkommerzak_y = 54
+
+
 init_money_ui(textures)
 crops = load_crops(textures)
 
@@ -247,6 +268,12 @@ while running:
     #Draw fermentatie potten
     virtual.blit(fermpotklein_img, (fermpotklein_x, fermpotklein_y))
     virtual.blit(fermpotgroot_img, (fermpotgroot_x, fermpotgroot_y))
+
+    #Draw zaadjes
+    virtual.blit(wortelzzak_img, (wortelzzak_x, wortelzzak_y))
+    virtual.blit(tomatenzak_img, (tomatenzak_x, tomatenzak_y))
+    virtual.blit(komkommerzak_img, (komkommerzak_x, komkommerzak_y))
+    virtual.blit(chilizak_img, (chilizak_x, chilizak_y))
 
     draw_money(virtual, money, VIRTUAL_WIDTH)
 
