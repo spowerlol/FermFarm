@@ -1,16 +1,12 @@
-# money_ui.py
 import pygame
 
-DIGIT_WIDTH = 8     # MUST match your sprite
+DIGIT_WIDTH = 8
 DIGIT_HEIGHT = 8
 MAX_DIGITS = 5
 
 number_font = {}
 
 def init_money_ui(textures):
-    """
-    Call once after load_textures()
-    """
     global number_font
 
     font_img = textures["NumberFont"]
@@ -23,9 +19,6 @@ def init_money_ui(textures):
 
 
 def draw_money(surface, amount, virtual_width):
-    """
-    Draws a fixed 5-digit counter in the top-right
-    """
     text = str(amount).zfill(MAX_DIGITS)
 
     total_width = MAX_DIGITS * DIGIT_WIDTH

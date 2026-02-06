@@ -177,7 +177,7 @@ while running:
         # PLACE PLANT (LEFT CLICK)
         # -------------------------------------------------
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-
+            TomaatZaad = True
             if TomaatZaad and itemheld:
                 mx, my = pygame.mouse.get_pos()
                 screen_w, screen_h = screen.get_size()

@@ -34,8 +34,6 @@ def run_start_screen(screen, fullscreen):
             offset_y += SLIDE_SPEED
             if offset_y >= VIRTUAL_HEIGHT:
                 return
-
-        # VIEWPORT INTO TALL IMAGE
         viewport = pygame.Rect(
             0,
             offset_y,
@@ -44,8 +42,6 @@ def run_start_screen(screen, fullscreen):
         )
 
         virtual.blit(start_image, (0, 0), viewport)
-
-        # scale exactly like the game
         screen_w, screen_h = screen.get_size()
         if fullscreen:
             scaled = pygame.transform.scale(virtual, (screen_w, screen_h))
