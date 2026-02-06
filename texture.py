@@ -46,8 +46,20 @@ def load_textures():
         os.path.join(ASSETS_PATH, "Sprite-fermpot2.png")
     ).convert_alpha()
 
-    textures["startScreen"] = pygame.image.load(
-        os.path.join(ASSETS_PATH, "backgroundconcept+tittlescreen.png")
+    textures["wortelzzak"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-wortelzzak2.png")
+    ).convert_alpha()
+
+    textures["tomatenzak"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-tomatenzzak.png")
+    ).convert_alpha()
+
+    textures["chilizak"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-chilizzak.png")
+    ).convert_alpha()
+
+    textures["komkommerzak"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-komkommerzak2.png")
     ).convert_alpha()
 
     return textures
