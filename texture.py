@@ -46,4 +46,8 @@ def load_textures():
         os.path.join(ASSETS_PATH, "Sprite-fermpot2.png")
     ).convert_alpha()
 
+    textures["startScreen"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "backgroundconcept+tittlescreen.png")
+    ).convert_alpha()
+
     return textures
