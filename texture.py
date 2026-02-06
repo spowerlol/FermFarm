@@ -61,5 +61,8 @@ def load_textures():
     textures["komkommerzak"] = pygame.image.load(
         os.path.join(ASSETS_PATH, "Sprite-komkommerzak2.png")
     ).convert_alpha()
+    textures["startScreen"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "backgroundconcept+tittlescreen.png")
+    ).convert_alpha()
 
     return textures
