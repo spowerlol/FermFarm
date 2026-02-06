@@ -17,7 +17,7 @@ def run_start_screen(screen, fullscreen):
 
     offset_y = 0
     sliding = False
-    SLIDE_SPEED = 4
+    SLIDE_SPEED = 0.5
 
     while True:
         clock.tick(FPS)
