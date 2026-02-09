@@ -37,40 +37,49 @@ clock = pygame.time.Clock()
 textures = load_textures()
 
 #coördinaten van de shopplanken
-shopplanken_img = textures["shopplanken"]
-shopplanken_x = 185
-shopplanken_y = 50
+shopPlanken_img = textures["shopPlanken"]
+shopPlanken_x = 185
+shopPlanken_y = 50
 
 #Coördinaten van fermpot1
-fermpotklein_img = textures["fermpotklein"]
-fermpotklein_x = 205
-fermpotklein_y = 44
+fermpotKlein_img = textures["fermpotKlein"]
+fermpotKlein_x = 205
+fermpotKlein_y = 44
 
 #coördinaten van fermpot2
-fermpotgroot_img = textures["fermpotgroot"]
-fermpotgroot_x = 208
-fermpotgroot_y = 62
+fermpotGroot_img = textures["fermpotGroot"]
+fermpotGroot_x = 208
+fermpotGroot_y = 62
 
 #coördinaten van wortelzzak
-wortelzzak_img = textures["wortelzzak"]
-wortelzzak_x = 186
-wortelzzak_y = 54
+wortelzZak_img = textures["wortelzZak"]
+wortelzZak_x = 186
+wortelzZak_y = 54
 
 #Coördinaten van tomatenzak
-tomatenzak_img = textures["tomatenzak"]
-tomatenzak_x = 198
-tomatenzak_y = 54
+tomatenZak_img = textures["tomatenZak"]
+tomatenZak_x = 198
+tomatenZak_y = 54
 
 #Coördinaten van chilizak
-chilizak_img = textures["chilizak"]
-chilizak_x = 186
-chilizak_y = 67
+chiliZak_img = textures["chiliZak"]
+chiliZak_x = 186
+chiliZak_y = 67
 
 #Coördinaten van komkommerzak
-komkommerzak_img = textures["komkommerzak"]
-komkommerzak_x = 210
-komkommerzak_y = 54
+komkommerZak_img = textures["komkommerZak"]
+komkommerZak_x = 210
+komkommerZak_y = 54
 
+#Coördinaten van koolzak
+koolZak_img = textures["koolZak"]
+koolZak_x = 197
+koolZak_y = 67
+
+#Coördinaten van knoflookzak
+knoflookZak_img = textures["knoflookZak"]
+knoflookZak_x = 209
+knoflookZak_y = 67
 
 init_money_ui(textures)
 crops = load_crops(textures)
@@ -274,6 +283,8 @@ while running:
     virtual.blit(tomatenzak_img, (tomatenzak_x, tomatenzak_y))
     virtual.blit(komkommerzak_img, (komkommerzak_x, komkommerzak_y))
     virtual.blit(chilizak_img, (chilizak_x, chilizak_y))
+    virtual.blit(knoflookzak_img, (knoflookzak_x, knoflookzak_y))
+    virtual.blit(koolzak_img, (koolzak_x, koolzak_y))
 
     draw_money(virtual, money, VIRTUAL_WIDTH)
 
