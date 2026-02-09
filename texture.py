@@ -10,6 +10,10 @@ def load_textures():
         os.path.join(ASSETS_PATH, "backgroundconcept.png")
     ).convert()
 
+    textures["Calendar"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-Calendar.png")
+    ).convert_alpha()
+
     textures["CalendarCircle"] = pygame.image.load(
         os.path.join(ASSETS_PATH, "Sprite-CalendarCircle.png")
     ).convert_alpha()

@@ -99,8 +99,8 @@ background = pygame.transform.scale(
     textures["background"],
     (VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 )
-calendar_sprite = textures["CalendarCircle"]
-
+calendarCircle_sprite = textures["CalendarCircle"]
+calendar_sprite = textures["Calendar"]
 # =========================================================
 # GRID (PLANTING)
 # =========================================================
@@ -292,7 +292,8 @@ while running:
                 )
 
     # draw calendar
-    virtual.blit(calendar_sprite, (sprite_x, sprite_y))
+    virtual.blit(calendar_sprite, (x+170,y+70))
+    virtual.blit(calendarCircle_sprite, (sprite_x, sprite_y))
 
     # =====================================================
     # SCALE TO SCREEN
