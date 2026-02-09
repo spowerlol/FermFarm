@@ -275,19 +275,19 @@ while running:
     virtual.blit(background, (0, 0))
 
     #Draw shopplanken
-    virtual.blit(shopplanken_img, (shopplanken_x, shopplanken_y))
+    virtual.blit(shopPlanken_img, (shopPlanken_x, shopPlanken_y))
 
     #Draw fermentatie potten
-    virtual.blit(fermpotklein_img, (fermpotklein_x, fermpotklein_y))
-    virtual.blit(fermpotgroot_img, (fermpotgroot_x, fermpotgroot_y))
+    virtual.blit(fermpotKlein_img, (fermpotKlein_x, fermpotKlein_y))
+    virtual.blit(fermpotGroot_img, (fermpotGroot_x, fermpotGroot_y))
 
     #Draw zaadjes
-    virtual.blit(wortelzzak_img, (wortelzzak_x, wortelzzak_y))
-    virtual.blit(tomatenzak_img, (tomatenzak_x, tomatenzak_y))
-    virtual.blit(komkommerzak_img, (komkommerzak_x, komkommerzak_y))
-    virtual.blit(chilizak_img, (chilizak_x, chilizak_y))
-    virtual.blit(knoflookzak_img, (knoflookzak_x, knoflookzak_y))
-    virtual.blit(koolzak_img, (koolzak_x, koolzak_y))
+    virtual.blit(wortelzZak_img, (wortelzZak_x, wortelzZak_y))
+    virtual.blit(tomatenZak_img, (tomatenZak_x, tomatenZak_y))
+    virtual.blit(komkommerZak_img, (komkommerZak_x, komkommerZak_y))
+    virtual.blit(chiliZak_img, (chiliZak_x, chiliZak_y))
+    virtual.blit(knoflookZak_img, (knoflookZak_x, knoflookZak_y))
+    virtual.blit(koolZak_img, (koolZak_x, koolZak_y))
 
     draw_money(virtual, money, VIRTUAL_WIDTH)
 
