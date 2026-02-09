@@ -4,6 +4,8 @@ from texture import load_textures
 from crop import load_crops
 from money_ui import init_money_ui, draw_money
 from cropHarvesting import harvest
+from startScreen import run_start_screen
+
 
 pygame.init()
 
@@ -30,6 +32,7 @@ pygame.display.set_caption("FermFarm")
 # =========================================================
 virtual = pygame.Surface((VIRTUAL_WIDTH, VIRTUAL_HEIGHT))
 clock = pygame.time.Clock()
+run_start_screen(screen, fullscreen)
 
 # =========================================================
 # LOAD TEXTURES & CROPS
@@ -105,8 +108,8 @@ background = pygame.transform.scale(
     textures["background"],
     (VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 )
-calendar_sprite = textures["CalendarCircle"]
-
+calendarCircle_sprite = textures["CalendarCircle"]
+calendar_sprite = textures["Calendar"]
 # =========================================================
 # GRID (PLANTING)
 # =========================================================
@@ -138,7 +141,7 @@ ROWS = 3
 current_column = 0
 current_row = 0
 
-MOVE_INTERVAL = 60_000  # 1 day = 60 seconds
+MOVE_INTERVAL = 5_000  # 1 day = 60 seconds
 last_move_time = pygame.time.get_ticks()
 days_passed = 0
 
@@ -183,7 +186,7 @@ while running:
         # PLACE PLANT (LEFT CLICK)
         # -------------------------------------------------
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-
+            TomaatZaad = True
             if TomaatZaad and itemheld:
                 mx, my = pygame.mouse.get_pos()
                 screen_w, screen_h = screen.get_size()
@@ -300,7 +303,8 @@ while running:
                 )
 
     # draw calendar
-    virtual.blit(calendar_sprite, (sprite_x, sprite_y))
+    virtual.blit(calendar_sprite, (x+170,y+70))
+    virtual.blit(calendarCircle_sprite, (sprite_x, sprite_y))
 
     # =====================================================
     # SCALE TO SCREEN

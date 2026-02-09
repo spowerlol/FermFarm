@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="95692660-6345-4587-9403-603976ea4ae0" name="Changes" comment="shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.">
-      <change afterPath="$PROJECT_DIR$/sprites/Sprite-chilizzak.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sprites/Sprite-komkommerzak2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sprites/Sprite-tomatenzzak.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sprites/Sprite-wortelzzak2.png" afterDir="false" />
+    <list default="true" id="95692660-6345-4587-9403-603976ea4ae0" name="Changes" comment="scaling change/fix added windowed mode + scaled fullscreen">
+      <change afterPath="$PROJECT_DIR$/startScreen.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script.py" beforeDir="false" afterPath="$PROJECT_DIR$/script.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/texture.py" beforeDir="false" afterPath="$PROJECT_DIR$/texture.py" afterDir="false" />
@@ -18,7 +15,6 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ChangesViewManager" show_ignored="true" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -59,6 +55,7 @@
     "Python.cropHarvesting.executor": "Run",
     "Python.money_ui.executor": "Run",
     "Python.script.executor": "Run",
+    "Python.startScreen.executor": "Run",
     "Python.texture.executor": "Run",
     "Python.textures.executor": "Run",
     "RunOnceActivity.MCP Project settings loaded": "true",
@@ -70,7 +67,7 @@
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "C:/Users/Amber/PycharmProjects/FermFarm/sprites",
+    "last_opened_file_path": "C:/Users/stijn/PycharmProjects/FermFarm/sprites",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -83,7 +80,6 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\Amber\PycharmProjects\FermFarm\sprites" />
       <recent name="C:\Users\stijn\PycharmProjects\FermFarm\sprites" />
     </key>
   </component>
@@ -108,7 +104,10 @@
       <workItem from="1769177686048" duration="1194000" />
       <workItem from="1769178945906" duration="388000" />
       <workItem from="1769509336635" duration="15631000" />
-      <workItem from="1769608926106" duration="13428000" />
+      <workItem from="1769608926106" duration="17044000" />
+      <workItem from="1770027574888" duration="5908000" />
+      <workItem from="1770127096517" duration="7985000" />
+      <workItem from="1770378340582" duration="1174000" />
     </task>
     <task id="LOCAL-00001" summary="transitioning from sceled to grid">
       <option name="closed" value="true" />
@@ -166,13 +165,13 @@
       <option name="project" value="LOCAL" />
       <updated>1769766384494</updated>
     </task>
-    <task id="LOCAL-00008" summary="shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.">
+    <task id="LOCAL-00008" summary="scaling change/fix added windowed mode + scaled fullscreen">
       <option name="closed" value="true" />
-      <created>1770071133664</created>
+      <created>1769778325222</created>
       <option name="number" value="00008" />
       <option name="presentableId" value="LOCAL-00008" />
       <option name="project" value="LOCAL" />
-      <updated>1770071133664</updated>
+      <updated>1769778325223</updated>
     </task>
     <option name="localTasksCounter" value="9" />
     <servers />
@@ -187,14 +186,15 @@
     <MESSAGE value="planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag" />
     <MESSAGE value="farmland texture and background change shed" />
     <MESSAGE value="geld mechanisme en gewassen harvesten" />
-    <MESSAGE value="shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren." />
-    <option name="LAST_COMMIT_MESSAGE" value="shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren." />
+    <MESSAGE value="scaling change/fix added windowed mode + scaled fullscreen" />
+    <option name="LAST_COMMIT_MESSAGE" value="scaling change/fix added windowed mode + scaled fullscreen" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/FermFarm$cropHarvesting.coverage" NAME="cropHarvesting Coverage Results" MODIFIED="1769769549833" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/FermFarm$textures.coverage" NAME="textures Coverage Results" MODIFIED="1769091608851" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FermFarm$script.coverage" NAME="script Coverage Results" MODIFIED="1770379429499" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FermFarm$texture.coverage" NAME="texture Coverage Results" MODIFIED="1770192886392" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FermFarm$cropHarvesting.coverage" NAME="cropHarvesting Coverage Results" MODIFIED="1770047320651" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FermFarm$money_ui.coverage" NAME="money_ui Coverage Results" MODIFIED="1769769552664" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/FermFarm$texture.coverage" NAME="texture Coverage Results" MODIFIED="1770067076734" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/FermFarm$script.coverage" NAME="script Coverage Results" MODIFIED="1770160592944" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FermFarm$textures.coverage" NAME="textures Coverage Results" MODIFIED="1769091608851" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FermFarm$startScreen.coverage" NAME="startScreen Coverage Results" MODIFIED="1770379417792" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
