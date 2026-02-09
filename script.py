@@ -303,7 +303,7 @@ while running:
                 )
 
     # draw calendar
-    virtual.blit(calendar_sprite, (x+170,y+70))
+    virtual.blit(calendar_sprite, (176,72))
     virtual.blit(calendarCircle_sprite, (sprite_x, sprite_y))
 
     # =====================================================
