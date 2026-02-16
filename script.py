@@ -302,10 +302,23 @@ while running:
                 gx = (vx - GRID_START_X) // CELL_SIZE
                 gy = (vy - GRID_START_Y) // CELL_SIZE
 
+            if selected_seed == "carrot":
+                gx = (vx - GRID_START_X) // CELL_SIZE
+                gy = (vy - GRID_START_Y) // CELL_SIZE
+
                 if 0 <= gx < GRID_COLS and 0 <= gy < GRID_ROWS:
                     if grid[gx][gy] is None:
                         grid[gx][gy] = {
                             "crop": "tomato",
+                            "day_planted": days_passed,
+                            "stage": 0
+                        }
+                        selected_seed = None
+
+                if 0 <= gx < GRID_COLS and 0 <= gy < GRID_ROWS:
+                    if grid[gx][gy] is None:
+                        grid[gx][gy] = {
+                            "crop": "carrot",
                             "day_planted": days_passed,
                             "stage": 0
                         }
