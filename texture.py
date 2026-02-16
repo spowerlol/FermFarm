@@ -34,6 +34,22 @@ def load_textures():
         os.path.join(ASSETS_PATH, "Sprite-TomaatPlant3.png")
     ).convert_alpha()
 
+    textures["wortelPlant0"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-wortelPlant0.png")
+    ).convert_alpha()
+
+    textures["wortelPlant1"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-wortelPlant1.png")
+    ).convert_alpha()
+
+    textures["wortelPlant2"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-wortelPlant2.png")
+    ).convert_alpha()
+
+    textures["wortelPlant3"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-wortelPlant3.png")
+    ).convert_alpha()
+
     textures["NumberFont"] = pygame.image.load(
         os.path.join(ASSETS_PATH, "Sprite-font.png")
     ).convert_alpha()
