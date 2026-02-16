@@ -1,5 +1,6 @@
 CROP_VALUES = {
-    "tomato": 5,
+    "tomato": 5 ,
+    "carrot" : 7,
     "carrot": 10,
     "cucumber": 15,
     "chili": 20,
