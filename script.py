@@ -3,7 +3,7 @@ import sys
 from texture import load_textures
 from crop import load_crops
 from money_ui import init_money_ui, draw_money
-from cropHarvesting import harvest
+from cropHarvesting import harvest, CROP_VALUES, Crop_Price, inventory
 from startScreen import run_start_screen
 
 
@@ -87,10 +87,44 @@ knoflookZak_y = 67
 init_money_ui(textures)
 crops = load_crops(textures)
 
+# ------------------------------------------------------------
+# ANDERE PLANTEN KUNNEN PLANTEN
+# ------------------------------------------------------------
+
+seeds_rects = {
+    "carrot": pygame.Rect(wortelzZak_x, wortelzZak_y,
+                    wortelzZak_img.get_width(), wortelzZak_img.get_height()),
+
+    "tomato": pygame.Rect(tomatenZak_x, tomatenZak_y,tomatenZak_img.get_width(),
+                          tomatenZak_img.get_height()),
+
+    "chili": pygame.Rect(chiliZak_x, chiliZak_y,
+                         chiliZak_img.get_width(), chiliZak_img.get_height()),
+
+    "cucumber": pygame.Rect(komkommerZak_x, komkommerZak_y,
+                             komkommerZak_img.get_width(), komkommerZak_img.get_height()),
+
+    "cabbage": pygame.Rect(koolZak_x, koolZak_y,
+                        koolZak_img.get_width(), koolZak_img.get_height()),
+
+    "garlic": pygame.Rect(knoflookZak_x, knoflookZak_y,
+                            knoflookZak_img.get_width(), knoflookZak_img.get_height()),
+}
+selected_seed = None
+
+#======================================
+#FERMENTATION
+#======================================
+fermpotKlein_rect = pygame.Rect(fermpotKlein_x, fermpotKlein_y,
+                           fermpotKlein_img.get_width(), fermpotKlein_img.get_height())
+
+fermpotGroot_rect = pygame.Rect(fermpotGroot_x, fermpotGroot_y,
+                                fermpotGroot_img.get_width(), fermpotGroot_img.get_height())
 # =========================================================
 # MONEY COUNTER
 # =========================================================
-money = 0
+money = 6
+
 
 DIGIT_WIDTH = 8
 DIGIT_HEIGHT = 8
@@ -186,22 +220,85 @@ while running:
         # PLACE PLANT (LEFT CLICK)
         # -------------------------------------------------
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            TomaatZaad = True
-            if TomaatZaad and itemheld:
-                mx, my = pygame.mouse.get_pos()
-                screen_w, screen_h = screen.get_size()
+            mx, my = pygame.mouse.get_pos()
+            screen_w, screen_h = screen.get_size()
 
-                if fullscreen:
+            if fullscreen:
                     # scale to full screen
-                    vx = mx * VIRTUAL_WIDTH // screen_w
-                    vy = my * VIRTUAL_HEIGHT // screen_h
-                else:
-                    scale = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)
-                    x_offset = (screen_w - VIRTUAL_WIDTH * scale) // 2
-                    y_offset = (screen_h - VIRTUAL_HEIGHT * scale) // 2
-                    vx = (mx - x_offset) // scale
-                    vy = (my - y_offset) // scale
+                vx = mx * VIRTUAL_WIDTH // screen_w
+                vy = my * VIRTUAL_HEIGHT // screen_h
 
+            else:
+                scale = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)
+                x_offset = (screen_w - VIRTUAL_WIDTH * scale) // 2
+                y_offset = (screen_h - VIRTUAL_HEIGHT * scale) // 2
+                vx = (mx - x_offset) // scale
+                vy = (my - y_offset) // scale
+
+                gx = (vx - GRID_START_X) // CELL_SIZE
+                gy = (vy - GRID_START_Y) // CELL_SIZE
+
+            #===================
+            # Kleine pot ( 1 stuk)
+            #====================
+            if fermpotKlein_rect.collidepoint(vx,vy):
+                for crop_name in inventory:
+                    if inventory[crop_name] > 0:
+                        inventory[crop_name] -= 1
+                        money +=  CROP_VALUES[crop_name] // 2
+                        break
+                continue
+
+            #==================
+            #Grote pot (2 stuks)
+            #===================
+            if fermpotGroot_rect.collidepoint(vx,vy):
+                fermented_count = 0
+                for crop_name in inventory:
+                    while inventory[crop_name] > 0 and fermented_count < 2:
+                        inventory[crop_name] -= 1
+                        money += CROP_VALUES[crop_name] // 2
+                        fermented_count += 1
+                    if fermented_count >= 2:
+                        break
+                continue
+
+
+            #===========================
+            # checken of je zaadzak klikt
+            #===========================
+
+            clicked_seed = None
+            for crop_name, rect in seeds_rects.items():
+                if rect.collidepoint(vx, vy):
+                    clicked_seed = crop_name
+                    break
+
+            #economie
+            if clicked_seed == "tomato" and selected_seed is None:
+                if money >= Crop_Price["tomato"]:
+                    money -= Crop_Price["tomato"]
+                    selected_seed = "tomato"
+
+            if clicked_seed == "carrot" and selected_seed is None:
+                if money >= Crop_Price["carrot"]:
+                    money -= Crop_Price["carrot"]
+                    selected_seed = "carrot"
+
+            if clicked_seed == "cucumber" and selected_seed is None:
+                if money >= Crop_Price["cucumber"]:
+                    money -= Crop_Price["cucumber"]
+                    selected_seed = "cucumber"
+
+            if clicked_seed == "chili" and selected_seed is None:
+                if money >= Crop_Price["chili"]:
+                    money -= Crop_Price["chili"]
+                    selected_seed = "chili"
+
+
+
+                #planten op grid
+            if selected_seed == "tomato":
                 gx = (vx - GRID_START_X) // CELL_SIZE
                 gy = (vy - GRID_START_Y) // CELL_SIZE
 
@@ -212,7 +309,8 @@ while running:
                             "day_planted": days_passed,
                             "stage": 0
                         }
-                        TomaatZaad = False  # consume seed
+                        selected_seed = None
+
 
         # -------------------------------------------------
         # HARVEST PLANT (RIGHT CLICK)
@@ -234,7 +332,10 @@ while running:
             gx = (vx - GRID_START_X) // CELL_SIZE
             gy = (vy - GRID_START_Y) // CELL_SIZE
 
-            money += harvest(grid, gx, gy, crops)
+            harvested = harvest(grid,gx,gy,crops)
+            if harvested:
+                money += CROP_VALUES[harvested]
+                inventory[harvested] = inventory.get(harvested, 0) + 1
 
     # =====================================================
     # CALENDAR TIMED MOVEMENT + PLANT GROWTH
