@@ -1,0 +1,195 @@
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"95692660-6345-4587-9403-603976ea4ae0\" name=\"Changes\" comment=\"shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.\">\r\n      <change afterPath=\"$PROJECT_DIR$/shop.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/crop.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/crop.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cropHarvesting.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cropHarvesting.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/script.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/script.py\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"ChangesViewManager\" show_ignored=\"true\" />\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;spowerlol&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\"><![CDATA[{\r\n  \"selectedUrlAndAccountId\": {\r\n    \"url\": \"https://github.com/spowerlol/FermFarm.git\",\r\n    \"accountId\": \"18c26119-1744-4ef9-9155-cd73e6ab547e\"\r\n  }\r\n}]]></component>\r\n  <component name=\"McpProjectServerCommands\">\r\n    <commands />\r\n    <urls />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 6\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"38c5FddQy6ljfzKCVHQbgWrUtCb\" />\r\n  <component name=\"ProjectLevelVcsManager\">\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,\r\n    &quot;Python.cropHarvesting.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.money_ui.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.script.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.texture.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.textures.executor&quot;: &quot;Run&quot;,\r\n    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,\r\n    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,\r\n    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;main&quot;,\r\n    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,\r\n    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;C:/Users/Amber/PycharmProjects/FermFarm/sprites&quot;,\r\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,\r\n    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,\r\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Users\\Amber\\PycharmProjects\\FermFarm\\sprites\" />\r\n      <recent name=\"C:\\Users\\stijn\\PycharmProjects\\FermFarm\\sprites\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-PY-253.29346.308\" />\r\n        <option value=\"bundled-python-sdk-ca5e2b39c7df-6e1f45a539f7-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.29346.308\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"95692660-6345-4587-9403-603976ea4ae0\" name=\"Changes\" comment=\"\" />\r\n      <created>1769085916195</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1769085916195</updated>\r\n      <workItem from=\"1769085917837\" duration=\"5601000\" />\r\n      <workItem from=\"1769111957488\" duration=\"3562000\" />\r\n      <workItem from=\"1769159302479\" duration=\"278000\" />\r\n      <workItem from=\"1769177686048\" duration=\"1194000\" />\r\n      <workItem from=\"1769178945906\" duration=\"388000\" />\r\n      <workItem from=\"1769509336635\" duration=\"15631000\" />\r\n      <workItem from=\"1769608926106\" duration=\"13428000\" />\r\n      <workItem from=\"1770988189633\" duration=\"2704000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"transitioning from sceled to grid\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1769178196805</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1769178196805</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"adding all current sprites\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1769179182081</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1769179182082</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"planten neerzetten WIP maar klaar voor groei en shop\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1769432346917</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1769432346917</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1769520493805</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1769520493805</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1769522358478</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1769522358478</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00006\" summary=\"farmland texture and background change shed\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1769528233745</created>\r\n      <option name=\"number\" value=\"00006\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1769528233745</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00007\" summary=\"geld mechanisme en gewassen harvesten\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1769766384494</created>\r\n      <option name=\"number\" value=\"00007\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1769766384494</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00008\" summary=\"shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1770071133664</created>\r\n      <option name=\"number\" value=\"00008\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1770071133664</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"9\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"transitioning from sceled to grid\" />\r\n    <MESSAGE value=\"adding all current sprites\" />\r\n    <MESSAGE value=\"planten neerzetten WIP maar klaar voor groei en shop\" />\r\n    <MESSAGE value=\"planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag\" />\r\n    <MESSAGE value=\"farmland texture and background change shed\" />\r\n    <MESSAGE value=\"geld mechanisme en gewassen harvesten\" />\r\n    <MESSAGE value=\"shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.\" />\r\n  </component>\r\n  <component name=\"XDebuggerManager\">\r\n    <breakpoint-manager>\r\n      <breakpoints>\r\n        <line-breakpoint enabled=\"true\" suspend=\"THREAD\" type=\"python-line\">\r\n          <url>file://$PROJECT_DIR$/texture.py</url>\r\n          <option name=\"timeStamp\" value=\"2\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" suspend=\"THREAD\" type=\"python-line\">\r\n          <url>file://$PROJECT_DIR$/script.py</url>\r\n          <option name=\"timeStamp\" value=\"3\" />\r\n        </line-breakpoint>\r\n      </breakpoints>\r\n    </breakpoint-manager>\r\n  </component>\r\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\r\n    <SUITE FILE_PATH=\"coverage/FermFarm$script.coverage\" NAME=\"script Coverage Results\" MODIFIED=\"1771236534459\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n    <SUITE FILE_PATH=\"coverage/FermFarm$textures.coverage\" NAME=\"textures Coverage Results\" MODIFIED=\"1769091608851\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n    <SUITE FILE_PATH=\"coverage/FermFarm$shop.coverage\" NAME=\"shop Coverage Results\" MODIFIED=\"1770052848696\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n    <SUITE FILE_PATH=\"coverage/FermFarm$cropHarvesting.coverage\" NAME=\"cropHarvesting Coverage Results\" MODIFIED=\"1770979476149\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n    <SUITE FILE_PATH=\"coverage/FermFarm$money_ui.coverage\" NAME=\"money_ui Coverage Results\" MODIFIED=\"1769769552664\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n    <SUITE FILE_PATH=\"coverage/FermFarm$crop.coverage\" NAME=\"crop Coverage Results\" MODIFIED=\"1770027608397\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n    <SUITE FILE_PATH=\"coverage/FermFarm$texture.coverage\" NAME=\"texture Coverage Results\" MODIFIED=\"1769765302072\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 3e8cc2ac730181f313dff77daebfcfcf2c5e551b)
++++ b/.idea/workspace.xml	(date 1771237453507)
+@@ -4,19 +4,20 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="95692660-6345-4587-9403-603976ea4ae0" name="Changes" comment="shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.">
+-      <change afterPath="$PROJECT_DIR$/shop.py" afterDir="false" />
++    <list default="true" id="95692660-6345-4587-9403-603976ea4ae0" name="Changes" comment="scaling change/fix added windowed mode + scaled fullscreen">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/crop.py" beforeDir="false" afterPath="$PROJECT_DIR$/crop.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/cropHarvesting.py" beforeDir="false" afterPath="$PROJECT_DIR$/cropHarvesting.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/script.py" beforeDir="false" afterPath="$PROJECT_DIR$/script.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/sprites/Sprite-wortelPlant2.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-wortelPlant2.png" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/sprites/Sprite-wortelPlant3.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-wortelPlant3.png" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/texture.py" beforeDir="false" afterPath="$PROJECT_DIR$/texture.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+     <option name="LAST_RESOLUTION" value="IGNORE" />
+   </component>
+-  <component name="ChangesViewManager" show_ignored="true" />
+   <component name="FileTemplateManagerImpl">
+     <option name="RECENT_TEMPLATES">
+       <list>
+@@ -33,12 +34,12 @@
+     &quot;assignee&quot;: &quot;spowerlol&quot;
+   }
+ }</component>
+-  <component name="GithubPullRequestsUISettings"><![CDATA[{
+-  "selectedUrlAndAccountId": {
+-    "url": "https://github.com/spowerlol/FermFarm.git",
+-    "accountId": "18c26119-1744-4ef9-9155-cd73e6ab547e"
++  <component name="GithubPullRequestsUISettings">{
++  &quot;selectedUrlAndAccountId&quot;: {
++    &quot;url&quot;: &quot;https://github.com/spowerlol/FermFarm&quot;,
++    &quot;accountId&quot;: &quot;eb09209d-4969-45b4-a387-6bccd96bd1ac&quot;
+   }
+-}]]></component>
++}</component>
+   <component name="McpProjectServerCommands">
+     <commands />
+     <urls />
+@@ -47,44 +48,42 @@
+   &quot;associatedIndex&quot;: 6
+ }</component>
+   <component name="ProjectId" id="38c5FddQy6ljfzKCVHQbgWrUtCb" />
+-  <component name="ProjectLevelVcsManager">
+-    <ConfirmationsSetting value="2" id="Add" />
+-  </component>
+   <component name="ProjectViewState">
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent">{
+-  &quot;keyToString&quot;: {
+-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+-    &quot;Python.cropHarvesting.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.money_ui.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.script.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.texture.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.textures.executor&quot;: &quot;Run&quot;,
+-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+-    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
+-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Amber/PycharmProjects/FermFarm/sprites&quot;,
+-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+-    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,
+-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
++  <component name="PropertiesComponent"><![CDATA[{
++  "keyToString": {
++    "ModuleVcsDetector.initialDetectionPerformed": "true",
++    "Python.cropHarvesting.executor": "Run",
++    "Python.money_ui.executor": "Run",
++    "Python.script.executor": "Run",
++    "Python.startScreen.executor": "Run",
++    "Python.texture.executor": "Run",
++    "Python.textures.executor": "Run",
++    "RunOnceActivity.MCP Project settings loaded": "true",
++    "RunOnceActivity.ShowReadmeOnStart": "true",
++    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
++    "RunOnceActivity.git.unshallow": "true",
++    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
++    "ai.playground.ignore.import.keys.banner.in.settings": "true",
++    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
++    "git-widget-placeholder": "main",
++    "ignore.virus.scanning.warn.message": "true",
++    "junie.onboarding.icon.badge.shown": "true",
++    "last_opened_file_path": "C:/Users/stijn/PycharmProjects/FermFarm/sprites",
++    "node.js.detected.package.eslint": "true",
++    "node.js.detected.package.tslint": "true",
++    "node.js.selected.package.eslint": "(autodetect)",
++    "node.js.selected.package.tslint": "(autodetect)",
++    "nodejs_package_manager_path": "npm",
++    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
++    "to.speed.mode.migration.done": "true",
++    "vue.rearranger.settings.migration": "true"
+   }
+-}</component>
++}]]></component>
+   <component name="RecentsManager">
+     <key name="CopyFile.RECENT_KEYS">
+-      <recent name="C:\Users\Amber\PycharmProjects\FermFarm\sprites" />
+       <recent name="C:\Users\stijn\PycharmProjects\FermFarm\sprites" />
+     </key>
+   </component>
+@@ -109,8 +108,10 @@
+       <workItem from="1769177686048" duration="1194000" />
+       <workItem from="1769178945906" duration="388000" />
+       <workItem from="1769509336635" duration="15631000" />
+-      <workItem from="1769608926106" duration="13428000" />
+-      <workItem from="1770988189633" duration="2704000" />
++      <workItem from="1769608926106" duration="17044000" />
++      <workItem from="1770027574888" duration="5908000" />
++      <workItem from="1770127096517" duration="7985000" />
++      <workItem from="1770378340582" duration="1174000" />
+     </task>
+     <task id="LOCAL-00001" summary="transitioning from sceled to grid">
+       <option name="closed" value="true" />
+@@ -168,13 +169,13 @@
+       <option name="project" value="LOCAL" />
+       <updated>1769766384494</updated>
+     </task>
+-    <task id="LOCAL-00008" summary="shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.">
++    <task id="LOCAL-00008" summary="scaling change/fix added windowed mode + scaled fullscreen">
+       <option name="closed" value="true" />
+-      <created>1770071133664</created>
++      <created>1769778325222</created>
+       <option name="number" value="00008" />
+       <option name="presentableId" value="LOCAL-00008" />
+       <option name="project" value="LOCAL" />
+-      <updated>1770071133664</updated>
++      <updated>1769778325223</updated>
+     </task>
+     <option name="localTasksCounter" value="9" />
+     <servers />
+@@ -189,30 +190,15 @@
+     <MESSAGE value="planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag" />
+     <MESSAGE value="farmland texture and background change shed" />
+     <MESSAGE value="geld mechanisme en gewassen harvesten" />
+-    <MESSAGE value="shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren." />
+-    <option name="LAST_COMMIT_MESSAGE" value="shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren." />
+-  </component>
+-  <component name="XDebuggerManager">
+-    <breakpoint-manager>
+-      <breakpoints>
+-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+-          <url>file://$PROJECT_DIR$/texture.py</url>
+-          <option name="timeStamp" value="2" />
+-        </line-breakpoint>
+-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+-          <url>file://$PROJECT_DIR$/script.py</url>
+-          <option name="timeStamp" value="3" />
+-        </line-breakpoint>
+-      </breakpoints>
+-    </breakpoint-manager>
++    <MESSAGE value="scaling change/fix added windowed mode + scaled fullscreen" />
++    <option name="LAST_COMMIT_MESSAGE" value="scaling change/fix added windowed mode + scaled fullscreen" />
+   </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+-    <SUITE FILE_PATH="coverage/FermFarm$script.coverage" NAME="script Coverage Results" MODIFIED="1771236534459" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+-    <SUITE FILE_PATH="coverage/FermFarm$textures.coverage" NAME="textures Coverage Results" MODIFIED="1769091608851" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+-    <SUITE FILE_PATH="coverage/FermFarm$shop.coverage" NAME="shop Coverage Results" MODIFIED="1770052848696" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+-    <SUITE FILE_PATH="coverage/FermFarm$cropHarvesting.coverage" NAME="cropHarvesting Coverage Results" MODIFIED="1770979476149" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/FermFarm$script.coverage" NAME="script Coverage Results" MODIFIED="1771237450017" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/FermFarm$texture.coverage" NAME="texture Coverage Results" MODIFIED="1770192886392" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/FermFarm$cropHarvesting.coverage" NAME="cropHarvesting Coverage Results" MODIFIED="1770977561484" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+     <SUITE FILE_PATH="coverage/FermFarm$money_ui.coverage" NAME="money_ui Coverage Results" MODIFIED="1769769552664" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+-    <SUITE FILE_PATH="coverage/FermFarm$crop.coverage" NAME="crop Coverage Results" MODIFIED="1770027608397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+-    <SUITE FILE_PATH="coverage/FermFarm$texture.coverage" NAME="texture Coverage Results" MODIFIED="1769765302072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/FermFarm$textures.coverage" NAME="textures Coverage Results" MODIFIED="1769091608851" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/FermFarm$startScreen.coverage" NAME="startScreen Coverage Results" MODIFIED="1770385498839" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+   </component>
+ </project>
+\ No newline at end of file

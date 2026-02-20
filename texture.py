@@ -93,4 +93,8 @@ def load_textures():
         os.path.join(ASSETS_PATH, "Sprite-koolzak.png")
     ).convert_alpha()
 
+    textures["menuSprite"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "optionsMenu.png")
+    ).convert_alpha()
+
     return textures
