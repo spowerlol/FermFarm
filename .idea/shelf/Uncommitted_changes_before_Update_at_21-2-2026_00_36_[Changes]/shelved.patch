@@ -1,0 +1,272 @@
+Index: script.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\nimport sys\r\nfrom texture import load_textures\r\nfrom crop import load_crops\r\nfrom money_ui import init_money_ui, draw_money\r\nfrom cropHarvesting import harvest, CROP_VALUES, Crop_Price, inventory\r\nfrom startScreen import run_start_screen\r\n\r\npygame.init()\r\n\r\n# =========================================================\r\n# VIRTUAL RESOLUTION\r\n# =========================================================\r\nVIRTUAL_WIDTH = 240\r\nVIRTUAL_HEIGHT = 135\r\nFPS = 60\r\n\r\n# =========================================================\r\n# FULLSCREEN / WINDOWED\r\n# =========================================================\r\nfullscreen = True\r\ninfo = pygame.display.Info()\r\nscreen = pygame.display.set_mode(\r\n    (info.current_w, info.current_h),\r\n    pygame.FULLSCREEN\r\n)\r\npygame.display.set_caption(\"FermFarm\")\r\n\r\n# =========================================================\r\n# VIRTUAL SURFACE\r\n# =========================================================\r\nvirtual = pygame.Surface((VIRTUAL_WIDTH, VIRTUAL_HEIGHT))\r\nclock = pygame.time.Clock()\r\nrun_start_screen(screen, fullscreen)\r\n\r\n# =========================================================\r\n# LOAD TEXTURES & CROPS\r\n# =========================================================\r\ntextures = load_textures()\r\ninit_money_ui(textures)\r\ncrops = load_crops(textures)\r\n\r\n# =========================================================\r\n# SHOP OBJECTS\r\n# =========================================================\r\nshopPlanken_img = textures[\"shopPlanken\"]\r\nshopPlanken_x, shopPlanken_y = 185, 50\r\n\r\nfermpotKlein_img = textures[\"fermpotKlein\"]\r\nfermpotKlein_x, fermpotKlein_y = 205, 44\r\n\r\nfermpotGroot_img = textures[\"fermpotGroot\"]\r\nfermpotGroot_x, fermpotGroot_y = 208, 62\r\n\r\nwortelzZak_img = textures[\"wortelzZak\"]\r\nwortelzZak_x, wortelzZak_y = 186, 54\r\n\r\ntomatenZak_img = textures[\"tomatenZak\"]\r\ntomatenZak_x, tomatenZak_y = 198, 54\r\n\r\nchiliZak_img = textures[\"chiliZak\"]\r\nchiliZak_x, chiliZak_y = 186, 67\r\n\r\nkomkommerZak_img = textures[\"komkommerZak\"]\r\nkomkommerZak_x, komkommerZak_y = 210, 54\r\n\r\nkoolZak_img = textures[\"koolZak\"]\r\nkoolZak_x, koolZak_y = 197, 67\r\n\r\nknoflookZak_img = textures[\"knoflookZak\"]\r\nknoflookZak_x, knoflookZak_y = 209, 67\r\n\r\n# =========================================================\r\n# SEED RECTS (CONSISTENT NAMES)\r\n# =========================================================\r\nseeds_rects = {\r\n    \"carrot\": pygame.Rect(wortelzZak_x, wortelzZak_y,\r\n                          wortelzZak_img.get_width(), wortelzZak_img.get_height()),\r\n    \"tomato\": pygame.Rect(tomatenZak_x, tomatenZak_y,\r\n                          tomatenZak_img.get_width(), tomatenZak_img.get_height()),\r\n    \"chili\": pygame.Rect(chiliZak_x, chiliZak_y,\r\n                         chiliZak_img.get_width(), chiliZak_img.get_height()),\r\n    \"cucumber\": pygame.Rect(komkommerZak_x, komkommerZak_y,\r\n                            komkommerZak_img.get_width(), komkommerZak_img.get_height()),\r\n    \"cabbage\": pygame.Rect(koolZak_x, koolZak_y,\r\n                           koolZak_img.get_width(), koolZak_img.get_height()),\r\n    \"garlic\": pygame.Rect(knoflookZak_x, knoflookZak_y,\r\n                          knoflookZak_img.get_width(), knoflookZak_img.get_height()),\r\n}\r\n\r\nselected_seed = None\r\n\r\n# =========================================================\r\n# FERMENTATION RECTS\r\n# =========================================================\r\nfermpotKlein_rect = pygame.Rect(\r\n    fermpotKlein_x, fermpotKlein_y,\r\n    fermpotKlein_img.get_width(), fermpotKlein_img.get_height()\r\n)\r\n\r\nfermpotGroot_rect = pygame.Rect(\r\n    fermpotGroot_x, fermpotGroot_y,\r\n    fermpotGroot_img.get_width(), fermpotGroot_img.get_height()\r\n)\r\n\r\n# =========================================================\r\n# MONEY\r\n# =========================================================\r\nmoney = 6\r\n\r\n# =========================================================\r\n# BACKGROUND & UI\r\n# =========================================================\r\nbackground = pygame.transform.scale(\r\n    textures[\"background\"],\r\n    (VIRTUAL_WIDTH, VIRTUAL_HEIGHT)\r\n)\r\n\r\ncalendarCircle_sprite = textures[\"CalendarCircle\"]\r\ncalendar_sprite = textures[\"Calendar\"]\r\n\r\n# =========================================================\r\n# GRID\r\n# =========================================================\r\nCELL_SIZE = 16\r\nGRID_COLS = 7\r\nGRID_ROWS = 3\r\nGRID_START_X = 0\r\nGRID_START_Y = 87\r\n\r\ngrid = [[None for _ in range(GRID_ROWS)] for _ in range(GRID_COLS)]\r\n\r\n# =========================================================\r\n# CALENDAR\r\n# =========================================================\r\nSTART_X, START_Y = 175, 87\r\nsprite_x, sprite_y = START_X, START_Y\r\n\r\nSTEP = 16\r\nCOLUMNS = 4\r\nROWS = 3\r\n\r\ncurrent_column = 0\r\ncurrent_row = 0\r\n\r\nMOVE_INTERVAL = 5_000\r\nlast_move_time = pygame.time.get_ticks()\r\ndays_passed = 0\r\n\r\n# =========================================================\r\n# MAIN LOOP\r\n# =========================================================\r\nrunning = True\r\nwhile running:\r\n    clock.tick(FPS)\r\n\r\n    for event in pygame.event.get():\r\n\r\n        if event.type == pygame.QUIT:\r\n            running = False\r\n\r\n        # ----------------- KEYBOARD -----------------\r\n        if event.type == pygame.KEYDOWN:\r\n\r\n            if event.key == pygame.K_ESCAPE:\r\n                running = False\r\n\r\n            if event.key == pygame.K_F11:\r\n                fullscreen = not fullscreen\r\n                if fullscreen:\r\n                    screen = pygame.display.set_mode(\r\n                        (info.current_w, info.current_h),\r\n                        pygame.FULLSCREEN\r\n                    )\r\n                else:\r\n                    screen = pygame.display.set_mode(\r\n                        (VIRTUAL_WIDTH * 4, VIRTUAL_HEIGHT * 4),\r\n                        pygame.RESIZABLE\r\n                    )\r\n\r\n        if event.type == pygame.VIDEORESIZE and not fullscreen:\r\n            screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)\r\n\r\n        # ----------------- LEFT CLICK -----------------\r\n        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:\r\n\r\n            mx, my = pygame.mouse.get_pos()\r\n            screen_w, screen_h = screen.get_size()\r\n\r\n            if fullscreen:\r\n                vx = mx * VIRTUAL_WIDTH // screen_w\r\n                vy = my * VIRTUAL_HEIGHT // screen_h\r\n            else:\r\n                scale = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)\r\n                x_offset = (screen_w - VIRTUAL_WIDTH * scale) // 2\r\n                y_offset = (screen_h - VIRTUAL_HEIGHT * scale) // 2\r\n                vx = (mx - x_offset) // scale\r\n                vy = (my - y_offset) // scale\r\n\r\n            # ---------- FERMENT SMALL ----------\r\n            if fermpotKlein_rect.collidepoint(vx, vy):\r\n                for crop_name in inventory:\r\n                    if inventory[crop_name] > 0:\r\n                        inventory[crop_name] -= 1\r\n                        money += CROP_VALUES[crop_name] // 2\r\n                        break\r\n                continue\r\n\r\n            # ---------- FERMENT BIG ----------\r\n            if fermpotGroot_rect.collidepoint(vx, vy):\r\n                fermented = 0\r\n                for crop_name in inventory:\r\n                    while inventory[crop_name] > 0 and fermented < 2:\r\n                        inventory[crop_name] -= 1\r\n                        money += CROP_VALUES[crop_name] // 2\r\n                        fermented += 1\r\n                    if fermented >= 2:\r\n                        break\r\n                continue\r\n\r\n            # ---------- CLICK SEED ----------\r\n            clicked_seed = None\r\n            for crop_name, rect in seeds_rects.items():\r\n                if rect.collidepoint(vx, vy):\r\n                    clicked_seed = crop_name\r\n                    break\r\n\r\n            # BUY SEED\r\n            if clicked_seed and selected_seed is None:\r\n                if money >= Crop_Price[clicked_seed]:\r\n                    money -= Crop_Price[clicked_seed]\r\n                    selected_seed = clicked_seed\r\n                continue\r\n\r\n            # ---------- PLANT ----------\r\n            if selected_seed is not None:\r\n                gx = (vx - GRID_START_X) // CELL_SIZE\r\n                gy = (vy - GRID_START_Y) // CELL_SIZE\r\n\r\n                if 0 <= gx < GRID_COLS and 0 <= gy < GRID_ROWS:\r\n                    if grid[gx][gy] is None:\r\n                        grid[gx][gy] = {\r\n                            \"crop\": selected_seed,\r\n                            \"day_planted\": days_passed,\r\n                            \"stage\": 0\r\n                        }\r\n                        selected_seed = None\r\n\r\n        # ----------------- RIGHT CLICK HARVEST -----------------\r\n        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:\r\n\r\n            mx, my = pygame.mouse.get_pos()\r\n            screen_w, screen_h = screen.get_size()\r\n\r\n            if fullscreen:\r\n                vx = mx * VIRTUAL_WIDTH // screen_w\r\n                vy = my * VIRTUAL_HEIGHT // screen_h\r\n            else:\r\n                scale = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)\r\n                x_offset = (screen_w - VIRTUAL_WIDTH * scale) // 2\r\n                y_offset = (screen_h - VIRTUAL_HEIGHT * scale) // 2\r\n                vx = (mx - x_offset) // scale\r\n                vy = (my - y_offset) // scale\r\n\r\n            gx = (vx - GRID_START_X) // CELL_SIZE\r\n            gy = (vy - GRID_START_Y) // CELL_SIZE\r\n\r\n            harvested = harvest(grid, gx, gy, crops)\r\n\r\n            if harvested:\r\n                money += CROP_VALUES[harvested]\r\n                inventory[harvested] = inventory.get(harvested, 0) + 1\r\n\r\n    # =====================================================\r\n    # TIME / GROWTH\r\n    # =====================================================\r\n    now = pygame.time.get_ticks()\r\n    if now - last_move_time >= MOVE_INTERVAL:\r\n\r\n        last_move_time = now\r\n        days_passed += 1\r\n\r\n        for x in range(GRID_COLS):\r\n            for y in range(GRID_ROWS):\r\n                cell = grid[x][y]\r\n                if cell:\r\n                    crop = crops[cell[\"crop\"]]\r\n                    age = days_passed - cell[\"day_planted\"]\r\n                    stage = age // crop[\"growth_days_per_stage\"]\r\n                    cell[\"stage\"] = min(stage, crop[\"max_stage\"])\r\n\r\n        sprite_x += STEP\r\n        current_column += 1\r\n\r\n        if current_column >= COLUMNS:\r\n            current_column = 0\r\n            sprite_x = START_X\r\n            sprite_y += STEP\r\n            current_row += 1\r\n\r\n            if current_row >= ROWS:\r\n                current_row = 0\r\n                sprite_x, sprite_y = START_X, START_Y\r\n\r\n    # =====================================================\r\n    # DRAW\r\n    # =====================================================\r\n    virtual.blit(background, (0, 0))\r\n\r\n    virtual.blit(shopPlanken_img, (shopPlanken_x, shopPlanken_y))\r\n    virtual.blit(fermpotKlein_img, (fermpotKlein_x, fermpotKlein_y))\r\n    virtual.blit(fermpotGroot_img, (fermpotGroot_x, fermpotGroot_y))\r\n\r\n    virtual.blit(wortelzZak_img, (wortelzZak_x, wortelzZak_y))\r\n    virtual.blit(tomatenZak_img, (tomatenZak_x, tomatenZak_y))\r\n    virtual.blit(komkommerZak_img, (komkommerZak_x, komkommerZak_y))\r\n    virtual.blit(chiliZak_img, (chiliZak_x, chiliZak_y))\r\n    virtual.blit(knoflookZak_img, (knoflookZak_x, knoflookZak_y))\r\n    virtual.blit(koolZak_img, (koolZak_x, koolZak_y))\r\n\r\n    draw_money(virtual, money, VIRTUAL_WIDTH)\r\n\r\n    # draw crops\r\n    for x in range(GRID_COLS):\r\n        for y in range(GRID_ROWS):\r\n            cell = grid[x][y]\r\n            if cell:\r\n                crop = crops[cell[\"crop\"]]\r\n                virtual.blit(\r\n                    crop[\"stages\"][cell[\"stage\"]],\r\n                    (GRID_START_X + x * CELL_SIZE,\r\n                     GRID_START_Y + y * CELL_SIZE)\r\n                )\r\n\r\n    virtual.blit(calendar_sprite, (176, 72))\r\n    virtual.blit(calendarCircle_sprite, (sprite_x, sprite_y))\r\n\r\n    # =====================================================\r\n    # SCALE\r\n    # =====================================================\r\n    screen_w, screen_h = screen.get_size()\r\n\r\n    if fullscreen:\r\n        scaled = pygame.transform.scale(virtual, (screen_w, screen_h))\r\n        screen.blit(scaled, (0, 0))\r\n    else:\r\n        scale = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)\r\n        scaled = pygame.transform.scale(\r\n            virtual,\r\n            (VIRTUAL_WIDTH * scale, VIRTUAL_HEIGHT * scale)\r\n        )\r\n        x_offset = (screen_w - scaled.get_width()) // 2\r\n        y_offset = (screen_h - scaled.get_height()) // 2\r\n        screen.fill((0, 0, 0))\r\n        screen.blit(scaled, (x_offset, y_offset))\r\n\r\n    pygame.display.flip()\r\n\r\npygame.quit()\r\nsys.exit()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/script.py b/script.py
+--- a/script.py	(revision f51cf89d48774700db1656e3099ff57c587b5045)
++++ b/script.py	(date 1771238086010)
+@@ -357,4 +357,4 @@
+     pygame.display.flip()
+ 
+ pygame.quit()
+-sys.exit()
++sys.exit()
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"95692660-6345-4587-9403-603976ea4ae0\" name=\"Changes\" comment=\"shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"ChangesViewManager\" show_ignored=\"true\" />\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;spowerlol&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\"><![CDATA[{\r\n  \"selectedUrlAndAccountId\": {\r\n    \"url\": \"https://github.com/spowerlol/FermFarm.git\",\r\n    \"accountId\": \"18c26119-1744-4ef9-9155-cd73e6ab547e\"\r\n  }\r\n}]]></component>\r\n  <component name=\"McpProjectServerCommands\">\r\n    <commands />\r\n    <urls />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 6\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"38c5FddQy6ljfzKCVHQbgWrUtCb\" />\r\n  <component name=\"ProjectLevelVcsManager\">\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,\r\n    &quot;Python.cropHarvesting.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.money_ui.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.script.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.texture.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.textures.executor&quot;: &quot;Run&quot;,\r\n    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,\r\n    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,\r\n    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;main&quot;,\r\n    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,\r\n    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;C:/Users/Amber/PycharmProjects/FermFarm/sprites&quot;,\r\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,\r\n    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,\r\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Users\\Amber\\PycharmProjects\\FermFarm\\sprites\" />\r\n      <recent name=\"C:\\Users\\stijn\\PycharmProjects\\FermFarm\\sprites\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-PY-253.29346.308\" />\r\n        <option value=\"bundled-python-sdk-ca5e2b39c7df-6e1f45a539f7-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.29346.308\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"95692660-6345-4587-9403-603976ea4ae0\" name=\"Changes\" comment=\"\" />\r\n      <created>1769085916195</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1769085916195</updated>\r\n      <workItem from=\"1769085917837\" duration=\"5601000\" />\r\n      <workItem from=\"1769111957488\" duration=\"3562000\" />\r\n      <workItem from=\"1769159302479\" duration=\"278000\" />\r\n      <workItem from=\"1769177686048\" duration=\"1194000\" />\r\n      <workItem from=\"1769178945906\" duration=\"388000\" />\r\n      <workItem from=\"1769509336635\" duration=\"15631000\" />\r\n      <workItem from=\"1769608926106\" duration=\"13428000\" />\r\n      <workItem from=\"1770988189633\" duration=\"3356000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"transitioning from sceled to grid\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1769178196805</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1769178196805</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"adding all current sprites\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1769179182081</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1769179182082</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"planten neerzetten WIP maar klaar voor groei en shop\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1769432346917</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1769432346917</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1769520493805</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1769520493805</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1769522358478</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1769522358478</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00006\" summary=\"farmland texture and background change shed\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1769528233745</created>\r\n      <option name=\"number\" value=\"00006\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1769528233745</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00007\" summary=\"geld mechanisme en gewassen harvesten\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1769766384494</created>\r\n      <option name=\"number\" value=\"00007\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1769766384494</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00008\" summary=\"shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1770071133664</created>\r\n      <option name=\"number\" value=\"00008\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1770071133664</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00009\" summary=\"shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1771237050425</created>\r\n      <option name=\"number\" value=\"00009\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00009\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1771237050426</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"10\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"transitioning from sceled to grid\" />\r\n    <MESSAGE value=\"adding all current sprites\" />\r\n    <MESSAGE value=\"planten neerzetten WIP maar klaar voor groei en shop\" />\r\n    <MESSAGE value=\"planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag\" />\r\n    <MESSAGE value=\"farmland texture and background change shed\" />\r\n    <MESSAGE value=\"geld mechanisme en gewassen harvesten\" />\r\n    <MESSAGE value=\"shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.\" />\r\n  </component>\r\n  <component name=\"XDebuggerManager\">\r\n    <breakpoint-manager>\r\n      <breakpoints>\r\n        <line-breakpoint enabled=\"true\" suspend=\"THREAD\" type=\"python-line\">\r\n          <url>file://$PROJECT_DIR$/texture.py</url>\r\n          <option name=\"timeStamp\" value=\"2\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" suspend=\"THREAD\" type=\"python-line\">\r\n          <url>file://$PROJECT_DIR$/script.py</url>\r\n          <option name=\"timeStamp\" value=\"3\" />\r\n        </line-breakpoint>\r\n      </breakpoints>\r\n    </breakpoint-manager>\r\n  </component>\r\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\r\n    <SUITE FILE_PATH=\"coverage/FermFarm$script.coverage\" NAME=\"script Coverage Results\" MODIFIED=\"1771236825600\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n    <SUITE FILE_PATH=\"coverage/FermFarm$textures.coverage\" NAME=\"textures Coverage Results\" MODIFIED=\"1769091608851\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n    <SUITE FILE_PATH=\"coverage/FermFarm$shop.coverage\" NAME=\"shop Coverage Results\" MODIFIED=\"1770052848696\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n    <SUITE FILE_PATH=\"coverage/FermFarm$cropHarvesting.coverage\" NAME=\"cropHarvesting Coverage Results\" MODIFIED=\"1771236820496\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n    <SUITE FILE_PATH=\"coverage/FermFarm$money_ui.coverage\" NAME=\"money_ui Coverage Results\" MODIFIED=\"1769769552664\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n    <SUITE FILE_PATH=\"coverage/FermFarm$crop.coverage\" NAME=\"crop Coverage Results\" MODIFIED=\"1770027608397\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n    <SUITE FILE_PATH=\"coverage/FermFarm$texture.coverage\" NAME=\"texture Coverage Results\" MODIFIED=\"1769765302072\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision f51cf89d48774700db1656e3099ff57c587b5045)
++++ b/.idea/workspace.xml	(date 1771587359983)
+@@ -4,15 +4,16 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="95692660-6345-4587-9403-603976ea4ae0" name="Changes" comment="shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.">
++    <list default="true" id="95692660-6345-4587-9403-603976ea4ae0" name="Changes" comment="scaling change/fix added windowed mode + scaled fullscreen">
++      <change afterPath="$PROJECT_DIR$/sprites/shopZaden.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/script.py" beforeDir="false" afterPath="$PROJECT_DIR$/script.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+     <option name="LAST_RESOLUTION" value="IGNORE" />
+   </component>
+-  <component name="ChangesViewManager" show_ignored="true" />
+   <component name="FileTemplateManagerImpl">
+     <option name="RECENT_TEMPLATES">
+       <list>
+@@ -21,6 +22,11 @@
+     </option>
+   </component>
+   <component name="Git.Settings">
++    <option name="RECENT_BRANCH_BY_REPOSITORY">
++      <map>
++        <entry key="$PROJECT_DIR$" value="main" />
++      </map>
++    </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+   </component>
+   <component name="GitHubPullRequestSearchHistory">{
+@@ -29,12 +35,12 @@
+     &quot;assignee&quot;: &quot;spowerlol&quot;
+   }
+ }</component>
+-  <component name="GithubPullRequestsUISettings"><![CDATA[{
+-  "selectedUrlAndAccountId": {
+-    "url": "https://github.com/spowerlol/FermFarm.git",
+-    "accountId": "18c26119-1744-4ef9-9155-cd73e6ab547e"
++  <component name="GithubPullRequestsUISettings">{
++  &quot;selectedUrlAndAccountId&quot;: {
++    &quot;url&quot;: &quot;https://github.com/spowerlol/FermFarm&quot;,
++    &quot;accountId&quot;: &quot;947da44d-177c-40fa-96bb-bf86899162be&quot;
+   }
+-}]]></component>
++}</component>
+   <component name="McpProjectServerCommands">
+     <commands />
+     <urls />
+@@ -43,51 +49,48 @@
+   &quot;associatedIndex&quot;: 6
+ }</component>
+   <component name="ProjectId" id="38c5FddQy6ljfzKCVHQbgWrUtCb" />
+-  <component name="ProjectLevelVcsManager">
+-    <ConfirmationsSetting value="2" id="Add" />
+-  </component>
+   <component name="ProjectViewState">
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent">{
+-  &quot;keyToString&quot;: {
+-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+-    &quot;Python.cropHarvesting.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.money_ui.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.script.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.texture.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.textures.executor&quot;: &quot;Run&quot;,
+-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+-    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
+-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Amber/PycharmProjects/FermFarm/sprites&quot;,
+-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+-    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,
+-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
++  <component name="PropertiesComponent"><![CDATA[{
++  "keyToString": {
++    "ModuleVcsDetector.initialDetectionPerformed": "true",
++    "Python.crop.executor": "Run",
++    "Python.cropHarvesting.executor": "Run",
++    "Python.money_ui.executor": "Run",
++    "Python.script.executor": "Run",
++    "Python.startScreen.executor": "Run",
++    "Python.texture.executor": "Run",
++    "Python.textures.executor": "Run",
++    "RunOnceActivity.MCP Project settings loaded": "true",
++    "RunOnceActivity.ShowReadmeOnStart": "true",
++    "RunOnceActivity.git.unshallow": "true",
++    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
++    "ai.playground.ignore.import.keys.banner.in.settings": "true",
++    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
++    "git-widget-placeholder": "main",
++    "ignore.virus.scanning.warn.message": "true",
++    "junie.onboarding.icon.badge.shown": "true",
++    "last_opened_file_path": "C:/Users/stijn/PycharmProjects/FermFarm/sprites",
++    "node.js.detected.package.eslint": "true",
++    "node.js.detected.package.tslint": "true",
++    "node.js.selected.package.eslint": "(autodetect)",
++    "node.js.selected.package.tslint": "(autodetect)",
++    "nodejs_package_manager_path": "npm",
++    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
++    "to.speed.mode.migration.done": "true",
++    "vue.rearranger.settings.migration": "true"
+   }
+-}</component>
++}]]></component>
+   <component name="RecentsManager">
+     <key name="CopyFile.RECENT_KEYS">
+-      <recent name="C:\Users\Amber\PycharmProjects\FermFarm\sprites" />
+       <recent name="C:\Users\stijn\PycharmProjects\FermFarm\sprites" />
+     </key>
+   </component>
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>
+-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-PY-253.29346.308" />
+         <option value="bundled-python-sdk-ca5e2b39c7df-6e1f45a539f7-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.29346.308" />
+       </set>
+     </attachedChunks>
+@@ -105,8 +108,12 @@
+       <workItem from="1769177686048" duration="1194000" />
+       <workItem from="1769178945906" duration="388000" />
+       <workItem from="1769509336635" duration="15631000" />
+-      <workItem from="1769608926106" duration="13428000" />
+-      <workItem from="1770988189633" duration="3356000" />
++      <workItem from="1769608926106" duration="17044000" />
++      <workItem from="1770027574888" duration="5908000" />
++      <workItem from="1770127096517" duration="7985000" />
++      <workItem from="1770378340582" duration="1174000" />
++      <workItem from="1771336679334" duration="3558000" />
++      <workItem from="1771587207722" duration="21000" />
+     </task>
+     <task id="LOCAL-00001" summary="transitioning from sceled to grid">
+       <option name="closed" value="true" />
+@@ -164,23 +171,15 @@
+       <option name="project" value="LOCAL" />
+       <updated>1769766384494</updated>
+     </task>
+-    <task id="LOCAL-00008" summary="shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.">
++    <task id="LOCAL-00008" summary="scaling change/fix added windowed mode + scaled fullscreen">
+       <option name="closed" value="true" />
+-      <created>1770071133664</created>
++      <created>1769778325222</created>
+       <option name="number" value="00008" />
+       <option name="presentableId" value="LOCAL-00008" />
+       <option name="project" value="LOCAL" />
+-      <updated>1770071133664</updated>
++      <updated>1769778325223</updated>
+     </task>
+-    <task id="LOCAL-00009" summary="shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.">
+-      <option name="closed" value="true" />
+-      <created>1771237050425</created>
+-      <option name="number" value="00009" />
+-      <option name="presentableId" value="LOCAL-00009" />
+-      <option name="project" value="LOCAL" />
+-      <updated>1771237050426</updated>
+-    </task>
+-    <option name="localTasksCounter" value="10" />
++    <option name="localTasksCounter" value="9" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+@@ -193,30 +192,16 @@
+     <MESSAGE value="planten neerzetten met check voor invetaris. aparte file voor toevoegen planten en groeicyclus verbonden met dag" />
+     <MESSAGE value="farmland texture and background change shed" />
+     <MESSAGE value="geld mechanisme en gewassen harvesten" />
+-    <MESSAGE value="shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren." />
+-    <option name="LAST_COMMIT_MESSAGE" value="shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren." />
+-  </component>
+-  <component name="XDebuggerManager">
+-    <breakpoint-manager>
+-      <breakpoints>
+-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+-          <url>file://$PROJECT_DIR$/texture.py</url>
+-          <option name="timeStamp" value="2" />
+-        </line-breakpoint>
+-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+-          <url>file://$PROJECT_DIR$/script.py</url>
+-          <option name="timeStamp" value="3" />
+-        </line-breakpoint>
+-      </breakpoints>
+-    </breakpoint-manager>
++    <MESSAGE value="scaling change/fix added windowed mode + scaled fullscreen" />
++    <option name="LAST_COMMIT_MESSAGE" value="scaling change/fix added windowed mode + scaled fullscreen" />
+   </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+-    <SUITE FILE_PATH="coverage/FermFarm$script.coverage" NAME="script Coverage Results" MODIFIED="1771236825600" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/FermFarm$cropHarvesting.coverage" NAME="cropHarvesting Coverage Results" MODIFIED="1769769549833" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/FermFarm$crop.coverage" NAME="crop Coverage Results" MODIFIED="1771251601886" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+     <SUITE FILE_PATH="coverage/FermFarm$textures.coverage" NAME="textures Coverage Results" MODIFIED="1769091608851" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+-    <SUITE FILE_PATH="coverage/FermFarm$shop.coverage" NAME="shop Coverage Results" MODIFIED="1770052848696" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+-    <SUITE FILE_PATH="coverage/FermFarm$cropHarvesting.coverage" NAME="cropHarvesting Coverage Results" MODIFIED="1771236820496" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+     <SUITE FILE_PATH="coverage/FermFarm$money_ui.coverage" NAME="money_ui Coverage Results" MODIFIED="1769769552664" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+-    <SUITE FILE_PATH="coverage/FermFarm$crop.coverage" NAME="crop Coverage Results" MODIFIED="1770027608397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+-    <SUITE FILE_PATH="coverage/FermFarm$texture.coverage" NAME="texture Coverage Results" MODIFIED="1769765302072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/FermFarm$texture.coverage" NAME="texture Coverage Results" MODIFIED="1770067076734" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/FermFarm$script.coverage" NAME="script Coverage Results" MODIFIED="1771576867042" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/FermFarm$startScreen.coverage" NAME="startScreen Coverage Results" MODIFIED="1770379417792" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: sprites/shopZaden.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/sprites/shopZaden.py b/sprites/shopZaden.py
+new file mode 100644
+--- /dev/null	(date 1771237836274)
++++ b/sprites/shopZaden.py	(date 1771237836274)
+@@ -0,0 +1,22 @@
++import pygame
++
++def load_shopZaden():
++    shopZaden = {}
++
++
++
++
++    # Draw shopplanken
++    virtual.blit(shopPlanken_img, (shopPlanken_x, shopPlanken_y))
++
++    # Draw fermentatie potten
++    virtual.blit(fermpotKlein_img, (fermpotKlein_x, fermpotKlein_y))
++    virtual.blit(fermpotGroot_img, (fermpotGroot_x, fermpotGroot_y))
++
++    # Draw zaadjes
++    virtual.blit(wortelzZak_img, (wortelzZak_x, wortelzZak_y))
++    virtual.blit(tomatenZak_img, (tomatenZak_x, tomatenZak_y))
++    virtual.blit(komkommerZak_img, (komkommerZak_x, komkommerZak_y))
++    virtual.blit(chiliZak_img, (chiliZak_x, chiliZak_y))
++    virtual.blit(knoflookZak_img, (knoflookZak_x, knoflookZak_y))
++    virtual.blit(koolZak_img, (koolZak_x, koolZak_y))
+\ No newline at end of file
