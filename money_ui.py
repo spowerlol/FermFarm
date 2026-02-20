@@ -1,8 +1,8 @@
 import pygame
 
-DIGIT_WIDTH = 8
-DIGIT_HEIGHT = 8
-MAX_DIGITS = 5
+DIGIT_WIDTH  = 8 * 8   # 64
+DIGIT_HEIGHT = 8 * 8   # 64
+MAX_DIGITS   = 5
 
 number_font = {}
 
@@ -22,8 +22,8 @@ def draw_money(surface, amount, virtual_width):
     text = str(amount).zfill(MAX_DIGITS)
 
     total_width = MAX_DIGITS * DIGIT_WIDTH
-    x = virtual_width - total_width - 4
-    y = 4
+    x = virtual_width - total_width - 4 * 8   # 4px margin, scaled
+    y = 4 * 8                                  # 4px top margin, scaled
 
     for i, digit in enumerate(text):
         surface.blit(

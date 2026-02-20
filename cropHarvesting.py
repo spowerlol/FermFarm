@@ -1,14 +1,12 @@
 CROP_VALUES = {
-    "tomato": 5 ,
-    "carrot" : 7,
-    "carrot": 10,
+    "tomato": 5,
+    "carrot": 10,  # Fixed: removed duplicate, kept higher value
     "cucumber": 15,
     "chili": 20,
     "cabbage": 25,
     "garlic": 30,
-
-    # Example: "carrot": 3,
 }
+
 Crop_Price = {
     "tomato": 3,
     "carrot": 6,
@@ -28,13 +26,7 @@ inventory = {
 }
 
 
-
-
 def harvest(grid, gx, gy, crops):
-    """
-    Attempt to harvest the plant at grid[gx][gy].
-    Returns the money earned (0 if nothing harvested)
-    """
     if 0 <= gx < len(grid) and 0 <= gy < len(grid[0]):
         cell = grid[gx][gy]
         if cell is None:
