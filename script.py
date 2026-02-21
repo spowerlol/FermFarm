@@ -31,9 +31,9 @@ fullscreen = True
 info = pygame.display.Info()
 screen = pygame.display.set_mode(
     (info.current_w, info.current_h),
-    pygame.FULLSCREEN
+    pygame.FULLSCREEN #The game is set in full screeen so there isn't a black outline
 )
-pygame.display.set_caption("FermFarm")
+pygame.display.set_caption("FermFarm") #Caption placed at the top of the game
 
 clock = pygame.time.Clock()
 run_start_screen(screen, fullscreen)
@@ -52,8 +52,9 @@ menu_surface = pygame.Surface((MENU_REF_W, MENU_REF_H), pygame.SRCALPHA)
 
 font_path = "sprites/babosorry.ttf"
 if not os.path.exists(font_path):
-    font_path = None
+    font_path = None #implementing the font
 
+#coördinates of the places we're using the font
 save_name_font = pygame.font.Font(font_path, 60) if font_path else pygame.font.Font(None, 60)
 save_date_font = pygame.font.Font(font_path, 36) if font_path else pygame.font.Font(None, 36)
 
@@ -167,7 +168,7 @@ save_slots = [
     {"name": "Empty", "date": "", "data": None},
     {"name": "Empty", "date": "", "data": None},
 ]
-
+# load save file if it exists
 if os.path.exists(SAVE_FILE):
     try:
         with open(SAVE_FILE, "r") as f:
@@ -175,7 +176,7 @@ if os.path.exists(SAVE_FILE):
             if len(loaded_slots) == 3:
                 save_slots = loaded_slots
     except:
-        pass
+        pass # ignore errors and keep empty slots
 
 selected_slot = None
 
@@ -265,21 +266,26 @@ SLOT_START_Y = (VIRTUAL_HEIGHT - (3 * SLOT_HEIGHT + 2 * SLOT_SPACING)) // 2.5  #
 
 
 def get_slot_rect(i):
+    # Calculate the Y position for slot i, each slot is stacked with spacing in between
     sy = SLOT_START_Y + i * (SLOT_HEIGHT + SLOT_SPACING)
+    # Return the rectangle representing that slot
     return pygame.Rect(SLOT_START_X, sy, SLOT_WIDTH, SLOT_HEIGHT)
 
 
 def build_menu_surface():
     menu_surface.fill((0, 0, 0, 0))
 
+    # Create a semi-transparent dark overlay, this dims the game behind the pause menu
     overlay = pygame.Surface((MENU_REF_W, MENU_REF_H))
     overlay.set_alpha(180)
     overlay.fill((0, 0, 0))
     menu_surface.blit(overlay, (0, 0))
 
+    # Scale the menu background image to full screen size
     menu_sprite_scaled = pygame.transform.scale(menu_sprite, (MENU_REF_W, MENU_REF_H))
     menu_surface.blit(menu_sprite_scaled, (0, 0))
 
+   #Draw the 3 save slots
     for i in range(3):
         slot_rect = get_slot_rect(i)
         pygame.draw.rect(menu_surface, (60, 40, 30), slot_rect)
@@ -290,6 +296,7 @@ def build_menu_surface():
             slot_rect.w - 2, slot_rect.h - 2
         ))
 
+        # Draw slot name
         name_surf = save_name_font.render(save_slots[i]["name"], False, (255, 255, 255))
         menu_surface.blit(name_surf, (slot_rect.x + 20, slot_rect.y + 20))
 
@@ -313,11 +320,13 @@ while running:
     clock.tick(FPS)
 
     for event in pygame.event.get():
+        # User clicked the window close button
         if event.type == pygame.QUIT:
             running = False
 
         # ---------- KEYBOARD ----------
         if event.type == pygame.KEYDOWN:
+            # Pressing ESC switches between paused and unpaused
             if event.key == pygame.K_ESCAPE:
                 paused = not paused
                 if not paused:
@@ -451,6 +460,7 @@ while running:
     else:
         target = pygame.Surface((VIRTUAL_WIDTH, VIRTUAL_HEIGHT))
 
+    #Draw background and shop
     target.blit(background,      (0, 0))
     target.blit(shopPlanken_img,  (shopPlanken_x,  shopPlanken_y))
     target.blit(fermpotKlein_img, (fermpotKlein_x, fermpotKlein_y))
@@ -477,13 +487,16 @@ while running:
                     (GRID_START_X + x * CELL_SIZE, GRID_START_Y + y * CELL_SIZE)
                 )
 
+    #Draw calander
     target.blit(calendar_sprite,       (176*8, 72*8))
     target.blit(calendarCircle_sprite, (sprite_x, sprite_y))
 
+    #Draw the pause menu on top
     if paused:
         build_menu_surface()
         target.blit(menu_surface, (0, 0))
 
+    # If an off-screen surface was used, than resize it to match the window
     if target is not screen:
         scaled = pygame.transform.scale(target, (screen_w, screen_h))
         screen.blit(scaled, (0, 0))

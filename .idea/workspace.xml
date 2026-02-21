@@ -6,36 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="95692660-6345-4587-9403-603976ea4ae0" name="Changes" comment="shopplanken, fermentatiepot 1 en 2 toegevoegd als texture. Coördinaten opgegeven waar ik ze wou hebben. En in draw laten visualiseren.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cropHarvesting.py" beforeDir="false" afterPath="$PROJECT_DIR$/cropHarvesting.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/money_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/money_ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script.py" beforeDir="false" afterPath="$PROJECT_DIR$/script.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-Calendar.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-Calendar.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-CalendarCircle.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-CalendarCircle.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-TomaatPlant0.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-TomaatPlant0.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-TomaatPlant1.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-TomaatPlant1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-TomaatPlant2.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-TomaatPlant2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-TomaatPlant3.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-TomaatPlant3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-WeerBericht1.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-WeerBericht1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-WeerBericht2.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-WeerBericht2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-WeerBericht3.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-WeerBericht3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-chilizzak.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-chilizzak.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-fermpot1.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-fermpot1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-fermpot2.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-fermpot2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-font.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-font.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-knoflookzak.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-knoflookzak.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-komkommerzak2.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-komkommerzak2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-koolzak.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-koolzak.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-shopplanken.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-shopplanken.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-tomatenzzak.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-tomatenzzak.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-wortelPlant1.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-wortelPlant1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-wortelPlant2.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-wortelPlant2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-wortelPlant3.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-wortelPlant3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/Sprite-wortelzzak2.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/Sprite-wortelzzak2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/backgroundconcept+tittlescreen.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/backgroundconcept+tittlescreen.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/backgroundconcept.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/backgroundconcept.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites/optionsMenu.png" beforeDir="false" afterPath="$PROJECT_DIR$/sprites/optionsMenu.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/startScreen.py" beforeDir="false" afterPath="$PROJECT_DIR$/startScreen.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/texture.py" beforeDir="false" afterPath="$PROJECT_DIR$/texture.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,7 +26,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
