@@ -1,10 +1,10 @@
 import pygame
 import sys
-from texture import load_textures
-from crop import load_crops
-from money_ui import init_money_ui, draw_money
-from cropHarvesting import harvest, CROP_VALUES, Crop_Price, inventory
-from startScreen import run_start_screen
+from texture import loadTextures
+from crop import loadCrops
+from money_ui import initMoneyUi, drawMoney
+from cropHarvesting import harvest, CROP_VALUES, cropPrice, inventory
+from startScreen import runStartScreen
 import os
 import json
 from datetime import datetime
@@ -26,7 +26,7 @@ screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.FULLSC
 pygame.display.set_caption("FermFarm")
 
 clock = pygame.time.Clock()
-run_start_screen(screen, fullscreen)
+runStartScreen(screen, fullscreen)
 
 # ── Music ──────────────────────────────────────────────────────────────────────
 MUSIC_NORMAL_VOL = 0.5
@@ -34,60 +34,60 @@ MUSIC_DIM_VOL    = 0.2
 music_enabled    = True
 # ──────────────────────────────────────────────────────────────────────────────
 
-textures = load_textures()
-init_money_ui(textures)
-crops = load_crops(textures)
+textures = loadTextures()
+initMoneyUi(textures)
+crops = loadCrops(textures)
 
-menu_surface = pygame.Surface((MENU_REF_W, MENU_REF_H), pygame.SRCALPHA)
-info_surface = pygame.Surface((MENU_REF_W, MENU_REF_H), pygame.SRCALPHA)
+menuSurface = pygame.Surface((MENU_REF_W, MENU_REF_H), pygame.SRCALPHA)
+infoSurface = pygame.Surface((MENU_REF_W, MENU_REF_H), pygame.SRCALPHA)
 
-font_path = "sprites/babosorry.ttf"
-if not os.path.exists(font_path):
-    font_path = None
+fontPath = "sprites/babosorry.ttf"
+if not os.path.exists(fontPath):
+    fontPath = None
 
-save_name_font  = pygame.font.Font(font_path, 60)
-save_date_font  = pygame.font.Font(font_path, 36)
-button_font     = pygame.font.Font(font_path, 96)
-info_text_font  = pygame.font.Font(font_path, 44)
-info_title_font = pygame.font.Font(font_path, 72)
+saveNameFont  = pygame.font.Font(fontPath, 60)
+saveDateFont  = pygame.font.Font(fontPath, 36)
+buttonFont    = pygame.font.Font(fontPath, 96)
+infoTextFont  = pygame.font.Font(fontPath, 44)
+infoTitleFont = pygame.font.Font(fontPath, 72)
 
-shopPlanken_img  = textures["shopPlanken"]
-shopPlanken_x, shopPlanken_y = 185*8, 50*8
-fermpotKlein_img = textures["fermpotKlein"]
-fermpotKlein_x, fermpotKlein_y = 205*8, 44*8
-fermpotGroot_img = textures["fermpotGroot"]
-fermpotGroot_x, fermpotGroot_y = 208*8, 62*8
-wortelzZak_img   = textures["wortelzZak"]
-wortelzZak_x, wortelzZak_y   = 186*8, 54*8
-tomatenZak_img   = textures["tomatenZak"]
-tomatenZak_x, tomatenZak_y   = 198*8, 54*8
-chiliZak_img     = textures["chiliZak"]
-chiliZak_x, chiliZak_y       = 186*8, 67*8
-komkommerZak_img = textures["komkommerZak"]
-komkommerZak_x, komkommerZak_y = 210*8, 54*8
-koolZak_img      = textures["koolZak"]
-koolZak_x, koolZak_y         = 197*8, 67*8
-knoflookZak_img  = textures["knoflookZak"]
-knoflookZak_x, knoflookZak_y = 209*8, 67*8
-menu_sprite = textures["menuSprite"]
+shopShelvesImg  = textures["shopShelves"]
+shopShelvesX, shopShelvesY = 185*8, 50*8
+fermPotSmallImg = textures["fermPotSmall"]
+fermPotSmallX, fermPotSmallY = 205*8, 44*8
+fermPotLargeImg = textures["fermPotLarge"]
+fermPotLargeX, fermPotLargeY = 208*8, 62*8
+carrotBagImg    = textures["carrotBag"]
+carrotBagX, carrotBagY     = 186*8, 54*8
+tomatoBagImg    = textures["tomatoBag"]
+tomatoBagX, tomatoBagY     = 198*8, 54*8
+chiliBagImg     = textures["chiliBag"]
+chiliBagX, chiliBagY       = 186*8, 67*8
+cucumberBagImg  = textures["cucumberBag"]
+cucumberBagX, cucumberBagY = 210*8, 54*8
+cabbageBagImg   = textures["cabbageBag"]
+cabbageBagX, cabbageBagY   = 197*8, 67*8
+garlicBagImg    = textures["garlicBag"]
+garlicBagX, garlicBagY     = 209*8, 67*8
+menuSprite = textures["menuSprite"]
 
-seeds_rects = {
-    "carrot":   pygame.Rect(wortelzZak_x,   wortelzZak_y,   wortelzZak_img.get_width(),   wortelzZak_img.get_height()),
-    "tomato":   pygame.Rect(tomatenZak_x,   tomatenZak_y,   tomatenZak_img.get_width(),   tomatenZak_img.get_height()),
-    "chili":    pygame.Rect(chiliZak_x,     chiliZak_y,     chiliZak_img.get_width(),     chiliZak_img.get_height()),
-    "cucumber": pygame.Rect(komkommerZak_x, komkommerZak_y, komkommerZak_img.get_width(), komkommerZak_img.get_height()),
-    "cabbage":  pygame.Rect(koolZak_x,      koolZak_y,      koolZak_img.get_width(),      koolZak_img.get_height()),
-    "garlic":   pygame.Rect(knoflookZak_x,  knoflookZak_y,  knoflookZak_img.get_width(),  knoflookZak_img.get_height()),
+seedRects = {
+    "carrot":   pygame.Rect(carrotBagX,   carrotBagY,   carrotBagImg.get_width(),   carrotBagImg.get_height()),
+    "tomato":   pygame.Rect(tomatoBagX,   tomatoBagY,   tomatoBagImg.get_width(),   tomatoBagImg.get_height()),
+    "chili":    pygame.Rect(chiliBagX,    chiliBagY,    chiliBagImg.get_width(),    chiliBagImg.get_height()),
+    "cucumber": pygame.Rect(cucumberBagX, cucumberBagY, cucumberBagImg.get_width(), cucumberBagImg.get_height()),
+    "cabbage":  pygame.Rect(cabbageBagX,  cabbageBagY,  cabbageBagImg.get_width(),  cabbageBagImg.get_height()),
+    "garlic":   pygame.Rect(garlicBagX,   garlicBagY,   garlicBagImg.get_width(),   garlicBagImg.get_height()),
 }
-selected_seed = None
+selectedSeed = None
 
-fermpotKlein_rect = pygame.Rect(fermpotKlein_x, fermpotKlein_y, fermpotKlein_img.get_width(), fermpotKlein_img.get_height())
-fermpotGroot_rect = pygame.Rect(fermpotGroot_x, fermpotGroot_y, fermpotGroot_img.get_width(), fermpotGroot_img.get_height())
+fermPotSmallRect = pygame.Rect(fermPotSmallX, fermPotSmallY, fermPotSmallImg.get_width(), fermPotSmallImg.get_height())
+fermPotLargeRect = pygame.Rect(fermPotLargeX, fermPotLargeY, fermPotLargeImg.get_width(), fermPotLargeImg.get_height())
 
 money = 6
-background            = textures["background"]
-calendar_sprite       = textures["Calendar"]
-calendarCircle_sprite = textures["CalendarCircle"]
+background      = textures["background"]
+calendarSprite  = textures["calendar"]
+calendarCircle  = textures["calendarCircle"]
 
 CELL_SIZE    = 16 * 8
 GRID_COLS    = 7
@@ -97,21 +97,21 @@ GRID_START_Y = 87 * 8
 grid = [[None for _ in range(GRID_ROWS)] for _ in range(GRID_COLS)]
 
 START_X, START_Y   = 175*8, 87*8
-sprite_x, sprite_y = START_X, START_Y
+spriteX, spriteY   = START_X, START_Y
 STEP           = 16 * 8
 COLUMNS        = 4
 ROWS           = 3
-current_column = 0
-current_row    = 0
+currentColumn  = 0
+currentRow     = 0
 MOVE_INTERVAL  = 5_000
-last_move_time = pygame.time.get_ticks()
-days_passed    = 0
+lastMoveTime   = pygame.time.get_ticks()
+daysPassed     = 0
 
-paused    = False
-show_info = True  # open info screen on boot
+paused   = False
+showInfo = True
 
 SAVE_FILE  = "saveslots.json"
-save_slots = [
+saveSlots = [
     {"name": "Empty", "date": "", "data": None},
     {"name": "Empty", "date": "", "data": None},
     {"name": "Empty", "date": "", "data": None},
@@ -119,63 +119,36 @@ save_slots = [
 if os.path.exists(SAVE_FILE):
     try:
         with open(SAVE_FILE, "r") as f:
-            loaded_slots = json.load(f)
-            if len(loaded_slots) == 3:
-                save_slots = loaded_slots
+            loadedSlots = json.load(f)
+            if len(loadedSlots) == 3:
+                saveSlots = loadedSlots
     except:
         pass
 
-selected_slot = None
-
 # Slot layout
-SLOT_WIDTH   = 400
-SLOT_HEIGHT  = 200
-SLOT_SPACING = 25
-SLOT_START_X = (VIRTUAL_WIDTH - SLOT_WIDTH) // 3.5
-SLOT_START_Y = (VIRTUAL_HEIGHT - (3 * SLOT_HEIGHT + 2 * SLOT_SPACING)) // 2.5
+SLOT_WIDTH    = 400
+SLOT_HEIGHT   = 200
+SLOT_SPACING  = 25
+SLOT_START_X  = (VIRTUAL_WIDTH - SLOT_WIDTH) // 3.5
+SLOT_START_Y  = (VIRTUAL_HEIGHT - (3 * SLOT_HEIGHT + 2 * SLOT_SPACING)) // 2.5
 SLOT_BOTTOM_Y = SLOT_START_Y + 3 * SLOT_HEIGHT + 2 * SLOT_SPACING
 
-def get_slot_rect(i):
+def getSlotRect(i):
     sy = SLOT_START_Y + i * (SLOT_HEIGHT + SLOT_SPACING)
     return pygame.Rect(SLOT_START_X, sy, SLOT_WIDTH, SLOT_HEIGHT)
 
 # Side buttons
 SIDE_BTN_W = 380
-SIDE_BTN_H = 100
 SIDE_BTN_X = int(SLOT_START_X) + SLOT_WIDTH + 100
 
-# Divide the original 3-slot space evenly across 4 buttons
-total_btn_area = SLOT_BOTTOM_Y - SLOT_START_Y
-BTN_SPACING = 20
-BTN_H_4 = (total_btn_area - 3 * BTN_SPACING) // 4
+totalBtnArea = SLOT_BOTTOM_Y - SLOT_START_Y
+BTN_SPACING  = 20
+BTN_H_4      = (totalBtnArea - 3 * BTN_SPACING) // 4
 
-fullscreen_btn_rect = pygame.Rect(
-    SIDE_BTN_X,
-    int(SLOT_START_Y),
-    SIDE_BTN_W,
-    BTN_H_4
-)
-
-info_btn_rect = pygame.Rect(
-    SIDE_BTN_X,
-    int(SLOT_START_Y + 1 * (BTN_H_4 + BTN_SPACING)),
-    SIDE_BTN_W,
-    BTN_H_4
-)
-
-quit_btn_rect = pygame.Rect(
-    SIDE_BTN_X,
-    int(SLOT_START_Y + 3 * (BTN_H_4 + BTN_SPACING)),
-    SIDE_BTN_W,
-    BTN_H_4
-)
-
-audio_btn_rect = pygame.Rect(
-    SIDE_BTN_X,
-    int(SLOT_START_Y + 2 * (BTN_H_4 + BTN_SPACING)),
-    SIDE_BTN_W,
-    BTN_H_4
-)
+fullscreenBtnRect = pygame.Rect(SIDE_BTN_X, int(SLOT_START_Y), SIDE_BTN_W, BTN_H_4)
+infoBtnRect       = pygame.Rect(SIDE_BTN_X, int(SLOT_START_Y + 1 * (BTN_H_4 + BTN_SPACING)), SIDE_BTN_W, BTN_H_4)
+quitBtnRect       = pygame.Rect(SIDE_BTN_X, int(SLOT_START_Y + 3 * (BTN_H_4 + BTN_SPACING)), SIDE_BTN_W, BTN_H_4)
+audioBtnRect      = pygame.Rect(SIDE_BTN_X, int(SLOT_START_Y + 2 * (BTN_H_4 + BTN_SPACING)), SIDE_BTN_W, BTN_H_4)
 
 # Info screen constants
 INFO_PAD_X         = 160
@@ -186,22 +159,22 @@ INFO_SCROLL_H      = INFO_SCROLL_BOTTOM - INFO_SCROLL_TOP
 
 CLOSE_BTN_W = 300
 CLOSE_BTN_H = 90
-close_btn_rect = pygame.Rect((VIRTUAL_WIDTH - CLOSE_BTN_W) // 2, 960, CLOSE_BTN_W, CLOSE_BTN_H)
+closeBtnRect = pygame.Rect((VIRTUAL_WIDTH - CLOSE_BTN_W) // 2, 960, CLOSE_BTN_W, CLOSE_BTN_H)
 
 INFO_FILE = "info.txt"
-_raw_info_lines = []
+rawInfoLines = []
 if os.path.exists(INFO_FILE):
     try:
         with open(INFO_FILE, "r", encoding="utf-8") as f:
-            _raw_info_lines = f.read().splitlines()
+            rawInfoLines = f.read().splitlines()
     except:
-        _raw_info_lines = ["Could not load info.txt"]
+        rawInfoLines = ["Could not load info.txt"]
 
-_max_text_w = VIRTUAL_WIDTH - INFO_PAD_X * 2
+maxTextW = VIRTUAL_WIDTH - INFO_PAD_X * 2
 
-def _wrap_lines(raw_lines, font, max_w):
+def wrapLines(rawLines, font, maxW):
     wrapped = []
-    for raw in raw_lines:
+    for raw in rawLines:
         if raw.strip() == "":
             wrapped.append("")
             continue
@@ -209,7 +182,7 @@ def _wrap_lines(raw_lines, font, max_w):
         current = ""
         for word in words:
             test = (current + " " + word).strip()
-            if font.size(test)[0] <= max_w:
+            if font.size(test)[0] <= maxW:
                 current = test
             else:
                 if current:
@@ -219,77 +192,81 @@ def _wrap_lines(raw_lines, font, max_w):
             wrapped.append(current)
     return wrapped
 
-info_lines        = _wrap_lines(_raw_info_lines, info_text_font, _max_text_w)
-INFO_LINE_H       = info_text_font.get_linesize() + 6
-info_scroll_y     = 0
-info_scroll_speed = 40
-_info_total_h     = len(info_lines) * INFO_LINE_H
+infoLines      = wrapLines(rawInfoLines, infoTextFont, maxTextW)
+INFO_LINE_H    = infoTextFont.get_linesize() + 6
+infoScrollY    = 0
+infoScrollSpeed = 40
+infoTotalH     = len(infoLines) * INFO_LINE_H
 
 
 # ── Music helpers ──────────────────────────────────────────────────────────────
-def set_music_volume_for_state():
-    """Set the correct volume based on game state and music_enabled toggle."""
+def setMusicVolume():
     if not music_enabled:
         pygame.mixer.music.set_volume(0)
-    elif paused or show_info:
+    elif paused or showInfo:
         pygame.mixer.music.set_volume(MUSIC_DIM_VOL)
     else:
         pygame.mixer.music.set_volume(MUSIC_NORMAL_VOL)
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-def save_game(slot_index, slot_name):
-    global save_slots
-    save_data = {
-        "money": money, "days_passed": days_passed, "grid": grid,
-        "inventory": inventory, "current_column": current_column,
-        "current_row": current_row, "sprite_x": sprite_x, "sprite_y": sprite_y,
+def saveGame(slotIndex, slotName):
+    global saveSlots
+    saveData = {
+        "money": money, "days_passed": daysPassed, "grid": grid,
+        "inventory": inventory, "current_column": currentColumn,
+        "current_row": currentRow, "sprite_x": spriteX, "sprite_y": spriteY,
     }
-    save_slots[slot_index] = {
-        "name": slot_name,
+    saveSlots[slotIndex] = {
+        "name": slotName,
         "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "data": save_data,
+        "data": saveData,
     }
     try:
         with open(SAVE_FILE, "w") as f:
-            json.dump(save_slots, f)
+            json.dump(saveSlots, f)
     except:
         pass
 
-def load_game(slot_index):
-    global money, days_passed, grid, inventory
-    global current_column, current_row, sprite_x, sprite_y, last_move_time
-    slot = save_slots[slot_index]
+def loadGame(slotIndex):
+    global money, daysPassed, grid, inventory
+    global currentColumn, currentRow, spriteX, spriteY, lastMoveTime
+    slot = saveSlots[slotIndex]
     if slot["data"] is None:
         return False
     try:
         data = slot["data"]
-        money = data["money"]; days_passed = data["days_passed"]; grid = data["grid"]
-        inventory = data["inventory"]; current_column = data["current_column"]
-        current_row = data["current_row"]; sprite_x = data["sprite_x"]; sprite_y = data["sprite_y"]
-        last_move_time = pygame.time.get_ticks()
+        money         = data["money"]
+        daysPassed    = data["days_passed"]
+        grid          = data["grid"]
+        inventory     = data["inventory"]
+        currentColumn = data["current_column"]
+        currentRow    = data["current_row"]
+        spriteX       = data["sprite_x"]
+        spriteY       = data["sprite_y"]
+        lastMoveTime  = pygame.time.get_ticks()
         return True
     except:
         return False
 
 
-def screen_to_virtual(mx, my):
-    screen_w, screen_h = screen.get_size()
+def screenToVirtual(mx, my):
+    screenW, screenH = screen.get_size()
     if fullscreen:
-        vx = mx * VIRTUAL_WIDTH  // screen_w
-        vy = my * VIRTUAL_HEIGHT // screen_h
+        vx = mx * VIRTUAL_WIDTH  // screenW
+        vy = my * VIRTUAL_HEIGHT // screenH
     else:
-        scale    = min(screen_w / VIRTUAL_WIDTH, screen_h / VIRTUAL_HEIGHT)
-        x_offset = (screen_w - VIRTUAL_WIDTH  * scale) / 2
-        y_offset = (screen_h - VIRTUAL_HEIGHT * scale) / 2
-        vx = int((mx - x_offset) / scale)
-        vy = int((my - y_offset) / scale)
+        scale   = min(screenW / VIRTUAL_WIDTH, screenH / VIRTUAL_HEIGHT)
+        xOffset = (screenW - VIRTUAL_WIDTH  * scale) / 2
+        yOffset = (screenH - VIRTUAL_HEIGHT * scale) / 2
+        vx = int((mx - xOffset) / scale)
+        vy = int((my - yOffset) / scale)
     return vx, vy
 
-def screen_to_menu_ref(mx, my):
-    return screen_to_virtual(mx, my)
+def screenToMenuRef(mx, my):
+    return screenToVirtual(mx, my)
 
-def toggle_fullscreen():
+def toggleFullscreen():
     global fullscreen, screen
     fullscreen = not fullscreen
     if fullscreen:
@@ -297,119 +274,112 @@ def toggle_fullscreen():
     else:
         screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
 
-def draw_side_button(surface, rect, label, hovered=False):
+def drawSideButton(surface, rect, label, hovered=False):
     if hovered:
         color = (255, 245, 190)
-        shadow_surf = button_font.render(label, False, (70, 40, 5))
+        shadowSurf = buttonFont.render(label, False, (70, 40, 5))
         for ox, oy in ((-3, 3), (3, 3), (-3, -3), (3, -3)):
-            sx = rect.x + (rect.w - shadow_surf.get_width())  // 2 + ox
-            sy = rect.y + (rect.h - shadow_surf.get_height()) // 2 + oy
-            surface.blit(shadow_surf, (sx, sy))
+            sx = rect.x + (rect.w - shadowSurf.get_width())  // 2 + ox
+            sy = rect.y + (rect.h - shadowSurf.get_height()) // 2 + oy
+            surface.blit(shadowSurf, (sx, sy))
     else:
         color = (140, 110, 70)
-    text_surf = button_font.render(label, False, color)
-    tx = rect.x + (rect.w - text_surf.get_width())  // 2
-    ty = rect.y + (rect.h - text_surf.get_height()) // 2
-    surface.blit(text_surf, (tx, ty))
+    textSurf = buttonFont.render(label, False, color)
+    tx = rect.x + (rect.w - textSurf.get_width())  // 2
+    ty = rect.y + (rect.h - textSurf.get_height()) // 2
+    surface.blit(textSurf, (tx, ty))
 
 
-def build_menu_surface(mouse_vx=0, mouse_vy=0):
-    menu_surface.fill((0, 0, 0, 0))
+def buildMenuSurface(mouseVx=0, mouseVy=0):
+    menuSurface.fill((0, 0, 0, 0))
     overlay = pygame.Surface((MENU_REF_W, MENU_REF_H))
     overlay.set_alpha(180)
     overlay.fill((0, 0, 0))
-    menu_surface.blit(overlay, (0, 0))
-    menu_sprite_scaled = pygame.transform.scale(menu_sprite, (MENU_REF_W, MENU_REF_H))
-    menu_surface.blit(menu_sprite_scaled, (0, 0))
+    menuSurface.blit(overlay, (0, 0))
+    menuSpriteScaled = pygame.transform.scale(menuSprite, (MENU_REF_W, MENU_REF_H))
+    menuSurface.blit(menuSpriteScaled, (0, 0))
 
     for i in range(3):
-        slot_rect = get_slot_rect(i)
-        pygame.draw.rect(menu_surface, (60, 40, 30), slot_rect)
-        pygame.draw.rect(menu_surface, (100, 80, 60), slot_rect, 1)
-        menu_surface.set_clip(pygame.Rect(slot_rect.x+1, slot_rect.y+1, slot_rect.w-2, slot_rect.h-2))
-        name_surf = save_name_font.render(save_slots[i]["name"], False, (255, 255, 255))
-        menu_surface.blit(name_surf, (slot_rect.x + 20, slot_rect.y + 20))
-        if save_slots[i]["date"]:
-            parts = save_slots[i]["date"].split(" ")
-            date_str = parts[0][2:] if parts else ""
-            time_str = parts[1] if len(parts) > 1 else ""
-            date_surf = save_date_font.render(date_str, False, (180, 180, 180))
-            time_surf = save_date_font.render(time_str, False, (180, 180, 180))
-            menu_surface.blit(date_surf, (slot_rect.x + 20, slot_rect.y + 100))
-            menu_surface.blit(time_surf, (slot_rect.x + 20, slot_rect.y + 148))
-        menu_surface.set_clip(None)
+        slotRect = getSlotRect(i)
+        pygame.draw.rect(menuSurface, (60, 40, 30), slotRect)
+        pygame.draw.rect(menuSurface, (100, 80, 60), slotRect, 1)
+        menuSurface.set_clip(pygame.Rect(slotRect.x+1, slotRect.y+1, slotRect.w-2, slotRect.h-2))
+        nameSurf = saveNameFont.render(saveSlots[i]["name"], False, (255, 255, 255))
+        menuSurface.blit(nameSurf, (slotRect.x + 20, slotRect.y + 20))
+        if saveSlots[i]["date"]:
+            parts    = saveSlots[i]["date"].split(" ")
+            dateStr  = parts[0][2:] if parts else ""
+            timeStr  = parts[1] if len(parts) > 1 else ""
+            dateSurf = saveDateFont.render(dateStr, False, (180, 180, 180))
+            timeSurf = saveDateFont.render(timeStr, False, (180, 180, 180))
+            menuSurface.blit(dateSurf, (slotRect.x + 20, slotRect.y + 100))
+            menuSurface.blit(timeSurf, (slotRect.x + 20, slotRect.y + 148))
+        menuSurface.set_clip(None)
 
-    fs_label = "Windowed" if fullscreen else "Fullscreen"
-    draw_side_button(menu_surface, fullscreen_btn_rect, fs_label,
-                     hovered=fullscreen_btn_rect.collidepoint(mouse_vx, mouse_vy))
-    draw_side_button(menu_surface, info_btn_rect, "Info",
-                     hovered=info_btn_rect.collidepoint(mouse_vx, mouse_vy))
-    draw_side_button(menu_surface, quit_btn_rect, "Quit",
-                     hovered=quit_btn_rect.collidepoint(mouse_vx, mouse_vy))
-
-    # Audio toggle button
-    audio_label = "Music: ON" if music_enabled else "Music: OFF"
-    draw_side_button(menu_surface, audio_btn_rect, audio_label,
-                     hovered=audio_btn_rect.collidepoint(mouse_vx, mouse_vy))
+    fsLabel = "Windowed" if fullscreen else "Fullscreen"
+    drawSideButton(menuSurface, fullscreenBtnRect, fsLabel,   hovered=fullscreenBtnRect.collidepoint(mouseVx, mouseVy))
+    drawSideButton(menuSurface, infoBtnRect,       "Info",    hovered=infoBtnRect.collidepoint(mouseVx, mouseVy))
+    drawSideButton(menuSurface, quitBtnRect,       "Quit",    hovered=quitBtnRect.collidepoint(mouseVx, mouseVy))
+    audioLabel = "Music: ON" if music_enabled else "Music: OFF"
+    drawSideButton(menuSurface, audioBtnRect, audioLabel,     hovered=audioBtnRect.collidepoint(mouseVx, mouseVy))
 
 
-def build_info_surface(mouse_vx=0, mouse_vy=0):
-    global info_scroll_y
-    info_surface.fill((0, 0, 0, 0))
+def buildInfoSurface(mouseVx=0, mouseVy=0):
+    global infoScrollY
+    infoSurface.fill((0, 0, 0, 0))
 
     overlay = pygame.Surface((MENU_REF_W, MENU_REF_H))
     overlay.set_alpha(180)
     overlay.fill((0, 0, 0))
-    info_surface.blit(overlay, (0, 0))
-    menu_sprite_scaled = pygame.transform.scale(menu_sprite, (MENU_REF_W, MENU_REF_H))
-    info_surface.blit(menu_sprite_scaled, (0, 0))
+    infoSurface.blit(overlay, (0, 0))
+    menuSpriteScaled = pygame.transform.scale(menuSprite, (MENU_REF_W, MENU_REF_H))
+    infoSurface.blit(menuSpriteScaled, (0, 0))
 
-    title_surf = info_title_font.render("How to Play", False, (255, 240, 180))
-    info_surface.blit(title_surf, ((VIRTUAL_WIDTH - title_surf.get_width()) // 2, INFO_TOP_Y))
+    titleSurf = infoTitleFont.render("How to Play", False, (255, 240, 180))
+    infoSurface.blit(titleSurf, ((VIRTUAL_WIDTH - titleSurf.get_width()) // 2, INFO_TOP_Y))
 
-    max_scroll = max(0, _info_total_h - INFO_SCROLL_H)
-    info_scroll_y = max(0, min(info_scroll_y, max_scroll))
+    maxScroll  = max(0, infoTotalH - INFO_SCROLL_H)
+    infoScrollY = max(0, min(infoScrollY, maxScroll))
 
-    scroll_clip = pygame.Rect(INFO_PAD_X, INFO_SCROLL_TOP, VIRTUAL_WIDTH - INFO_PAD_X * 2, INFO_SCROLL_H)
-    info_surface.set_clip(scroll_clip)
+    scrollClip = pygame.Rect(INFO_PAD_X, INFO_SCROLL_TOP, VIRTUAL_WIDTH - INFO_PAD_X * 2, INFO_SCROLL_H)
+    infoSurface.set_clip(scrollClip)
 
-    y = INFO_SCROLL_TOP - info_scroll_y
-    for line in info_lines:
+    y = INFO_SCROLL_TOP - infoScrollY
+    for line in infoLines:
         if line == "":
             y += INFO_LINE_H // 2
             continue
-        line_surf = info_text_font.render(line, False, (220, 200, 160))
-        info_surface.blit(line_surf, (INFO_PAD_X, y))
+        lineSurf = infoTextFont.render(line, False, (220, 200, 160))
+        infoSurface.blit(lineSurf, (INFO_PAD_X, y))
         y += INFO_LINE_H
 
-    info_surface.set_clip(None)
+    infoSurface.set_clip(None)
 
-    fade_h = 60
-    top_fade = pygame.Surface((VIRTUAL_WIDTH - INFO_PAD_X * 2, fade_h), pygame.SRCALPHA)
-    for i in range(fade_h):
-        alpha = int(200 * (1 - i / fade_h))
-        pygame.draw.line(top_fade, (20, 12, 5, alpha), (0, i), (top_fade.get_width(), i))
-    info_surface.blit(top_fade, (INFO_PAD_X, INFO_SCROLL_TOP))
+    fadeH = 60
+    topFade = pygame.Surface((VIRTUAL_WIDTH - INFO_PAD_X * 2, fadeH), pygame.SRCALPHA)
+    for i in range(fadeH):
+        alpha = int(200 * (1 - i / fadeH))
+        pygame.draw.line(topFade, (20, 12, 5, alpha), (0, i), (topFade.get_width(), i))
+    infoSurface.blit(topFade, (INFO_PAD_X, INFO_SCROLL_TOP))
 
-    bot_fade = pygame.Surface((VIRTUAL_WIDTH - INFO_PAD_X * 2, fade_h), pygame.SRCALPHA)
-    for i in range(fade_h):
-        alpha = int(200 * (i / fade_h))
-        pygame.draw.line(bot_fade, (20, 12, 5, alpha), (0, i), (bot_fade.get_width(), i))
-    info_surface.blit(bot_fade, (INFO_PAD_X, INFO_SCROLL_BOTTOM - fade_h))
+    botFade = pygame.Surface((VIRTUAL_WIDTH - INFO_PAD_X * 2, fadeH), pygame.SRCALPHA)
+    for i in range(fadeH):
+        alpha = int(200 * (i / fadeH))
+        pygame.draw.line(botFade, (20, 12, 5, alpha), (0, i), (botFade.get_width(), i))
+    infoSurface.blit(botFade, (INFO_PAD_X, INFO_SCROLL_BOTTOM - fadeH))
 
-    if info_scroll_y > 0:
-        up_surf = info_text_font.render("scroll up", False, (160, 130, 80))
-        info_surface.blit(up_surf, ((VIRTUAL_WIDTH - up_surf.get_width()) // 2, INFO_SCROLL_TOP + 8))
-    if info_scroll_y < max_scroll:
-        dn_surf = info_text_font.render("scroll down", False, (160, 130, 80))
-        info_surface.blit(dn_surf, ((VIRTUAL_WIDTH - dn_surf.get_width()) // 2, INFO_SCROLL_BOTTOM - 52))
+    if infoScrollY > 0:
+        upSurf = infoTextFont.render("scroll up", False, (160, 130, 80))
+        infoSurface.blit(upSurf, ((VIRTUAL_WIDTH - upSurf.get_width()) // 2, INFO_SCROLL_TOP + 8))
+    if infoScrollY < maxScroll:
+        downSurf = infoTextFont.render("scroll down", False, (160, 130, 80))
+        infoSurface.blit(downSurf, ((VIRTUAL_WIDTH - downSurf.get_width()) // 2, INFO_SCROLL_BOTTOM - 52))
 
-    draw_side_button(info_surface, close_btn_rect, "Close",
-                     hovered=close_btn_rect.collidepoint(mouse_vx, mouse_vy))
+    drawSideButton(infoSurface, closeBtnRect, "Close", hovered=closeBtnRect.collidepoint(mouseVx, mouseVy))
 
 
 # Dim music on startup since info screen opens on boot
-set_music_volume_for_state()
+setMusicVolume()
 
 # =========================================================
 # MAIN LOOP
@@ -418,124 +388,124 @@ running = True
 while running:
     clock.tick(FPS)
 
-    _mx, _my = pygame.mouse.get_pos()
-    hover_vx, hover_vy = screen_to_menu_ref(_mx, _my)
+    mx, my = pygame.mouse.get_pos()
+    hoverVx, hoverVy = screenToMenuRef(mx, my)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
         if event.type == pygame.KEYDOWN:
-            if show_info:
+            if showInfo:
                 if event.key == pygame.K_ESCAPE:
-                    show_info = False
-                    paused    = True
-                    set_music_volume_for_state()
+                    showInfo = False
+                    paused   = True
+                    setMusicVolume()
             elif paused:
                 if event.key == pygame.K_ESCAPE:
-                    paused = False
-                    last_move_time = pygame.time.get_ticks()
-                    set_music_volume_for_state()
+                    paused       = False
+                    lastMoveTime = pygame.time.get_ticks()
+                    setMusicVolume()
             else:
                 if event.key == pygame.K_ESCAPE:
                     paused = True
-                    set_music_volume_for_state()
+                    setMusicVolume()
                 if event.key == pygame.K_F11:
-                    toggle_fullscreen()
+                    toggleFullscreen()
 
-        if event.type == pygame.MOUSEWHEEL and show_info:
-            info_scroll_y -= event.y * info_scroll_speed
+        if event.type == pygame.MOUSEWHEEL and showInfo:
+            infoScrollY -= event.y * infoScrollSpeed
 
         if event.type == pygame.VIDEORESIZE and not fullscreen:
             screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             mx, my = pygame.mouse.get_pos()
-            rx, ry = screen_to_menu_ref(mx, my)
+            rx, ry = screenToMenuRef(mx, my)
 
-            if show_info:
-                if close_btn_rect.collidepoint(rx, ry):
-                    show_info = False
-                    paused    = True
-                    set_music_volume_for_state()
+            if showInfo:
+                if closeBtnRect.collidepoint(rx, ry):
+                    showInfo = False
+                    paused   = True
+                    setMusicVolume()
                 continue
 
             if paused:
-                if fullscreen_btn_rect.collidepoint(rx, ry):
-                    toggle_fullscreen()
+                if fullscreenBtnRect.collidepoint(rx, ry):
+                    toggleFullscreen()
                     continue
-                if info_btn_rect.collidepoint(rx, ry):
-                    show_info     = True
-                    info_scroll_y = 0
-                    set_music_volume_for_state()
+                if infoBtnRect.collidepoint(rx, ry):
+                    showInfo    = True
+                    infoScrollY = 0
+                    setMusicVolume()
                     continue
-                if quit_btn_rect.collidepoint(rx, ry):
+                if quitBtnRect.collidepoint(rx, ry):
                     running = False
                     continue
-                if audio_btn_rect.collidepoint(rx, ry):
+                if audioBtnRect.collidepoint(rx, ry):
                     music_enabled = not music_enabled
-                    set_music_volume_for_state()
+                    setMusicVolume()
                     continue
                 for i in range(3):
-                    if get_slot_rect(i).collidepoint(rx, ry):
-                        if save_slots[i]["data"] is not None:
-                            load_game(i)
+                    if getSlotRect(i).collidepoint(rx, ry):
+                        if saveSlots[i]["data"] is not None:
+                            loadGame(i)
                             paused = False
-                            set_music_volume_for_state()
+                            setMusicVolume()
                         break
                 continue
 
-            vx, vy = screen_to_virtual(mx, my)
+            vx, vy = screenToVirtual(mx, my)
 
-            if fermpotKlein_rect.collidepoint(vx, vy):
-                for crop_name in inventory:
-                    if inventory[crop_name] > 0:
-                        inventory[crop_name] -= 1
-                        money += CROP_VALUES[crop_name] // 2
+            if fermPotSmallRect.collidepoint(vx, vy):
+                for cropName in inventory:
+                    if inventory[cropName] > 0:
+                        inventory[cropName] -= 1
+                        money += CROP_VALUES[cropName] // 2
                         break
                 continue
 
-            if fermpotGroot_rect.collidepoint(vx, vy):
+            if fermPotLargeRect.collidepoint(vx, vy):
                 fermented = 0
-                for crop_name in inventory:
-                    while inventory[crop_name] > 0 and fermented < 2:
-                        inventory[crop_name] -= 1
-                        money += CROP_VALUES[crop_name] // 2
+                for cropName in inventory:
+                    while inventory[cropName] > 0 and fermented < 2:
+                        inventory[cropName] -= 1
+                        money += CROP_VALUES[cropName] // 2
                         fermented += 1
                     if fermented >= 2:
                         break
                 continue
 
-            clicked_seed = None
-            for crop_name, rect in seeds_rects.items():
+            clickedSeed = None
+            for cropName, rect in seedRects.items():
                 if rect.collidepoint(vx, vy):
-                    clicked_seed = crop_name
+                    clickedSeed = cropName
                     break
 
-            if clicked_seed and selected_seed is None:
-                if money >= Crop_Price[clicked_seed]:
-                    money -= Crop_Price[clicked_seed]
-                    selected_seed = clicked_seed
+            if clickedSeed and selectedSeed is None:
+                if money >= cropPrice[clickedSeed]:
+                    money -= cropPrice[clickedSeed]
+                    selectedSeed = clickedSeed
                 continue
 
-            if selected_seed is not None:
+            if selectedSeed is not None:
                 gx = (vx - GRID_START_X) // CELL_SIZE
                 gy = (vy - GRID_START_Y) // CELL_SIZE
                 if 0 <= gx < GRID_COLS and 0 <= gy < GRID_ROWS:
                     if grid[gx][gy] is None:
-                        grid[gx][gy] = {"crop": selected_seed, "day_planted": days_passed, "stage": 0}
-                        selected_seed = None
+                        grid[gx][gy] = {"crop": selectedSeed, "day_planted": daysPassed, "stage": 0}
+                        selectedSeed = None
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
             mx, my = pygame.mouse.get_pos()
-            rx, ry = screen_to_menu_ref(mx, my)
-            if paused and not show_info:
+            rx, ry = screenToMenuRef(mx, my)
+            if paused and not showInfo:
                 for i in range(3):
-                    if get_slot_rect(i).collidepoint(rx, ry):
-                        save_game(i, f"Farm {i + 1}")
+                    if getSlotRect(i).collidepoint(rx, ry):
+                        saveGame(i, f"Farm {i + 1}")
                         break
-            elif not paused and not show_info:
-                vx, vy = screen_to_virtual(mx, my)
+            elif not paused and not showInfo:
+                vx, vy = screenToVirtual(mx, my)
                 gx = (vx - GRID_START_X) // CELL_SIZE
                 gy = (vy - GRID_START_Y) // CELL_SIZE
                 harvested = harvest(grid, gx, gy, crops)
@@ -543,44 +513,44 @@ while running:
                     money += CROP_VALUES[harvested]
                     inventory[harvested] = inventory.get(harvested, 0) + 1
 
-    if not paused and not show_info:
+    if not paused and not showInfo:
         now = pygame.time.get_ticks()
-        if now - last_move_time >= MOVE_INTERVAL:
-            last_move_time = now
-            days_passed += 1
+        if now - lastMoveTime >= MOVE_INTERVAL:
+            lastMoveTime = now
+            daysPassed  += 1
             for x in range(GRID_COLS):
                 for y in range(GRID_ROWS):
                     cell = grid[x][y]
                     if cell:
                         crop  = crops[cell["crop"]]
-                        age   = days_passed - cell["day_planted"]
+                        age   = daysPassed - cell["day_planted"]
                         stage = age // crop["growth_days_per_stage"]
                         cell["stage"] = min(stage, crop["max_stage"])
-            sprite_x       += STEP
-            current_column += 1
-            if current_column >= COLUMNS:
-                current_column = 0
-                sprite_x       = START_X
-                sprite_y      += STEP
-                current_row   += 1
-                if current_row >= ROWS:
-                    current_row        = 0
-                    sprite_x, sprite_y = START_X, START_Y
+            spriteX       += STEP
+            currentColumn += 1
+            if currentColumn >= COLUMNS:
+                currentColumn = 0
+                spriteX       = START_X
+                spriteY      += STEP
+                currentRow   += 1
+                if currentRow >= ROWS:
+                    currentRow         = 0
+                    spriteX, spriteY   = START_X, START_Y
 
-    screen_w, screen_h = screen.get_size()
+    screenW, screenH = screen.get_size()
     target = pygame.Surface((VIRTUAL_WIDTH, VIRTUAL_HEIGHT))
 
     target.blit(background,      (0, 0))
-    target.blit(shopPlanken_img,  (shopPlanken_x,  shopPlanken_y))
-    target.blit(fermpotKlein_img, (fermpotKlein_x, fermpotKlein_y))
-    target.blit(fermpotGroot_img, (fermpotGroot_x, fermpotGroot_y))
-    target.blit(wortelzZak_img,   (wortelzZak_x,   wortelzZak_y))
-    target.blit(tomatenZak_img,   (tomatenZak_x,   tomatenZak_y))
-    target.blit(komkommerZak_img, (komkommerZak_x, komkommerZak_y))
-    target.blit(chiliZak_img,     (chiliZak_x,     chiliZak_y))
-    target.blit(knoflookZak_img,  (knoflookZak_x,  knoflookZak_y))
-    target.blit(koolZak_img,      (koolZak_x,      koolZak_y))
-    draw_money(target, money, VIRTUAL_WIDTH)
+    target.blit(shopShelvesImg,  (shopShelvesX,  shopShelvesY))
+    target.blit(fermPotSmallImg, (fermPotSmallX, fermPotSmallY))
+    target.blit(fermPotLargeImg, (fermPotLargeX, fermPotLargeY))
+    target.blit(carrotBagImg,    (carrotBagX,    carrotBagY))
+    target.blit(tomatoBagImg,    (tomatoBagX,    tomatoBagY))
+    target.blit(cucumberBagImg,  (cucumberBagX,  cucumberBagY))
+    target.blit(chiliBagImg,     (chiliBagX,     chiliBagY))
+    target.blit(garlicBagImg,    (garlicBagX,    garlicBagY))
+    target.blit(cabbageBagImg,   (cabbageBagX,   cabbageBagY))
+    drawMoney(target, money, VIRTUAL_WIDTH)
 
     for x in range(GRID_COLS):
         for y in range(GRID_ROWS):
@@ -592,22 +562,22 @@ while running:
                     sprite = pygame.transform.scale(sprite, (CELL_SIZE, CELL_SIZE))
                 target.blit(sprite, (GRID_START_X + x * CELL_SIZE, GRID_START_Y + y * CELL_SIZE))
 
-    target.blit(calendar_sprite,       (176*8, 72*8))
-    target.blit(calendarCircle_sprite, (sprite_x, sprite_y))
+    target.blit(calendarSprite, (176*8, 72*8))
+    target.blit(calendarCircle, (spriteX, spriteY))
 
-    if show_info:
-        build_info_surface(hover_vx, hover_vy)
-        target.blit(info_surface, (0, 0))
+    if showInfo:
+        buildInfoSurface(hoverVx, hoverVy)
+        target.blit(infoSurface, (0, 0))
     elif paused:
-        build_menu_surface(hover_vx, hover_vy)
-        target.blit(menu_surface, (0, 0))
+        buildMenuSurface(hoverVx, hoverVy)
+        target.blit(menuSurface, (0, 0))
 
-    scale    = min(screen_w / VIRTUAL_WIDTH, screen_h / VIRTUAL_HEIGHT)
-    scaled_w = int(VIRTUAL_WIDTH  * scale)
-    scaled_h = int(VIRTUAL_HEIGHT * scale)
-    scaled   = pygame.transform.scale(target, (scaled_w, scaled_h))
+    scale    = min(screenW / VIRTUAL_WIDTH, screenH / VIRTUAL_HEIGHT)
+    scaledW  = int(VIRTUAL_WIDTH  * scale)
+    scaledH  = int(VIRTUAL_HEIGHT * scale)
+    scaled   = pygame.transform.scale(target, (scaledW, scaledH))
     screen.fill((0, 0, 0))
-    screen.blit(scaled, ((screen_w - scaled_w) // 2, (screen_h - scaled_h) // 2))
+    screen.blit(scaled, ((screenW - scaledW) // 2, (screenH - scaledH) // 2))
     pygame.display.flip()
 
 pygame.quit()

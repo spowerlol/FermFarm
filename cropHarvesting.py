@@ -1,13 +1,13 @@
 CROP_VALUES = {
     "tomato": 5,
-    "carrot": 10,  # Fixed: removed duplicate, kept higher value
+    "carrot": 10,
     "cucumber": 15,
     "chili": 20,
     "cabbage": 25,
     "garlic": 30,
 }
 
-Crop_Price = {
+cropPrice = {
     "tomato": 3,
     "carrot": 6,
     "cucumber": 13,
@@ -30,14 +30,13 @@ def harvest(grid, gx, gy, crops):
     if 0 <= gx < len(grid) and 0 <= gy < len(grid[0]):
         cell = grid[gx][gy]
         if cell is None:
-            return None  # nothing to harvest
+            return None
 
-        crop_name = cell["crop"]
-        crop_data = crops[crop_name]
+        cropName = cell["crop"]
+        cropData = crops[cropName]
 
-        if cell["stage"] >= crop_data["max_stage"]:
-            # fully grown, harvest it
-            grid[gx][gy] = None  # remove plant
-            return crop_name
+        if cell["stage"] >= cropData["max_stage"]:
+            grid[gx][gy] = None
+            return cropName
 
     return None
