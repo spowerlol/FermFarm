@@ -1,16 +1,24 @@
 import pygame
 import sys
+import os
 from texture import load_textures
 
-VIRTUAL_WIDTH  = 240 * 8   # 1920
-VIRTUAL_HEIGHT = 135 * 8   # 1080
+VIRTUAL_WIDTH  = 240 * 8
+VIRTUAL_HEIGHT = 135 * 8
 FPS = 60
+
+MUSIC_NORMAL_VOL = 0.5
 
 def run_start_screen(screen, fullscreen):
     clock = pygame.time.Clock()
     textures = load_textures()
 
-    # startScreen image is DOUBLE HEIGHT (1920 × 2160 after ×8 scale)
+    if not pygame.mixer.music.get_busy():
+        if os.path.exists("fermfarm theme.mp3"):
+            pygame.mixer.music.load("fermfarm theme.mp3")
+            pygame.mixer.music.set_volume(MUSIC_NORMAL_VOL)
+            pygame.mixer.music.play(-1)
+
     start_image = textures["startScreen"]
 
     offset_y = 0

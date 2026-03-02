@@ -29,14 +29,9 @@ clock = pygame.time.Clock()
 run_start_screen(screen, fullscreen)
 
 # ── Music ──────────────────────────────────────────────────────────────────────
-MUSIC_NORMAL_VOL = 0.7
+MUSIC_NORMAL_VOL = 0.5
 MUSIC_DIM_VOL    = 0.2
 music_enabled    = True
-
-if os.path.exists("fermfarm theme.mp3"):
-    pygame.mixer.music.load("fermfarm theme.mp3")
-    pygame.mixer.music.set_volume(MUSIC_NORMAL_VOL)
-    pygame.mixer.music.play(-1)   # loop forever
 # ──────────────────────────────────────────────────────────────────────────────
 
 textures = load_textures()
