@@ -18,6 +18,10 @@ VIRTUAL_WIDTH  = 240 * 8   # 1920
 VIRTUAL_HEIGHT = 135 * 8   # 1080
 FPS = 60
 
+# Windowed mode opens at half the virtual resolution (resizable)
+WINDOW_WIDTH  = VIRTUAL_WIDTH  // 2   # 960
+WINDOW_HEIGHT = VIRTUAL_HEIGHT // 2   # 540
+
 # =========================================================
 # PAUSE MENU REFERENCE RESOLUTION
 # =========================================================
@@ -31,9 +35,9 @@ fullscreen = True
 info = pygame.display.Info()
 screen = pygame.display.set_mode(
     (info.current_w, info.current_h),
-    pygame.FULLSCREEN #The game is set in full screeen so there isn't a black outline
+    pygame.FULLSCREEN
 )
-pygame.display.set_caption("FermFarm") #Caption placed at the top of the game
+pygame.display.set_caption("FermFarm")
 
 clock = pygame.time.Clock()
 run_start_screen(screen, fullscreen)
@@ -46,17 +50,17 @@ init_money_ui(textures)
 crops = load_crops(textures)
 
 # =========================================================
-# PAUSE MENU SURFACE  — native resolution
+# PAUSE MENU SURFACE
 # =========================================================
 menu_surface = pygame.Surface((MENU_REF_W, MENU_REF_H), pygame.SRCALPHA)
 
 font_path = "sprites/babosorry.ttf"
 if not os.path.exists(font_path):
-    font_path = None #implementing the font
+    font_path = None
 
-#coördinates of the places we're using the font
-save_name_font = pygame.font.Font(font_path, 60) if font_path else pygame.font.Font(None, 60)
-save_date_font = pygame.font.Font(font_path, 36) if font_path else pygame.font.Font(None, 36)
+save_name_font = pygame.font.Font(font_path, 60)
+save_date_font = pygame.font.Font(font_path, 36)
+button_font    = pygame.font.Font(font_path, 96)   # larger text-only buttons
 
 # =========================================================
 # SHOP OBJECTS  — original coords × 8
@@ -168,7 +172,6 @@ save_slots = [
     {"name": "Empty", "date": "", "data": None},
     {"name": "Empty", "date": "", "data": None},
 ]
-# load save file if it exists
 if os.path.exists(SAVE_FILE):
     try:
         with open(SAVE_FILE, "r") as f:
@@ -176,9 +179,45 @@ if os.path.exists(SAVE_FILE):
             if len(loaded_slots) == 3:
                 save_slots = loaded_slots
     except:
-        pass # ignore errors and keep empty slots
+        pass
 
 selected_slot = None
+
+# =========================================================
+# PAUSE MENU SLOT RECTS  — in 1920×1080 virtual space
+# =========================================================
+SLOT_WIDTH   = 400
+SLOT_HEIGHT  = 200
+SLOT_SPACING = 25
+SLOT_START_X = (VIRTUAL_WIDTH - SLOT_WIDTH) // 3.5
+SLOT_START_Y = (VIRTUAL_HEIGHT - (3 * SLOT_HEIGHT + 2 * SLOT_SPACING)) // 2.5
+
+
+def get_slot_rect(i):
+    sy = SLOT_START_Y + i * (SLOT_HEIGHT + SLOT_SPACING)
+    return pygame.Rect(SLOT_START_X, sy, SLOT_WIDTH, SLOT_HEIGHT)
+
+
+# =========================================================
+# SIDE BUTTON RECTS — text-only, to the right of save slots
+# =========================================================
+SIDE_BTN_W       = 380
+SIDE_BTN_H       = 100
+SIDE_BTN_SPACING = 50
+SIDE_BTN_X       = int(SLOT_START_X) + SLOT_WIDTH + 80
+
+fullscreen_btn_rect = pygame.Rect(
+    SIDE_BTN_X,
+    int(SLOT_START_Y),
+    SIDE_BTN_W,
+    SIDE_BTN_H,
+)
+quit_btn_rect = pygame.Rect(
+    SIDE_BTN_X,
+    int(SLOT_START_Y) + 3 * SLOT_HEIGHT + 2 * SLOT_SPACING - SIDE_BTN_H,
+    SIDE_BTN_W,
+    SIDE_BTN_H,
+)
 
 # =========================================================
 # SAVE / LOAD
@@ -231,61 +270,84 @@ def load_game(slot_index):
 
 # =========================================================
 # COORDINATE HELPER
-# Screen → native game coords (handles windowed letterbox)
+# Maps physical screen pixels → virtual 1920×1080 coords.
+# Handles fullscreen stretching and windowed letterboxing.
 # =========================================================
 def screen_to_virtual(mx, my):
     screen_w, screen_h = screen.get_size()
     if fullscreen:
-        # Screen may not exactly match 1920×1080; map proportionally
         vx = mx * VIRTUAL_WIDTH  // screen_w
         vy = my * VIRTUAL_HEIGHT // screen_h
     else:
-        scale    = min(screen_w // VIRTUAL_WIDTH, screen_h // VIRTUAL_HEIGHT)
-        if scale < 1: scale = 1
-        x_offset = (screen_w - VIRTUAL_WIDTH  * scale) // 2
-        y_offset = (screen_h - VIRTUAL_HEIGHT * scale) // 2
-        vx = (mx - x_offset) // scale
-        vy = (my - y_offset) // scale
+        # Letterbox: maintain aspect ratio, centre game in window
+        scale    = min(screen_w / VIRTUAL_WIDTH, screen_h / VIRTUAL_HEIGHT)
+        x_offset = (screen_w - VIRTUAL_WIDTH  * scale) / 2
+        y_offset = (screen_h - VIRTUAL_HEIGHT * scale) / 2
+        vx = int((mx - x_offset) / scale)
+        vy = int((my - y_offset) / scale)
     return vx, vy
 
 
-# In native-res mode the menu reference space == game space
 def screen_to_menu_ref(mx, my):
     return screen_to_virtual(mx, my)
 
 
 # =========================================================
-# PAUSE MENU SLOT RECTS  — laid out in 1920×1080 space
-# Three slots stacked vertically, centred on screen
+# TOGGLE FULLSCREEN / WINDOWED
 # =========================================================
-SLOT_WIDTH   = 400
-SLOT_HEIGHT  = 200
-SLOT_SPACING = 25
-SLOT_START_X = (VIRTUAL_WIDTH - SLOT_WIDTH) // 3.5 #horizontal adjust
-SLOT_START_Y = (VIRTUAL_HEIGHT - (3 * SLOT_HEIGHT + 2 * SLOT_SPACING)) // 2.5  # vertical adjust
+def toggle_fullscreen():
+    global fullscreen, screen
+    fullscreen = not fullscreen
+    if fullscreen:
+        screen = pygame.display.set_mode(
+            (info.current_w, info.current_h), pygame.FULLSCREEN
+        )
+    else:
+        # Real OS window at 960×540 — user can resize freely
+        screen = pygame.display.set_mode(
+            (WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE
+        )
 
 
-def get_slot_rect(i):
-    # Calculate the Y position for slot i, each slot is stacked with spacing in between
-    sy = SLOT_START_Y + i * (SLOT_HEIGHT + SLOT_SPACING)
-    # Return the rectangle representing that slot
-    return pygame.Rect(SLOT_START_X, sy, SLOT_WIDTH, SLOT_HEIGHT)
+# =========================================================
+# TEXT-ONLY BUTTON — dims when idle, lights up on hover
+# =========================================================
+def draw_side_button(surface, rect, label, hovered=False):
+    if hovered:
+        # Bright warm glow: draw a dark shadow offset behind the text first
+        color       = (255, 245, 190)
+        shadow_surf = button_font.render(label, False, (70, 40, 5))
+        for ox, oy in ((-3, 3), (3, 3), (-3, -3), (3, -3)):
+            sx = rect.x + (rect.w - shadow_surf.get_width())  // 2 + ox
+            sy = rect.y + (rect.h - shadow_surf.get_height()) // 2 + oy
+            surface.blit(shadow_surf, (sx, sy))
+    else:
+        # Muted brown-grey when not hovered
+        color = (140, 110, 70)
+
+    text_surf = button_font.render(label, False, color)
+    tx = rect.x + (rect.w - text_surf.get_width())  // 2
+    ty = rect.y + (rect.h - text_surf.get_height()) // 2
+    surface.blit(text_surf, (tx, ty))
 
 
-def build_menu_surface():
+# =========================================================
+# BUILD PAUSE MENU SURFACE
+# =========================================================
+def build_menu_surface(mouse_vx=0, mouse_vy=0):
     menu_surface.fill((0, 0, 0, 0))
 
-    # Create a semi-transparent dark overlay, this dims the game behind the pause menu
+    # Dark overlay behind menu
     overlay = pygame.Surface((MENU_REF_W, MENU_REF_H))
     overlay.set_alpha(180)
     overlay.fill((0, 0, 0))
     menu_surface.blit(overlay, (0, 0))
 
-    # Scale the menu background image to full screen size
+    # Menu background sprite
     menu_sprite_scaled = pygame.transform.scale(menu_sprite, (MENU_REF_W, MENU_REF_H))
     menu_surface.blit(menu_sprite_scaled, (0, 0))
 
-   #Draw the 3 save slots
+    # Save slots
     for i in range(3):
         slot_rect = get_slot_rect(i)
         pygame.draw.rect(menu_surface, (60, 40, 30), slot_rect)
@@ -296,7 +358,6 @@ def build_menu_surface():
             slot_rect.w - 2, slot_rect.h - 2
         ))
 
-        # Draw slot name
         name_surf = save_name_font.render(save_slots[i]["name"], False, (255, 255, 255))
         menu_surface.blit(name_surf, (slot_rect.x + 20, slot_rect.y + 20))
 
@@ -311,6 +372,17 @@ def build_menu_surface():
 
         menu_surface.set_clip(None)
 
+    # Side buttons
+    fs_label = "Windowed" if fullscreen else "Fullscreen"
+    draw_side_button(
+        menu_surface, fullscreen_btn_rect, fs_label,
+        hovered=fullscreen_btn_rect.collidepoint(mouse_vx, mouse_vy)
+    )
+    draw_side_button(
+        menu_surface, quit_btn_rect, "Quit",
+        hovered=quit_btn_rect.collidepoint(mouse_vx, mouse_vy)
+    )
+
 
 # =========================================================
 # MAIN LOOP
@@ -319,39 +391,44 @@ running = True
 while running:
     clock.tick(FPS)
 
+    _mx, _my = pygame.mouse.get_pos()
+    hover_vx, hover_vy = screen_to_menu_ref(_mx, _my)
+
     for event in pygame.event.get():
-        # User clicked the window close button
         if event.type == pygame.QUIT:
             running = False
 
         # ---------- KEYBOARD ----------
         if event.type == pygame.KEYDOWN:
-            # Pressing ESC switches between paused and unpaused
             if event.key == pygame.K_ESCAPE:
                 paused = not paused
                 if not paused:
                     last_move_time = pygame.time.get_ticks()
             if event.key == pygame.K_F11:
-                fullscreen = not fullscreen
-                if fullscreen:
-                    screen = pygame.display.set_mode(
-                        (info.current_w, info.current_h), pygame.FULLSCREEN
-                    )
-                else:
-                    screen = pygame.display.set_mode(
-                        (VIRTUAL_WIDTH, VIRTUAL_HEIGHT), pygame.RESIZABLE
-                    )
+                toggle_fullscreen()
 
+        # Let pygame track the new window size on resize; draw loop handles scaling
         if event.type == pygame.VIDEORESIZE and not fullscreen:
             screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
 
-        # ---------- LEFT CLICK ----------
+        # ---------- MOUSE CLICK ----------
         if event.type == pygame.MOUSEBUTTONDOWN:
             mx, my = pygame.mouse.get_pos()
 
             if paused:
                 rx, ry = screen_to_menu_ref(mx, my)
 
+                # Fullscreen toggle
+                if fullscreen_btn_rect.collidepoint(rx, ry) and event.button == 1:
+                    toggle_fullscreen()
+                    continue
+
+                # Quit game
+                if quit_btn_rect.collidepoint(rx, ry) and event.button == 1:
+                    running = False
+                    continue
+
+                # Save / load slots
                 for i in range(3):
                     if get_slot_rect(i).collidepoint(rx, ry):
                         if event.button == 1:
@@ -411,13 +488,14 @@ while running:
 
         # ---------- RIGHT CLICK (harvest) ----------
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
-            vx, vy = screen_to_virtual(*pygame.mouse.get_pos())
-            gx = (vx - GRID_START_X) // CELL_SIZE
-            gy = (vy - GRID_START_Y) // CELL_SIZE
-            harvested = harvest(grid, gx, gy, crops)
-            if harvested:
-                money += CROP_VALUES[harvested]
-                inventory[harvested] = inventory.get(harvested, 0) + 1
+            if not paused:
+                vx, vy = screen_to_virtual(*pygame.mouse.get_pos())
+                gx = (vx - GRID_START_X) // CELL_SIZE
+                gy = (vy - GRID_START_Y) // CELL_SIZE
+                harvested = harvest(grid, gx, gy, crops)
+                if harvested:
+                    money += CROP_VALUES[harvested]
+                    inventory[harvested] = inventory.get(harvested, 0) + 1
 
     # =====================================================
     # TIME / GROWTH
@@ -453,14 +531,10 @@ while running:
     # =====================================================
     screen_w, screen_h = screen.get_size()
 
-    # If the physical screen differs from 1920×1080 (e.g. ultrawide / 4K),
-    # draw into an intermediate surface then scale once.
-    if screen_w == VIRTUAL_WIDTH and screen_h == VIRTUAL_HEIGHT:
-        target = screen
-    else:
-        target = pygame.Surface((VIRTUAL_WIDTH, VIRTUAL_HEIGHT))
+    # Always render into a fixed 1920×1080 virtual canvas, then scale to window.
+    # This means the game looks identical regardless of window size.
+    target = pygame.Surface((VIRTUAL_WIDTH, VIRTUAL_HEIGHT))
 
-    #Draw background and shop
     target.blit(background,      (0, 0))
     target.blit(shopPlanken_img,  (shopPlanken_x,  shopPlanken_y))
     target.blit(fermpotKlein_img, (fermpotKlein_x, fermpotKlein_y))
@@ -477,9 +551,8 @@ while running:
         for y in range(GRID_ROWS):
             cell = grid[x][y]
             if cell:
-                crop = crops[cell["crop"]]
+                crop   = crops[cell["crop"]]
                 sprite = crop["stages"][cell["stage"]]
-                # If the sprite hasn't been pre-scaled to CELL_SIZE, scale it now
                 if sprite.get_width() != CELL_SIZE or sprite.get_height() != CELL_SIZE:
                     sprite = pygame.transform.scale(sprite, (CELL_SIZE, CELL_SIZE))
                 target.blit(
@@ -487,19 +560,21 @@ while running:
                     (GRID_START_X + x * CELL_SIZE, GRID_START_Y + y * CELL_SIZE)
                 )
 
-    #Draw calander
     target.blit(calendar_sprite,       (176*8, 72*8))
     target.blit(calendarCircle_sprite, (sprite_x, sprite_y))
 
-    #Draw the pause menu on top
     if paused:
-        build_menu_surface()
+        build_menu_surface(hover_vx, hover_vy)
         target.blit(menu_surface, (0, 0))
 
-    # If an off-screen surface was used, than resize it to match the window
-    if target is not screen:
-        scaled = pygame.transform.scale(target, (screen_w, screen_h))
-        screen.blit(scaled, (0, 0))
+    # Scale to fit the actual window, preserving aspect ratio with black bars
+    scale    = min(screen_w / VIRTUAL_WIDTH, screen_h / VIRTUAL_HEIGHT)
+    scaled_w = int(VIRTUAL_WIDTH  * scale)
+    scaled_h = int(VIRTUAL_HEIGHT * scale)
+    scaled   = pygame.transform.scale(target, (scaled_w, scaled_h))
+
+    screen.fill((0, 0, 0))  # letterbox bars
+    screen.blit(scaled, ((screen_w - scaled_w) // 2, (screen_h - scaled_h) // 2))
 
     pygame.display.flip()
 
