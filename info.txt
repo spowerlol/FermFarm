@@ -1,0 +1,39 @@
+Welcome to FermFarm!
+
+In FermFarm you grow crops, ferment them, and sell your produce for coins. Here is everything you need to know to get started.
+
+BUYING SEEDS
+
+Click one of the seed bags in the shop on the right side of the screen to buy a seed. Each seed costs a small amount of coins. After clicking a bag your cursor is loaded with that seed type.
+
+PLANTING
+
+With a seed selected, click any empty plot in the soil grid at the bottom of the screen to plant it. The seed will begin growing automatically as days pass.
+
+HARVESTING
+
+When a crop has fully grown right-click it in the grid to harvest it. Harvested crops are added to your inventory and you earn coins automatically.
+
+FERMENTATION
+
+You can ferment harvested crops for bonus coins using the two pots in the shop area. The small pot ferments one crop at a time. The large pot ferments two crops at once. Fermented crops are worth more than selling raw but you earn coins immediately when you place them in the pot.
+
+THE CALENDAR
+
+The circle on the calendar in the top right tracks how many days have passed. Every few seconds a new day begins and your crops grow one stage closer to harvest.
+
+SAVING AND LOADING
+
+Press ESC to open the pause menu. Right-click any save slot to save your current farm to that slot. Left-click a filled slot to load it and resume from where you left off.
+
+FULLSCREEN AND WINDOWED
+
+Use the Windowed and Fullscreen buttons in the pause menu to switch display modes. You can also press F11 at any time.
+
+TIPS
+
+- Plant multiple crops at once to always have something ready to harvest.
+- Use the large fermentation pot when your inventory is full to cash out quickly.
+- Coins carry over between sessions when you save, so keep saving often!
+
+Good luck on your farm!
