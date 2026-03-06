@@ -29,5 +29,7 @@ def loadTextures():
     textures["garlicBag"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-knoflookzak.png")).convert_alpha()
     textures["cabbageBag"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-koolzak.png")).convert_alpha()
     textures["menuSprite"] = pygame.image.load(os.path.join(ASSETS_PATH, "optionsMenu.png")).convert_alpha()
-
+    textures["waterDropPlant"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-waterDruppelPlant.png")).convert_alpha()
+    textures["wateringcanEmpty"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-waterBucketEmpty.png")).convert_alpha()
+    textures["wateringcanFull"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-waterBucketFull.png")).convert_alpha()
     return textures

@@ -32,8 +32,4 @@ Use the Windowed and Fullscreen buttons in the pause menu to switch display mode
 
 TIPS
 
-- Plant multiple crops at once to always have something ready to harvest.
-- Use the large fermentation pot when your inventory is full to cash out quickly.
-- Coins carry over between sessions when you save, so keep saving often!
-
 Good luck on your farm!
