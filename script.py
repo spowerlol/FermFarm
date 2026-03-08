@@ -296,6 +296,21 @@ def loadGame(slotIndex):
         return False
 
 
+def newGame():
+    global money, daysPassed, grid, inventory
+    global currentColumn, currentRow, spriteX, spriteY, lastMoveTime, tileOwned
+    money         = 6
+    daysPassed    = 0
+    grid          = [[None for _ in range(GRID_ROWS)] for _ in range(GRID_COLS)]
+    inventory     = {k: 0 for k in inventory}
+    currentColumn = 0
+    currentRow    = 0
+    spriteX       = START_X
+    spriteY       = START_Y
+    lastMoveTime  = pygame.time.get_ticks()
+    tileOwned     = makeTileOwned()
+
+
 def screenToVirtual(mx, my):
     screenW, screenH = screen.get_size()
     if fullscreen:
@@ -347,12 +362,19 @@ def buildMenuSurface(mouseVx=0, mouseVy=0):
 
     for i in range(3):
         slotRect = getSlotRect(i)
-        pygame.draw.rect(menuSurface, (60, 40, 30), slotRect)
-        pygame.draw.rect(menuSurface, (100, 80, 60), slotRect, 1)
+        isHovered = slotRect.collidepoint(mouseVx, mouseVy)
+        hasSave   = saveSlots[i]["data"] is not None
+
+        bgColor = (75, 55, 40) if isHovered else (60, 40, 30)
+        pygame.draw.rect(menuSurface, bgColor, slotRect)
+        borderColor = (180, 150, 100) if isHovered else (100, 80, 60)
+        pygame.draw.rect(menuSurface, borderColor, slotRect, 2)
+
         menuSurface.set_clip(pygame.Rect(slotRect.x+1, slotRect.y+1, slotRect.w-2, slotRect.h-2))
-        nameSurf = saveNameFont.render(saveSlots[i]["name"], False, (255, 255, 255))
-        menuSurface.blit(nameSurf, (slotRect.x + 20, slotRect.y + 20))
-        if saveSlots[i]["date"]:
+
+        if hasSave:
+            nameSurf = saveNameFont.render(saveSlots[i]["name"], False, (255, 255, 255))
+            menuSurface.blit(nameSurf, (slotRect.x + 20, slotRect.y + 20))
             parts    = saveSlots[i]["date"].split(" ")
             dateStr  = parts[0][2:] if parts else ""
             timeStr  = parts[1] if len(parts) > 1 else ""
@@ -360,6 +382,10 @@ def buildMenuSurface(mouseVx=0, mouseVy=0):
             timeSurf = saveDateFont.render(timeStr, False, (180, 180, 180))
             menuSurface.blit(dateSurf, (slotRect.x + 20, slotRect.y + 100))
             menuSurface.blit(timeSurf, (slotRect.x + 20, slotRect.y + 148))
+        else:
+            nameSurf = saveNameFont.render(f"Empty Slot {i + 1}", False, (140, 120, 90))
+            menuSurface.blit(nameSurf, (slotRect.x + 20, slotRect.y + 20))
+
         menuSurface.set_clip(None)
 
     fsLabel = "Windowed" if fullscreen else "Fullscreen"
@@ -503,8 +529,10 @@ while running:
                     if getSlotRect(i).collidepoint(rx, ry):
                         if saveSlots[i]["data"] is not None:
                             loadGame(i)
-                            paused = False
-                            setMusicVolume()
+                        else:
+                            newGame()
+                        paused = False
+                        setMusicVolume()
                         break
                 continue
 
@@ -697,21 +725,35 @@ while running:
     else:
         pygame.mouse.set_visible(True)
 
-    # Draw price tooltip on hovered locked tile
-    if hoveredLockedTile is not None:
-        hx, hy = hoveredLockedTile
-        price = TILE_COL_PRICE[hx]
-        priceText = f"Buy: {price} coins"
-        tooltipSurf = saveDateFont.render(priceText, True, (255, 240, 160))
+
+    def drawTooltip(surface, text, cx, cy):
+        """Draw a small dark tooltip centred at (cx, cy), shifted above that point."""
+        tooltipSurf = saveDateFont.render(text, True, (255, 240, 160))
         padX, padY = 16, 10
         tooltipBg = pygame.Surface((tooltipSurf.get_width() + padX * 2, tooltipSurf.get_height() + padY * 2), pygame.SRCALPHA)
         tooltipBg.fill((30, 20, 10, 210))
-        tx = GRID_START_X + hx * CELL_SIZE + CELL_SIZE // 2 - tooltipBg.get_width() // 2
-        ty = GRID_START_Y + hy * CELL_SIZE - tooltipBg.get_height() - 8
+        tx = cx - tooltipBg.get_width() // 2
+        ty = cy - tooltipBg.get_height() - 8
         tx = max(0, min(tx, VIRTUAL_WIDTH - tooltipBg.get_width()))
         ty = max(0, ty)
-        target.blit(tooltipBg, (tx, ty))
-        target.blit(tooltipSurf, (tx + padX, ty + padY))
+        surface.blit(tooltipBg, (tx, ty))
+        surface.blit(tooltipSurf, (tx + padX, ty + padY))
+
+    # Tooltip: locked tile buy price
+    if hoveredLockedTile is not None:
+        hx, hy = hoveredLockedTile
+        cx = GRID_START_X + hx * CELL_SIZE + CELL_SIZE // 2
+        cy = GRID_START_Y + hy * CELL_SIZE
+        drawTooltip(target, f"Buy: {TILE_COL_PRICE[hx]} coins", cx, cy)
+
+    # Tooltip: seed bag prices
+    if not paused and not showInfo:
+        for cropName, rect in seedRects.items():
+            if rect.collidepoint(vMouseX, vMouseY):
+                cx = rect.centerx
+                cy = rect.top
+                drawTooltip(target, f"{cropName.capitalize()}: {cropPrice[cropName]} coins", cx, cy)
+                break
 
     if showInfo:
         pygame.mouse.set_visible(True)
