@@ -14,6 +14,11 @@ HARVESTING
 
 When a crop has fully grown right-click it in the grid to harvest it. Harvested crops are added to your inventory and you earn coins automatically.
 
+PURCHASING TILES
+
+To expand your farming empire you can purchase more tiles. This can be done by clicking with your left mouse button on the purchasable tiles with prices rangeing per coulumn.
+going right to left: 3,5,10,15,20,30,50
+
 FERMENTATION
 
 You can ferment harvested crops for bonus coins using the two pots in the shop area. The small pot ferments one crop at a time. The large pot ferments two crops at once. Fermented crops are worth more than selling raw but you earn coins immediately when you place them in the pot.

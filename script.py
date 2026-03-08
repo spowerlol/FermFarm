@@ -38,6 +38,8 @@ textures = loadTextures()
 initMoneyUi(textures)
 crops = loadCrops(textures)
 
+tekoopTileImg = textures["tekoopTile"]
+
 menuSurface = pygame.Surface((MENU_REF_W, MENU_REF_H), pygame.SRCALPHA)
 infoSurface = pygame.Surface((MENU_REF_W, MENU_REF_H), pygame.SRCALPHA)
 
@@ -119,6 +121,21 @@ GRID_ROWS    = 3
 GRID_START_X = 0
 GRID_START_Y = 87 * 8
 grid = [[None for _ in range(GRID_ROWS)] for _ in range(GRID_COLS)]
+
+# ── Tile ownership ─────────────────────────────────────────────────────────────
+# Prices per column, right to left (col 6 = cheapest, col 0 = most expensive)
+TILE_COL_PRICE = {6: 3, 5: 5, 4: 10, 3: 15, 2: 20, 1: 30, 0: 50}
+
+def makeTileOwned():
+    """Return a fresh 7x3 ownership grid. Free tiles: cols 5-6, rows 0-1."""
+    owned = [[False for _ in range(GRID_ROWS)] for _ in range(GRID_COLS)]
+    for col in [5, 6]:
+        for row in [0, 1]:
+            owned[col][row] = True
+    return owned
+
+tileOwned = makeTileOwned()
+# ──────────────────────────────────────────────────────────────────────────────
 
 START_X, START_Y   = 175*8, 87*8
 spriteX, spriteY   = START_X, START_Y
@@ -240,6 +257,7 @@ def saveGame(slotIndex, slotName):
         "money": money, "days_passed": daysPassed, "grid": grid,
         "inventory": inventory, "current_column": currentColumn,
         "current_row": currentRow, "sprite_x": spriteX, "sprite_y": spriteY,
+        "tile_owned": tileOwned,
     }
     saveSlots[slotIndex] = {
         "name": slotName,
@@ -254,7 +272,7 @@ def saveGame(slotIndex, slotName):
 
 def loadGame(slotIndex):
     global money, daysPassed, grid, inventory
-    global currentColumn, currentRow, spriteX, spriteY, lastMoveTime
+    global currentColumn, currentRow, spriteX, spriteY, lastMoveTime, tileOwned
     slot = saveSlots[slotIndex]
     if slot["data"] is None:
         return False
@@ -269,6 +287,10 @@ def loadGame(slotIndex):
         spriteX       = data["sprite_x"]
         spriteY       = data["sprite_y"]
         lastMoveTime  = pygame.time.get_ticks()
+        if "tile_owned" in data:
+            tileOwned = data["tile_owned"]
+        else:
+            tileOwned = makeTileOwned()
         return True
     except:
         return False
@@ -528,6 +550,18 @@ while running:
                         clickedSeed = cropName
                         break
 
+            # Buy a locked tile when clicking it with nothing held
+            if clickedSeed is None and selectedSeed is None and not wateringCanHeld:
+                gx = (vx - GRID_START_X) // CELL_SIZE
+                gy = (vy - GRID_START_Y) // CELL_SIZE
+                if 0 <= gx < GRID_COLS and 0 <= gy < GRID_ROWS:
+                    if not tileOwned[gx][gy]:
+                        price = TILE_COL_PRICE[gx]
+                        if money >= price:
+                            money -= price
+                            tileOwned[gx][gy] = True
+                        continue
+
             if clickedSeed and selectedSeed is None:
                 if money >= cropPrice[clickedSeed]:
                     money -= cropPrice[clickedSeed]
@@ -538,7 +572,7 @@ while running:
                 gx = (vx - GRID_START_X) // CELL_SIZE
                 gy = (vy - GRID_START_Y) // CELL_SIZE
                 if 0 <= gx < GRID_COLS and 0 <= gy < GRID_ROWS:
-                    if grid[gx][gy] is None:
+                    if grid[gx][gy] is None and tileOwned[gx][gy]:
                         grid[gx][gy] = {"crop": selectedSeed, "day_planted": daysPassed, "stage": 0, "watered": False, "watered_days": 0}
                         selectedSeed = None
                 continue
@@ -623,6 +657,21 @@ while running:
                     sprite = pygame.transform.scale(sprite, (CELL_SIZE, CELL_SIZE))
                 target.blit(sprite, (GRID_START_X + x * CELL_SIZE, GRID_START_Y + y * CELL_SIZE))
 
+    # Draw locked tiles and collect hover info
+    vMouseX, vMouseY = screenToVirtual(*pygame.mouse.get_pos())
+    hoveredLockedTile = None
+    tekoopScaled = pygame.transform.scale(tekoopTileImg, (CELL_SIZE, CELL_SIZE))
+    for x in range(GRID_COLS):
+        for y in range(GRID_ROWS):
+            if not tileOwned[x][y]:
+                tx = GRID_START_X + x * CELL_SIZE
+                ty = GRID_START_Y + y * CELL_SIZE
+                target.blit(tekoopScaled, (tx, ty))
+                # Check hover
+                tileRect = pygame.Rect(tx, ty, CELL_SIZE, CELL_SIZE)
+                if tileRect.collidepoint(vMouseX, vMouseY) and not paused and not showInfo:
+                    hoveredLockedTile = (x, y)
+
     target.blit(calendarSprite, (176*8, 72*8))
     target.blit(calendarCircle, (spriteX, spriteY))
 
@@ -635,7 +684,6 @@ while running:
                 target.blit(druppel, (GRID_START_X + x * CELL_SIZE, GRID_START_Y + y * CELL_SIZE))
 
     # Draw cursor: seed bag or watering can following mouse
-    vMouseX, vMouseY = screenToVirtual(*pygame.mouse.get_pos())
     if selectedSeed is not None:
         cursorImg = seedBagImages[selectedSeed]
         cursorScaled = pygame.transform.scale(cursorImg, (CELL_SIZE // 2, CELL_SIZE // 2))
@@ -648,6 +696,22 @@ while running:
         pygame.mouse.set_visible(False)
     else:
         pygame.mouse.set_visible(True)
+
+    # Draw price tooltip on hovered locked tile
+    if hoveredLockedTile is not None:
+        hx, hy = hoveredLockedTile
+        price = TILE_COL_PRICE[hx]
+        priceText = f"Buy: {price} coins"
+        tooltipSurf = saveDateFont.render(priceText, True, (255, 240, 160))
+        padX, padY = 16, 10
+        tooltipBg = pygame.Surface((tooltipSurf.get_width() + padX * 2, tooltipSurf.get_height() + padY * 2), pygame.SRCALPHA)
+        tooltipBg.fill((30, 20, 10, 210))
+        tx = GRID_START_X + hx * CELL_SIZE + CELL_SIZE // 2 - tooltipBg.get_width() // 2
+        ty = GRID_START_Y + hy * CELL_SIZE - tooltipBg.get_height() - 8
+        tx = max(0, min(tx, VIRTUAL_WIDTH - tooltipBg.get_width()))
+        ty = max(0, ty)
+        target.blit(tooltipBg, (tx, ty))
+        target.blit(tooltipSurf, (tx + padX, ty + padY))
 
     if showInfo:
         pygame.mouse.set_visible(True)

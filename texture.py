@@ -32,4 +32,5 @@ def loadTextures():
     textures["waterDropPlant"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-waterDruppelPlant.png")).convert_alpha()
     textures["wateringcanEmpty"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-waterBucketEmpty.png")).convert_alpha()
     textures["wateringcanFull"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-waterBucketFull.png")).convert_alpha()
+    textures["tekoopTile"] = pygame.image.load(os.path.join(ASSETS_PATH, "tekoopTiles.png")).convert_alpha()
     return textures
