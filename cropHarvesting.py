@@ -1,10 +1,10 @@
 CROP_VALUES = {
     "tomato": 5,
     "carrot": 10,
-    "cucumber": 15,
+    "cucumber": 19,
     "chili": 20,
-    "cabbage": 25,
-    "garlic": 30,
+    "cabbage": 26,
+    "garlic": 42,
 }
 
 cropPrice = {

@@ -58,7 +58,7 @@ shopShelvesX, shopShelvesY = 185*8, 50*8
 fermPotSmallImg = textures["fermPotSmall"]
 fermPotSmallX, fermPotSmallY = 205*8, 44*8
 fermPotLargeImg = textures["fermPotLarge"]
-fermPotLargeX, fermPotLargeY = 208*8, 62*8
+fermPotLargeX, fermPotLargeY = 230*8, 62*8
 carrotBagImg    = textures["carrotBag"]
 carrotBagX, carrotBagY     = 186*8, 54*8
 tomatoBagImg    = textures["tomatoBag"]
@@ -104,8 +104,6 @@ seedBagImages = {
 }
 # ──────────────────────────────────────────────────────────────────────────────
 
-fermPotSmallRect = pygame.Rect(fermPotSmallX, fermPotSmallY, fermPotSmallImg.get_width(), fermPotSmallImg.get_height())
-fermPotLargeRect = pygame.Rect(fermPotLargeX, fermPotLargeY, fermPotLargeImg.get_width(), fermPotLargeImg.get_height())
 
 money = 6
 background      = textures["background"]
@@ -552,24 +550,6 @@ while running:
                     wateringCanHeld = False
                     continue
 
-            if fermPotSmallRect.collidepoint(vx, vy):
-                for cropName in inventory:
-                    if inventory[cropName] > 0:
-                        inventory[cropName] -= 1
-                        money += CROP_VALUES[cropName] // 2
-                        break
-                continue
-
-            if fermPotLargeRect.collidepoint(vx, vy):
-                fermented = 0
-                for cropName in inventory:
-                    while inventory[cropName] > 0 and fermented < 2:
-                        inventory[cropName] -= 1
-                        money += CROP_VALUES[cropName] // 2
-                        fermented += 1
-                    if fermented >= 2:
-                        break
-                continue
 
             clickedSeed = None
             if not wateringCanHeld:
