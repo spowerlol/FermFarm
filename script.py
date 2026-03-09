@@ -3,7 +3,7 @@ import sys
 from texture import loadTextures
 from crop import loadCrops
 from money_ui import initMoneyUi, drawMoney
-from cropHarvesting import harvest, CROP_VALUES, cropPrice, inventory
+from cropHarvesting import harvest, CROP_VALUES, cropPrice
 from startScreen import runStartScreen
 import os
 import json
@@ -253,7 +253,7 @@ def saveGame(slotIndex, slotName):
     global saveSlots
     saveData = {
         "money": money, "days_passed": daysPassed, "grid": grid,
-        "inventory": inventory, "current_column": currentColumn,
+        "current_column": currentColumn,
         "current_row": currentRow, "sprite_x": spriteX, "sprite_y": spriteY,
         "tile_owned": tileOwned,
     }
@@ -269,7 +269,7 @@ def saveGame(slotIndex, slotName):
         pass
 
 def loadGame(slotIndex):
-    global money, daysPassed, grid, inventory
+    global money, daysPassed, grid
     global currentColumn, currentRow, spriteX, spriteY, lastMoveTime, tileOwned
     slot = saveSlots[slotIndex]
     if slot["data"] is None:
@@ -279,7 +279,6 @@ def loadGame(slotIndex):
         money         = data["money"]
         daysPassed    = data["days_passed"]
         grid          = data["grid"]
-        inventory     = data["inventory"]
         currentColumn = data["current_column"]
         currentRow    = data["current_row"]
         spriteX       = data["sprite_x"]
@@ -295,12 +294,11 @@ def loadGame(slotIndex):
 
 
 def newGame():
-    global money, daysPassed, grid, inventory
+    global money, daysPassed, grid
     global currentColumn, currentRow, spriteX, spriteY, lastMoveTime, tileOwned
     money         = 6
     daysPassed    = 0
     grid          = [[None for _ in range(GRID_ROWS)] for _ in range(GRID_COLS)]
-    inventory     = {k: 0 for k in inventory}
     currentColumn = 0
     currentRow    = 0
     spriteX       = START_X
@@ -610,7 +608,6 @@ while running:
                 harvested = harvest(grid, gx, gy, crops)
                 if harvested:
                     money += CROP_VALUES[harvested]
-                    inventory[harvested] = inventory.get(harvested, 0) + 1
 
     if not paused and not showInfo:
         now = pygame.time.get_ticks()

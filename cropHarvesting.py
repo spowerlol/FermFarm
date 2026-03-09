@@ -16,16 +16,6 @@ cropPrice = {
     "garlic": 28,
 }
 
-inventory = {
-    "tomato": 0,
-    "carrot": 0,
-    "cucumber": 0,
-    "chili": 0,
-    "cabbage": 0,
-    "garlic": 0,
-}
-
-
 def harvest(grid, gx, gy, crops):
     if 0 <= gx < len(grid) and 0 <= gy < len(grid[0]):
         cell = grid[gx][gy]
