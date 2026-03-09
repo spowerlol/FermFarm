@@ -90,4 +90,8 @@ def loadTextures():
     textures["cucumberPlant3"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-komkommerPlant3.png")).convert_alpha()
     textures["cucumberPlant4"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-komkommerPlant4.png")).convert_alpha()
 
+    textures["closeCross"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-closeCross.png")).convert_alpha()
+    textures["closeCrossClick"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-closeCrossClick.png")).convert_alpha()
+    textures["doneSparkle"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-doneSparkle.png")).convert_alpha()
+
     return textures

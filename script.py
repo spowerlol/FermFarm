@@ -3,7 +3,8 @@ import sys
 from texture import loadTextures
 from crop import loadCrops
 from money_ui import initMoneyUi, drawMoney
-from cropHarvesting import harvest, CROP_VALUES, cropPrice
+from cropHarvesting import harvest, CROP_VALUES as cropValues, cropPrice
+from ferment import FERMENT_DATA as fermentData
 from startScreen import runStartScreen
 import os
 import json
@@ -12,16 +13,16 @@ from datetime import datetime
 pygame.init()
 pygame.mixer.init()
 
-VIRTUAL_WIDTH  = 240 * 8
-VIRTUAL_HEIGHT = 135 * 8
-FPS = 60
-WINDOW_WIDTH  = VIRTUAL_WIDTH  // 2
-WINDOW_HEIGHT = VIRTUAL_HEIGHT // 2
-MENU_REF_W = VIRTUAL_WIDTH
-MENU_REF_H = VIRTUAL_HEIGHT
+virtualWidth  = 240 * 8
+virtualHeight = 135 * 8
+fps           = 60
+windowWidth   = virtualWidth  // 2
+windowHeight  = virtualHeight // 2
+menuRefW      = virtualWidth
+menuRefH      = virtualHeight
 
 fullscreen = True
-info = pygame.display.Info()
+info   = pygame.display.Info()
 screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.FULLSCREEN)
 pygame.display.set_caption("FermFarm")
 
@@ -29,9 +30,9 @@ clock = pygame.time.Clock()
 runStartScreen(screen, fullscreen)
 
 # ── Music ──────────────────────────────────────────────────────────────────────
-MUSIC_NORMAL_VOL = 0.5
-MUSIC_DIM_VOL    = 0.2
-music_enabled    = True
+musicNormalVol = 0.5
+musicDimVol    = 0.2
+musicEnabled   = True
 # ──────────────────────────────────────────────────────────────────────────────
 
 textures = loadTextures()
@@ -40,8 +41,8 @@ crops = loadCrops(textures)
 
 tekoopTileImg = textures["tekoopTile"]
 
-menuSurface = pygame.Surface((MENU_REF_W, MENU_REF_H), pygame.SRCALPHA)
-infoSurface = pygame.Surface((MENU_REF_W, MENU_REF_H), pygame.SRCALPHA)
+menuSurface = pygame.Surface((menuRefW, menuRefH), pygame.SRCALPHA)
+infoSurface = pygame.Surface((menuRefW, menuRefH), pygame.SRCALPHA)
 
 fontPath = "sprites/babosorry.ttf"
 if not os.path.exists(fontPath):
@@ -53,47 +54,96 @@ buttonFont    = pygame.font.Font(fontPath, 96)
 infoTextFont  = pygame.font.Font(fontPath, 44)
 infoTitleFont = pygame.font.Font(fontPath, 72)
 
-shedDoorImg     = textures["shedDoor"]
-shedDoorX, shedDoorY       = 512, 264
-shopShelvesImg  = textures["shopShelves"]
-shopShelvesX, shopShelvesY = 185*8, 50*8
-shopChestImg = textures["shopChest"]
-shopChestX, shopChestY = 225*8, 56*8
-fermPotLargeImg = textures["fermPotLarge"]
-fermPotLargeX, fermPotLargeY = 230*8, 42*8
-carrotBagImg    = textures["carrotBag"]
-carrotBagX, carrotBagY     = 186*8, 54*8
-tomatoBagImg    = textures["tomatoBag"]
-tomatoBagX, tomatoBagY     = 198*8, 54*8
-chiliBagImg     = textures["chiliBag"]
-chiliBagX, chiliBagY       = 186*8, 67*8
-cucumberBagImg  = textures["cucumberBag"]
-cucumberBagX, cucumberBagY = 210*8, 54*8
-cabbageBagImg   = textures["cabbageBag"]
-cabbageBagX, cabbageBagY   = 197*8, 67*8
-garlicBagImg    = textures["garlicBag"]
-garlicBagX, garlicBagY     = 209*8, 67*8
-menuSprite = textures["menuSprite"]
+shedDoorImg        = textures["shedDoor"]
+shedDoorX          = 512
+shedDoorY          = 264
+shopShelvesImg     = textures["shopShelves"]
+shopShelvesX       = 185 * 8
+shopShelvesY       = 50  * 8
+shopChestImg       = textures["shopChest"]
+shopChestX         = 225 * 8
+shopChestY         = 56  * 8
+fermPotLargeImg    = textures["fermPotLarge"]
+fermPotLargeX      = 230 * 8
+fermPotLargeY      = 42  * 8
+carrotBagImg       = textures["carrotBag"]
+carrotBagX         = 186 * 8
+carrotBagY         = 54  * 8
+tomatoBagImg       = textures["tomatoBag"]
+tomatoBagX         = 198 * 8
+tomatoBagY         = 54  * 8
+chiliBagImg        = textures["chiliBag"]
+chiliBagX          = 186 * 8
+chiliBagY          = 67  * 8
+cucumberBagImg     = textures["cucumberBag"]
+cucumberBagX       = 210 * 8
+cucumberBagY       = 54  * 8
+cabbageBagImg      = textures["cabbageBag"]
+cabbageBagX        = 197 * 8
+cabbageBagY        = 67  * 8
+garlicBagImg       = textures["garlicBag"]
+garlicBagX         = 209 * 8
+garlicBagY         = 67  * 8
+menuSprite         = textures["menuSprite"]
+closeCrossImg      = textures["closeCross"]
+closeCrossClickImg = textures["closeCrossClick"]
+doneSparkleImg     = textures["doneSparkle"]
+closeCrossX        = 174 * 8
+closeCrossY        = 12  * 8
 
-# ── Ferm Pot Shop ──────────────────────────────────────────────────────────────
-shedPotImg = textures["shedPot"]
+# ── Fruit textures ─────────────────────────────────────────────────────────────
+fruitImages = {
+    "tomato":   textures["tomato"],
+    "carrot":   textures["carrot"],
+    "cucumber": textures["cucumber"],
+    "chili":    textures["chili"],
+    "cabbage":  textures["cabbage"],
+    "garlic":   textures["garlic"],
+}
 
-# Clickable rects for the two shop pots (small and large)
+# ── Fermented fruit textures ───────────────────────────────────────────────────
+fermentImages = {
+    "tomato":   textures["tomatoFerment"],
+    "carrot":   textures["carrotFerment"],
+    "cucumber": textures["cucumberFerment"],
+    "chili":    textures["chiliFerment"],
+    "cabbage":  textures["cabbageFerment"],
+    "garlic":   textures["garlicFerment"],
+}
 
+# ── Ferm Pot ───────────────────────────────────────────────────────────────────
+shedPotImg       = textures["shedPot"]
 fermPotLargeRect = pygame.Rect(fermPotLargeX, fermPotLargeY,
                                fermPotLargeImg.get_width(), fermPotLargeImg.get_height())
+fermPotLargePrice = 30
 
-FERM_POT_LARGE_PRICE = 30
+# draw positions for the shed pots (where sprites are blitted)
+shedSlotTop    = (440, 280)
+shedSlotBottom = (464, 360)
 
-# Shed placement slots: top(440,280) bottom(464,360)
-SHED_SLOT_TOP    = (440, 280)
-SHED_SLOT_BOTTOM = (464, 360)
-shedSlots = [None, None]   # None | "small" | "large"  for top and bottom slot
+# shedSlots: None | {"pot": "large", "crop": None, "day_placed": None, "done": False}
+shedSlots = [None, None]
 
-# Pot being held by the player: None | "small" | "large"
-heldPot = None
-# ──────────────────────────────────────────────────────────────────────────────
+fermentOffsetX = 17
+fermentOffsetY = 25
 
+heldPot   = None
+heldFruit = None   # None | {"crop": str, "fermented": bool}
+fruitCursorSize = 48
+
+# click rects are independent from draw positions
+shedSlotRects = [
+    pygame.Rect(456, 336, 40, 40),   # top pot click area
+    pygame.Rect(480, 416, 40, 40),   # bottom pot click area
+]
+
+shopChestRect = pygame.Rect(shopChestX, shopChestY,
+                            shopChestImg.get_width(), shopChestImg.get_height())
+
+closeCrossRect = pygame.Rect(closeCrossX, closeCrossY,
+                             closeCrossImg.get_width(), closeCrossImg.get_height())
+
+# ── Seeds ──────────────────────────────────────────────────────────────────────
 seedRects = {
     "carrot":   pygame.Rect(carrotBagX,   carrotBagY,   carrotBagImg.get_width(),   carrotBagImg.get_height()),
     "tomato":   pygame.Rect(tomatoBagX,   tomatoBagY,   tomatoBagImg.get_width(),   tomatoBagImg.get_height()),
@@ -104,17 +154,6 @@ seedRects = {
 }
 selectedSeed = None
 
-# ── Watering Can ───────────────────────────────────────────────────────────────
-wateringCanEmptyImg = textures["wateringcanEmpty"]
-wateringCanFullImg  = textures["wateringcanFull"]
-waterDropImg        = textures["waterDropPlant"]
-wateringCanFull     = False   # starts empty
-wateringCanHeld     = False   # player is holding the can
-
-# Refill zone: (887, 416), 90x90 in virtual coords
-waterRefillRect = pygame.Rect(887, 416, 90, 90)
-
-# Seed-bag images lookup for cursor rendering
 seedBagImages = {
     "carrot":   textures["carrotBag"],
     "tomato":   textures["tomatoBag"],
@@ -123,31 +162,34 @@ seedBagImages = {
     "cabbage":  textures["cabbageBag"],
     "garlic":   textures["garlicBag"],
 }
+
+# ── Watering Can ───────────────────────────────────────────────────────────────
+wateringCanEmptyImg = textures["wateringcanEmpty"]
+wateringCanFullImg  = textures["wateringcanFull"]
+waterDropImg        = textures["waterDropPlant"]
+wateringCanFull     = False
+wateringCanHeld     = False
+waterRefillRect     = pygame.Rect(887, 416, 90, 90)
+wateringCanWorldRect = pygame.Rect(887, 416 - 90, 90, 90)
 # ──────────────────────────────────────────────────────────────────────────────
 
+money          = 60
+background     = textures["background"]
+calendarSprite = textures["calendar"]
+calendarCircle = textures["calendarCircle"]
 
-money = 60
-background      = textures["background"]
-calendarSprite  = textures["calendar"]
-calendarCircle  = textures["calendarCircle"]
-
-# Watering can pickup rect (placed near the refill zone for easy access)
-wateringCanWorldRect = pygame.Rect(887, 416 - 90, 90, 90)  # just above refill zone
-
-CELL_SIZE    = 16 * 8
-GRID_COLS    = 7
-GRID_ROWS    = 3
-GRID_START_X = 0
-GRID_START_Y = 87 * 8
-grid = [[None for _ in range(GRID_ROWS)] for _ in range(GRID_COLS)]
+cellSize   = 16 * 8
+gridCols   = 7
+gridRows   = 3
+gridStartX = 0
+gridStartY = 87 * 8
+grid = [[None for _ in range(gridRows)] for _ in range(gridCols)]
 
 # ── Tile ownership ─────────────────────────────────────────────────────────────
-# Prices per column, right to left (col 6 = cheapest, col 0 = most expensive)
-TILE_COL_PRICE = {6: 3, 5: 5, 4: 10, 3: 15, 2: 20, 1: 30, 0: 50}
+tileColPrice = {6: 3, 5: 5, 4: 10, 3: 15, 2: 20, 1: 30, 0: 50}
 
 def makeTileOwned():
-    """Return a fresh 7x3 ownership grid. Free tiles: cols 5-6, rows 0-1."""
-    owned = [[False for _ in range(GRID_ROWS)] for _ in range(GRID_COLS)]
+    owned = [[False for _ in range(gridRows)] for _ in range(gridCols)]
     for col in [5, 6]:
         for row in [0, 1]:
             owned[col][row] = True
@@ -156,81 +198,80 @@ def makeTileOwned():
 tileOwned = makeTileOwned()
 # ──────────────────────────────────────────────────────────────────────────────
 
-START_X, START_Y   = 175*8, 87*8
-spriteX, spriteY   = START_X, START_Y
-STEP           = 16 * 8
-COLUMNS        = 4
-ROWS           = 3
-currentColumn  = 0
-currentRow     = 0
-MOVE_INTERVAL  = 5_000
-lastMoveTime   = pygame.time.get_ticks()
-daysPassed     = 0
+startX, startY = 175 * 8, 87 * 8
+spriteX, spriteY = startX, startY
+step          = 16 * 8
+columns       = 4
+rows          = 3
+currentColumn = 0
+currentRow    = 0
+moveInterval  = 5_000
+lastMoveTime  = pygame.time.get_ticks()
+daysPassed    = 0
 
 paused   = False
 showInfo = True
 
-SAVE_FILE  = "saveslots.json"
+saveFile  = "saveslots.json"
 saveSlots = [
     {"name": "Empty", "date": "", "data": None},
     {"name": "Empty", "date": "", "data": None},
     {"name": "Empty", "date": "", "data": None},
 ]
-if os.path.exists(SAVE_FILE):
+if os.path.exists(saveFile):
     try:
-        with open(SAVE_FILE, "r") as f:
+        with open(saveFile, "r") as f:
             loadedSlots = json.load(f)
             if len(loadedSlots) == 3:
                 saveSlots = loadedSlots
     except:
         pass
 
-# Slot layout
-SLOT_WIDTH    = 400
-SLOT_HEIGHT   = 200
-SLOT_SPACING  = 25
-SLOT_START_X  = (VIRTUAL_WIDTH - SLOT_WIDTH) // 3.5
-SLOT_START_Y  = (VIRTUAL_HEIGHT - (3 * SLOT_HEIGHT + 2 * SLOT_SPACING)) // 2.5
-SLOT_BOTTOM_Y = SLOT_START_Y + 3 * SLOT_HEIGHT + 2 * SLOT_SPACING
+# ── Menu / UI layout ───────────────────────────────────────────────────────────
+slotWidth   = 400
+slotHeight  = 200
+slotSpacing = 25
+slotStartX  = (virtualWidth  - slotWidth)  // 3.5
+slotStartY  = (virtualHeight - (3 * slotHeight + 2 * slotSpacing)) // 2.5
+slotBottomY = slotStartY + 3 * slotHeight + 2 * slotSpacing
 
 def getSlotRect(i):
-    sy = SLOT_START_Y + i * (SLOT_HEIGHT + SLOT_SPACING)
-    return pygame.Rect(SLOT_START_X, sy, SLOT_WIDTH, SLOT_HEIGHT)
+    sy = slotStartY + i * (slotHeight + slotSpacing)
+    return pygame.Rect(slotStartX, sy, slotWidth, slotHeight)
 
-# Side buttons
-SIDE_BTN_W = 380
-SIDE_BTN_X = int(SLOT_START_X) + SLOT_WIDTH + 100
+sideBtnW = 380
+sideBtnX = int(slotStartX) + slotWidth + 100
 
-totalBtnArea = SLOT_BOTTOM_Y - SLOT_START_Y
-BTN_SPACING  = 20
-BTN_H_4      = (totalBtnArea - 3 * BTN_SPACING) // 4
+totalBtnArea = slotBottomY - slotStartY
+btnSpacing   = 20
+btnH4        = (totalBtnArea - 3 * btnSpacing) // 4
 
-fullscreenBtnRect = pygame.Rect(SIDE_BTN_X, int(SLOT_START_Y), SIDE_BTN_W, BTN_H_4)
-infoBtnRect       = pygame.Rect(SIDE_BTN_X, int(SLOT_START_Y + 1 * (BTN_H_4 + BTN_SPACING)), SIDE_BTN_W, BTN_H_4)
-quitBtnRect       = pygame.Rect(SIDE_BTN_X, int(SLOT_START_Y + 3 * (BTN_H_4 + BTN_SPACING)), SIDE_BTN_W, BTN_H_4)
-audioBtnRect      = pygame.Rect(SIDE_BTN_X, int(SLOT_START_Y + 2 * (BTN_H_4 + BTN_SPACING)), SIDE_BTN_W, BTN_H_4)
+fullscreenBtnRect = pygame.Rect(sideBtnX, int(slotStartY),                              sideBtnW, btnH4)
+infoBtnRect       = pygame.Rect(sideBtnX, int(slotStartY + 1 * (btnH4 + btnSpacing)),   sideBtnW, btnH4)
+quitBtnRect       = pygame.Rect(sideBtnX, int(slotStartY + 3 * (btnH4 + btnSpacing)),   sideBtnW, btnH4)
+audioBtnRect      = pygame.Rect(sideBtnX, int(slotStartY + 2 * (btnH4 + btnSpacing)),   sideBtnW, btnH4)
 
-# Info screen constants
-INFO_PAD_X         = 160
-INFO_TOP_Y         = 160
-INFO_SCROLL_TOP    = 280
-INFO_SCROLL_BOTTOM = 920
-INFO_SCROLL_H      = INFO_SCROLL_BOTTOM - INFO_SCROLL_TOP
+# ── Info screen ────────────────────────────────────────────────────────────────
+infoPadX        = 160
+infoTopY        = 160
+infoScrollTop   = 280
+infoScrollBottom = 920
+infoScrollH     = infoScrollBottom - infoScrollTop
 
-CLOSE_BTN_W = 300
-CLOSE_BTN_H = 90
-closeBtnRect = pygame.Rect((VIRTUAL_WIDTH - CLOSE_BTN_W) // 2, 960, CLOSE_BTN_W, CLOSE_BTN_H)
+closeBtnW    = 300
+closeBtnH    = 90
+closeBtnRect = pygame.Rect((virtualWidth - closeBtnW) // 2, 960, closeBtnW, closeBtnH)
 
-INFO_FILE = "info.txt"
+infoFile     = "info.txt"
 rawInfoLines = []
-if os.path.exists(INFO_FILE):
+if os.path.exists(infoFile):
     try:
-        with open(INFO_FILE, "r", encoding="utf-8") as f:
+        with open(infoFile, "r", encoding="utf-8") as f:
             rawInfoLines = f.read().splitlines()
     except:
         rawInfoLines = ["Could not load info.txt"]
 
-maxTextW = VIRTUAL_WIDTH - INFO_PAD_X * 2
+maxTextW = virtualWidth - infoPadX * 2
 
 def wrapLines(rawLines, font, maxW):
     wrapped = []
@@ -238,7 +279,7 @@ def wrapLines(rawLines, font, maxW):
         if raw.strip() == "":
             wrapped.append("")
             continue
-        words = raw.split()
+        words   = raw.split()
         current = ""
         for word in words:
             test = (current + " " + word).strip()
@@ -252,21 +293,21 @@ def wrapLines(rawLines, font, maxW):
             wrapped.append(current)
     return wrapped
 
-infoLines      = wrapLines(rawInfoLines, infoTextFont, maxTextW)
-INFO_LINE_H    = infoTextFont.get_linesize() + 6
-infoScrollY    = 0
+infoLines       = wrapLines(rawInfoLines, infoTextFont, maxTextW)
+infoLineH       = infoTextFont.get_linesize() + 6
+infoScrollY     = 0
 infoScrollSpeed = 40
-infoTotalH     = len(infoLines) * INFO_LINE_H
+infoTotalH      = len(infoLines) * infoLineH
 
 
 # ── Music helpers ──────────────────────────────────────────────────────────────
 def setMusicVolume():
-    if not music_enabled:
+    if not musicEnabled:
         pygame.mixer.music.set_volume(0)
     elif paused or showInfo:
-        pygame.mixer.music.set_volume(MUSIC_DIM_VOL)
+        pygame.mixer.music.set_volume(musicDimVol)
     else:
-        pygame.mixer.music.set_volume(MUSIC_NORMAL_VOL)
+        pygame.mixer.music.set_volume(musicNormalVol)
 # ──────────────────────────────────────────────────────────────────────────────
 
 
@@ -274,10 +315,9 @@ def saveGame(slotIndex, slotName):
     global saveSlots
     saveData = {
         "money": money, "days_passed": daysPassed, "grid": grid,
-        "current_column": currentColumn,
-        "current_row": currentRow, "sprite_x": spriteX, "sprite_y": spriteY,
-        "tile_owned": tileOwned,
-        "shed_slots": shedSlots,
+        "current_column": currentColumn, "current_row": currentRow,
+        "sprite_x": spriteX, "sprite_y": spriteY,
+        "tile_owned": tileOwned, "shed_slots": shedSlots,
     }
     saveSlots[slotIndex] = {
         "name": slotName,
@@ -285,10 +325,11 @@ def saveGame(slotIndex, slotName):
         "data": saveData,
     }
     try:
-        with open(SAVE_FILE, "w") as f:
+        with open(saveFile, "w") as f:
             json.dump(saveSlots, f)
     except:
         pass
+
 
 def loadGame(slotIndex):
     global money, daysPassed, grid
@@ -298,7 +339,7 @@ def loadGame(slotIndex):
     if slot["data"] is None:
         return False
     try:
-        data = slot["data"]
+        data          = slot["data"]
         money         = data["money"]
         daysPassed    = data["days_passed"]
         grid          = data["grid"]
@@ -307,14 +348,8 @@ def loadGame(slotIndex):
         spriteX       = data["sprite_x"]
         spriteY       = data["sprite_y"]
         lastMoveTime  = pygame.time.get_ticks()
-        if "tile_owned" in data:
-            tileOwned = data["tile_owned"]
-        else:
-            tileOwned = makeTileOwned()
-        if "shed_slots" in data:
-            shedSlots = data["shed_slots"]
-        else:
-            shedSlots = [None, None]
+        tileOwned     = data.get("tile_owned") or makeTileOwned()
+        shedSlots     = data.get("shed_slots") or [None, None]
         return True
     except:
         return False
@@ -323,29 +358,30 @@ def loadGame(slotIndex):
 def newGame():
     global money, daysPassed, grid
     global currentColumn, currentRow, spriteX, spriteY, lastMoveTime, tileOwned
-    global shedSlots, heldPot
+    global shedSlots, heldPot, heldFruit
     money         = 6
     daysPassed    = 0
-    grid          = [[None for _ in range(GRID_ROWS)] for _ in range(GRID_COLS)]
+    grid          = [[None for _ in range(gridRows)] for _ in range(gridCols)]
     currentColumn = 0
     currentRow    = 0
-    spriteX       = START_X
-    spriteY       = START_Y
+    spriteX       = startX
+    spriteY       = startY
     lastMoveTime  = pygame.time.get_ticks()
     tileOwned     = makeTileOwned()
     shedSlots     = [None, None]
     heldPot       = None
+    heldFruit     = None
 
 
 def screenToVirtual(mx, my):
     screenW, screenH = screen.get_size()
     if fullscreen:
-        vx = mx * VIRTUAL_WIDTH  // screenW
-        vy = my * VIRTUAL_HEIGHT // screenH
+        vx = mx * virtualWidth  // screenW
+        vy = my * virtualHeight // screenH
     else:
-        scale   = min(screenW / VIRTUAL_WIDTH, screenH / VIRTUAL_HEIGHT)
-        xOffset = (screenW - VIRTUAL_WIDTH  * scale) / 2
-        yOffset = (screenH - VIRTUAL_HEIGHT * scale) / 2
+        scale   = min(screenW / virtualWidth, screenH / virtualHeight)
+        xOffset = (screenW - virtualWidth  * scale) / 2
+        yOffset = (screenH - virtualHeight * scale) / 2
         vx = int((mx - xOffset) / scale)
         vy = int((my - yOffset) / scale)
     return vx, vy
@@ -359,11 +395,11 @@ def toggleFullscreen():
     if fullscreen:
         screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.FULLSCREEN)
     else:
-        screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
+        screen = pygame.display.set_mode((windowWidth, windowHeight), pygame.RESIZABLE)
 
 def drawSideButton(surface, rect, label, hovered=False):
     if hovered:
-        color = (255, 245, 190)
+        color      = (255, 245, 190)
         shadowSurf = buttonFont.render(label, False, (70, 40, 5))
         for ox, oy in ((-3, 3), (3, 3), (-3, -3), (3, -3)):
             sx = rect.x + (rect.w - shadowSurf.get_width())  // 2 + ox
@@ -379,24 +415,23 @@ def drawSideButton(surface, rect, label, hovered=False):
 
 def buildMenuSurface(mouseVx=0, mouseVy=0):
     menuSurface.fill((0, 0, 0, 0))
-    overlay = pygame.Surface((MENU_REF_W, MENU_REF_H), pygame.SRCALPHA)
+    overlay = pygame.Surface((menuRefW, menuRefH), pygame.SRCALPHA)
     overlay.fill((0, 0, 0, 180))
     menuSurface.blit(overlay, (0, 0))
-    menuSpriteScaled = pygame.transform.scale(menuSprite, (MENU_REF_W, MENU_REF_H))
+    menuSpriteScaled = pygame.transform.scale(menuSprite, (menuRefW, menuRefH))
     menuSurface.blit(menuSpriteScaled, (0, 0))
 
     for i in range(3):
-        slotRect = getSlotRect(i)
+        slotRect  = getSlotRect(i)
         isHovered = slotRect.collidepoint(mouseVx, mouseVy)
         hasSave   = saveSlots[i]["data"] is not None
 
-        bgColor = (75, 55, 40) if isHovered else (60, 40, 30)
-        pygame.draw.rect(menuSurface, bgColor, slotRect)
+        bgColor     = (75, 55, 40)    if isHovered else (60, 40, 30)
         borderColor = (180, 150, 100) if isHovered else (100, 80, 60)
+        pygame.draw.rect(menuSurface, bgColor,     slotRect)
         pygame.draw.rect(menuSurface, borderColor, slotRect, 2)
 
         menuSurface.set_clip(pygame.Rect(slotRect.x+1, slotRect.y+1, slotRect.w-2, slotRect.h-2))
-
         if hasSave:
             nameSurf = saveNameFont.render(saveSlots[i]["name"], False, (255, 255, 255))
             menuSurface.blit(nameSurf, (slotRect.x + 20, slotRect.y + 20))
@@ -410,77 +445,104 @@ def buildMenuSurface(mouseVx=0, mouseVy=0):
         else:
             nameSurf = saveNameFont.render(f"Empty Slot {i + 1}", False, (140, 120, 90))
             menuSurface.blit(nameSurf, (slotRect.x + 20, slotRect.y + 20))
-
         menuSurface.set_clip(None)
 
-    fsLabel = "Windowed" if fullscreen else "Fullscreen"
-    drawSideButton(menuSurface, fullscreenBtnRect, fsLabel,   hovered=fullscreenBtnRect.collidepoint(mouseVx, mouseVy))
-    drawSideButton(menuSurface, infoBtnRect,       "Info",    hovered=infoBtnRect.collidepoint(mouseVx, mouseVy))
-    drawSideButton(menuSurface, quitBtnRect,       "Quit",    hovered=quitBtnRect.collidepoint(mouseVx, mouseVy))
-    audioLabel = "Music: ON" if music_enabled else "Music: OFF"
-    drawSideButton(menuSurface, audioBtnRect, audioLabel,     hovered=audioBtnRect.collidepoint(mouseVx, mouseVy))
+    # Close cross — swap to hover sprite when mouse is over it
+    crossHovered = closeCrossRect.collidepoint(mouseVx, mouseVy)
+    crossImg     = closeCrossClickImg if crossHovered else closeCrossImg
+    menuSurface.blit(crossImg, (closeCrossX, closeCrossY))
+
+    fsLabel    = "Windowed" if fullscreen else "Fullscreen"
+    audioLabel = "Music: ON" if musicEnabled else "Music: OFF"
+    drawSideButton(menuSurface, fullscreenBtnRect, fsLabel,    hovered=fullscreenBtnRect.collidepoint(mouseVx, mouseVy))
+    drawSideButton(menuSurface, infoBtnRect,       "Info",     hovered=infoBtnRect.collidepoint(mouseVx, mouseVy))
+    drawSideButton(menuSurface, quitBtnRect,       "Quit",     hovered=quitBtnRect.collidepoint(mouseVx, mouseVy))
+    drawSideButton(menuSurface, audioBtnRect,      audioLabel, hovered=audioBtnRect.collidepoint(mouseVx, mouseVy))
 
 
 def buildInfoSurface(mouseVx=0, mouseVy=0):
     global infoScrollY
     infoSurface.fill((0, 0, 0, 0))
 
-    overlay = pygame.Surface((MENU_REF_W, MENU_REF_H), pygame.SRCALPHA)
+    overlay = pygame.Surface((menuRefW, menuRefH), pygame.SRCALPHA)
     overlay.fill((0, 0, 0, 180))
     infoSurface.blit(overlay, (0, 0))
-    menuSpriteScaled = pygame.transform.scale(menuSprite, (MENU_REF_W, MENU_REF_H))
+    menuSpriteScaled = pygame.transform.scale(menuSprite, (menuRefW, menuRefH))
     infoSurface.blit(menuSpriteScaled, (0, 0))
 
     titleSurf = infoTitleFont.render("How to Play", False, (255, 240, 180))
-    infoSurface.blit(titleSurf, ((VIRTUAL_WIDTH - titleSurf.get_width()) // 2, INFO_TOP_Y))
+    infoSurface.blit(titleSurf, ((virtualWidth - titleSurf.get_width()) // 2, infoTopY))
 
-    maxScroll  = max(0, infoTotalH - INFO_SCROLL_H)
+    maxScroll   = max(0, infoTotalH - infoScrollH)
     infoScrollY = max(0, min(infoScrollY, maxScroll))
 
-    scrollClip = pygame.Rect(INFO_PAD_X, INFO_SCROLL_TOP, VIRTUAL_WIDTH - INFO_PAD_X * 2, INFO_SCROLL_H)
+    scrollClip = pygame.Rect(infoPadX, infoScrollTop, virtualWidth - infoPadX * 2, infoScrollH)
     infoSurface.set_clip(scrollClip)
 
-    y = INFO_SCROLL_TOP - infoScrollY
+    y = infoScrollTop - infoScrollY
     for line in infoLines:
         if line == "":
-            y += INFO_LINE_H // 2
+            y += infoLineH // 2
             continue
         lineSurf = infoTextFont.render(line, False, (220, 200, 160))
-        infoSurface.blit(lineSurf, (INFO_PAD_X, y))
-        y += INFO_LINE_H
+        infoSurface.blit(lineSurf, (infoPadX, y))
+        y += infoLineH
 
     infoSurface.set_clip(None)
 
-    fadeH = 60
-    topFade = pygame.Surface((VIRTUAL_WIDTH - INFO_PAD_X * 2, fadeH), pygame.SRCALPHA)
+    fadeH   = 60
+    topFade = pygame.Surface((virtualWidth - infoPadX * 2, fadeH), pygame.SRCALPHA)
     for i in range(fadeH):
         alpha = int(200 * (1 - i / fadeH))
         pygame.draw.line(topFade, (20, 12, 5, alpha), (0, i), (topFade.get_width(), i))
-    infoSurface.blit(topFade, (INFO_PAD_X, INFO_SCROLL_TOP))
+    infoSurface.blit(topFade, (infoPadX, infoScrollTop))
 
-    botFade = pygame.Surface((VIRTUAL_WIDTH - INFO_PAD_X * 2, fadeH), pygame.SRCALPHA)
+    botFade = pygame.Surface((virtualWidth - infoPadX * 2, fadeH), pygame.SRCALPHA)
     for i in range(fadeH):
         alpha = int(200 * (i / fadeH))
         pygame.draw.line(botFade, (20, 12, 5, alpha), (0, i), (botFade.get_width(), i))
-    infoSurface.blit(botFade, (INFO_PAD_X, INFO_SCROLL_BOTTOM - fadeH))
+    infoSurface.blit(botFade, (infoPadX, infoScrollBottom - fadeH))
 
     if infoScrollY > 0:
         upSurf = infoTextFont.render("scroll up", False, (160, 130, 80))
-        infoSurface.blit(upSurf, ((VIRTUAL_WIDTH - upSurf.get_width()) // 2, INFO_SCROLL_TOP + 8))
+        infoSurface.blit(upSurf, ((virtualWidth - upSurf.get_width()) // 2, infoScrollTop + 8))
     if infoScrollY < maxScroll:
         downSurf = infoTextFont.render("scroll down", False, (160, 130, 80))
-        infoSurface.blit(downSurf, ((VIRTUAL_WIDTH - downSurf.get_width()) // 2, INFO_SCROLL_BOTTOM - 52))
+        infoSurface.blit(downSurf, ((virtualWidth - downSurf.get_width()) // 2, infoScrollBottom - 52))
 
     drawSideButton(infoSurface, closeBtnRect, "Close", hovered=closeBtnRect.collidepoint(mouseVx, mouseVy))
 
 
-# ── Helper: get the shop sprite for a pot type ─────────────────────────────────
-
 def potShopPrice(potType):
-    return FERM_POT_SMALL_PRICE if potType == "small" else FERM_POT_LARGE_PRICE
-# ──────────────────────────────────────────────────────────────────────────────
+    return fermPotLargePrice
 
-# Dim music on startup since info screen opens on boot
+
+def getFruitSellValue(cropName, fermented):
+    if fermented:
+        return fermentData[cropName]["value"]
+    return cropValues[cropName]
+
+
+def isFermentDone(slot):
+    if slot is None or slot.get("crop") is None:
+        return False
+    if slot.get("done", False):
+        return True
+    daysRequired = fermentData[slot["crop"]]["days"]
+    daysIn       = daysPassed - slot.get("day_placed", daysPassed)
+    return daysIn >= daysRequired
+
+
+def tickFermentation():
+    for slot in shedSlots:
+        if slot is not None and slot.get("crop") is not None:
+            if not slot.get("done", False):
+                daysRequired = fermentData[slot["crop"]]["days"]
+                daysIn       = daysPassed - slot.get("day_placed", daysPassed)
+                if daysIn >= daysRequired:
+                    slot["done"] = True
+
+
 setMusicVolume()
 
 # =========================================================
@@ -488,9 +550,9 @@ setMusicVolume()
 # =========================================================
 running = True
 while running:
-    clock.tick(FPS)
+    clock.tick(fps)
 
-    mx, my = pygame.mouse.get_pos()
+    mx, my           = pygame.mouse.get_pos()
     hoverVx, hoverVy = screenToMenuRef(mx, my)
 
     for event in pygame.event.get():
@@ -510,15 +572,16 @@ while running:
                     setMusicVolume()
             else:
                 if event.key == pygame.K_ESCAPE:
-                    # Drop held seed, can, or pot before pausing
                     if selectedSeed is not None:
-                        money += cropPrice[selectedSeed]  # refund
+                        money += cropPrice[selectedSeed]
                         selectedSeed = None
                     elif wateringCanHeld:
                         wateringCanHeld = False
                     elif heldPot is not None:
-                        money += potShopPrice(heldPot)   # refund
+                        money  += potShopPrice(heldPot)
                         heldPot = None
+                    elif heldFruit is not None:
+                        pass   # cannot drop fruit
                     else:
                         paused = True
                         setMusicVolume()
@@ -531,6 +594,9 @@ while running:
         if event.type == pygame.VIDEORESIZE and not fullscreen:
             screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
 
+        # ══════════════════════════════════════════════════════════════════════
+        # LEFT CLICK
+        # ══════════════════════════════════════════════════════════════════════
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             mx, my = pygame.mouse.get_pos()
             rx, ry = screenToMenuRef(mx, my)
@@ -543,6 +609,11 @@ while running:
                 continue
 
             if paused:
+                if closeCrossRect.collidepoint(rx, ry):
+                    paused       = False
+                    lastMoveTime = pygame.time.get_ticks()
+                    setMusicVolume()
+                    continue
                 if fullscreenBtnRect.collidepoint(rx, ry):
                     toggleFullscreen()
                     continue
@@ -555,7 +626,7 @@ while running:
                     running = False
                     continue
                 if audioBtnRect.collidepoint(rx, ry):
-                    music_enabled = not music_enabled
+                    musicEnabled = not musicEnabled
                     setMusicVolume()
                     continue
                 for i in range(3):
@@ -571,15 +642,28 @@ while running:
 
             vx, vy = screenToVirtual(mx, my)
 
+            # ── Holding a fruit ───────────────────────────────────────────────
+            if heldFruit is not None:
+                if shopChestRect.collidepoint(vx, vy):
+                    money    += getFruitSellValue(heldFruit["crop"], heldFruit["fermented"])
+                    heldFruit = None
+                    continue
+                for slotIdx, slotRect in enumerate(shedSlotRects):
+                    if slotRect.collidepoint(vx, vy):
+                        slot = shedSlots[slotIdx]
+                        if slot is not None and slot.get("crop") is None and not heldFruit["fermented"]:
+                            slot["crop"]       = heldFruit["crop"]
+                            slot["day_placed"] = daysPassed
+                            slot["done"]       = False
+                            heldFruit = None
+                        break
+                continue
+
             # ── Ferm pot: place into shed slot ────────────────────────────────
             if heldPot is not None:
-                shedSlotRects = [
-                    pygame.Rect(456, 336, 40, 40),   # top slot
-                    pygame.Rect(480, 416, 40, 40),   # bottom slot
-                ]
                 for slotIdx, slotRect in enumerate(shedSlotRects):
                     if slotRect.collidepoint(vx, vy) and shedSlots[slotIdx] is None:
-                        shedSlots[slotIdx] = heldPot
+                        shedSlots[slotIdx] = {"pot": heldPot, "crop": None, "day_placed": None, "done": False}
                         heldPot = None
                         break
                 continue
@@ -591,35 +675,46 @@ while running:
                 continue
 
             if wateringCanHeld:
-                # Put down the can (click outside grid)
-                gx = (vx - GRID_START_X) // CELL_SIZE
-                gy = (vy - GRID_START_Y) // CELL_SIZE
-                if not (0 <= gx < GRID_COLS and 0 <= gy < GRID_ROWS):
+                gx = (vx - gridStartX) // cellSize
+                gy = (vy - gridStartY) // cellSize
+                if not (0 <= gx < gridCols and 0 <= gy < gridRows):
                     wateringCanHeld = False
                     continue
 
+            # ── Pick up finished fermented fruit from pot ─────────────────────
+            if not wateringCanHeld and selectedSeed is None and heldPot is None and heldFruit is None:
+                for slotIdx, slotRect in enumerate(shedSlotRects):
+                    if slotRect.collidepoint(vx, vy):
+                        slot = shedSlots[slotIdx]
+                        if slot is not None and isFermentDone(slot):
+                            heldFruit          = {"crop": slot["crop"], "fermented": True}
+                            slot["crop"]       = None
+                            slot["day_placed"] = None
+                            slot["done"]       = False
+                        break
+
             # ── Ferm pot: buy from shop ───────────────────────────────────────
-            if not wateringCanHeld and selectedSeed is None and heldPot is None:
+            if not wateringCanHeld and selectedSeed is None and heldPot is None and heldFruit is None:
                 if fermPotLargeRect.collidepoint(vx, vy):
-                    if money >= FERM_POT_LARGE_PRICE:
-                        money  -= FERM_POT_LARGE_PRICE
+                    if money >= fermPotLargePrice:
+                        money  -= fermPotLargePrice
                         heldPot = "large"
                     continue
 
             clickedSeed = None
-            if not wateringCanHeld and heldPot is None:
+            if not wateringCanHeld and heldPot is None and heldFruit is None:
                 for cropName, rect in seedRects.items():
                     if rect.collidepoint(vx, vy):
                         clickedSeed = cropName
                         break
 
-            # Buy a locked tile when clicking it with nothing held
-            if clickedSeed is None and selectedSeed is None and not wateringCanHeld and heldPot is None:
-                gx = (vx - GRID_START_X) // CELL_SIZE
-                gy = (vy - GRID_START_Y) // CELL_SIZE
-                if 0 <= gx < GRID_COLS and 0 <= gy < GRID_ROWS:
+            # Buy a locked tile
+            if clickedSeed is None and selectedSeed is None and not wateringCanHeld and heldPot is None and heldFruit is None:
+                gx = (vx - gridStartX) // cellSize
+                gy = (vy - gridStartY) // cellSize
+                if 0 <= gx < gridCols and 0 <= gy < gridRows:
                     if not tileOwned[gx][gy]:
-                        price = TILE_COL_PRICE[gx]
+                        price = tileColPrice[gx]
                         if money >= price:
                             money -= price
                             tileOwned[gx][gy] = True
@@ -632,24 +727,28 @@ while running:
                 continue
 
             if selectedSeed is not None:
-                gx = (vx - GRID_START_X) // CELL_SIZE
-                gy = (vy - GRID_START_Y) // CELL_SIZE
-                if 0 <= gx < GRID_COLS and 0 <= gy < GRID_ROWS:
+                gx = (vx - gridStartX) // cellSize
+                gy = (vy - gridStartY) // cellSize
+                if 0 <= gx < gridCols and 0 <= gy < gridRows:
                     if grid[gx][gy] is None and tileOwned[gx][gy]:
-                        grid[gx][gy] = {"crop": selectedSeed, "day_planted": daysPassed, "stage": 0, "watered": False, "watered_days": 0}
+                        grid[gx][gy] = {"crop": selectedSeed, "day_planted": daysPassed,
+                                        "stage": 0, "watered": False, "watered_days": 0}
                         selectedSeed = None
                 continue
 
-            # Watering a plant (left-click on grid cell while holding full can)
+            # Water a plant
             if wateringCanHeld and wateringCanFull:
-                gx = (vx - GRID_START_X) // CELL_SIZE
-                gy = (vy - GRID_START_Y) // CELL_SIZE
-                if 0 <= gx < GRID_COLS and 0 <= gy < GRID_ROWS:
+                gx = (vx - gridStartX) // cellSize
+                gy = (vy - gridStartY) // cellSize
+                if 0 <= gx < gridCols and 0 <= gy < gridRows:
                     cell = grid[gx][gy]
                     if cell is not None and not cell.get("watered", False):
-                        cell["watered"] = True
-                        wateringCanFull = False
+                        cell["watered"]  = True
+                        wateringCanFull  = False
 
+        # ══════════════════════════════════════════════════════════════════════
+        # RIGHT CLICK
+        # ══════════════════════════════════════════════════════════════════════
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
             mx, my = pygame.mouse.get_pos()
             rx, ry = screenToMenuRef(mx, my)
@@ -660,151 +759,211 @@ while running:
                         break
             elif not paused and not showInfo:
                 vx, vy = screenToVirtual(mx, my)
-                gx = (vx - GRID_START_X) // CELL_SIZE
-                gy = (vy - GRID_START_Y) // CELL_SIZE
+
+                if heldFruit is not None:
+                    if heldFruit["fermented"]:
+                        for slot in shedSlots:
+                            if slot is not None and slot.get("crop") is None:
+                                slot["crop"]       = heldFruit["crop"]
+                                slot["day_placed"] = daysPassed
+                                slot["done"]       = True
+                                heldFruit = None
+                                break
+                    continue
+
+                if selectedSeed is not None:
+                    money += cropPrice[selectedSeed]
+                    selectedSeed = None
+                    continue
+                if heldPot is not None:
+                    money  += potShopPrice(heldPot)
+                    heldPot = None
+                    continue
+
+                # Harvest fully grown plant → player holds the fruit
+                gx        = (vx - gridStartX) // cellSize
+                gy        = (vy - gridStartY) // cellSize
                 harvested = harvest(grid, gx, gy, crops)
                 if harvested:
-                    money += CROP_VALUES[harvested]
+                    heldFruit = {"crop": harvested, "fermented": False}
 
+    # ── Day tick ───────────────────────────────────────────────────────────────
     if not paused and not showInfo:
         now = pygame.time.get_ticks()
-        if now - lastMoveTime >= MOVE_INTERVAL:
+        if now - lastMoveTime >= moveInterval:
             lastMoveTime = now
             daysPassed  += 1
-            for x in range(GRID_COLS):
-                for y in range(GRID_ROWS):
+            for x in range(gridCols):
+                for y in range(gridRows):
                     cell = grid[x][y]
                     if cell:
-                        # Only advance growth if plant was watered this day
                         if cell.get("watered", False):
                             cell["watered_days"] = cell.get("watered_days", 0) + 1
-                        cell["watered"] = False  # reset watering for new day
-                        crop  = crops[cell["crop"]]
+                        cell["watered"] = False
+                        crop        = crops[cell["crop"]]
                         wateredDays = cell.get("watered_days", 0)
-                        stage = wateredDays // crop["growth_days_per_stage"]
+                        stage       = wateredDays // crop["growth_days_per_stage"]
                         cell["stage"] = min(stage, crop["max_stage"])
-            spriteX       += STEP
+            tickFermentation()
+            spriteX       += step
             currentColumn += 1
-            if currentColumn >= COLUMNS:
+            if currentColumn >= columns:
                 currentColumn = 0
-                spriteX       = START_X
-                spriteY      += STEP
+                spriteX       = startX
+                spriteY      += step
                 currentRow   += 1
-                if currentRow >= ROWS:
-                    currentRow         = 0
-                    spriteX, spriteY   = START_X, START_Y
+                if currentRow >= rows:
+                    currentRow       = 0
+                    spriteX, spriteY = startX, startY
 
+    # ── Rendering ──────────────────────────────────────────────────────────────
     screenW, screenH = screen.get_size()
-    target = pygame.Surface((VIRTUAL_WIDTH, VIRTUAL_HEIGHT))
+    target = pygame.Surface((virtualWidth, virtualHeight))
 
-    target.blit(background,      (0, 0))
-    target.blit(shopShelvesImg,  (shopShelvesX,  shopShelvesY))
-    target.blit(fermPotLargeImg, (fermPotLargeX, fermPotLargeY))
-    target.blit(carrotBagImg,    (carrotBagX,    carrotBagY))
-    target.blit(tomatoBagImg,    (tomatoBagX,    tomatoBagY))
-    target.blit(cucumberBagImg,  (cucumberBagX,  cucumberBagY))
-    target.blit(chiliBagImg,     (chiliBagX,     chiliBagY))
-    target.blit(garlicBagImg,    (garlicBagX,    garlicBagY))
-    target.blit(cabbageBagImg,   (cabbageBagX,   cabbageBagY))
-    target.blit(shopChestImg,    (shopChestX, shopChestY))
+    target.blit(background,     (0, 0))
+    target.blit(shopShelvesImg, (shopShelvesX, shopShelvesY))
+    target.blit(fermPotLargeImg,(fermPotLargeX, fermPotLargeY))
+    target.blit(carrotBagImg,   (carrotBagX,   carrotBagY))
+    target.blit(tomatoBagImg,   (tomatoBagX,   tomatoBagY))
+    target.blit(cucumberBagImg, (cucumberBagX, cucumberBagY))
+    target.blit(chiliBagImg,    (chiliBagX,    chiliBagY))
+    target.blit(garlicBagImg,   (garlicBagX,   garlicBagY))
+    target.blit(cabbageBagImg,  (cabbageBagX,  cabbageBagY))
+    target.blit(shopChestImg,   (shopChestX,   shopChestY))
 
-    # ── Draw shed pots: top slot first, then bottom overlays it ───────────────
-    if shedSlots[0] is not None:
-        target.blit(shedPotImg, SHED_SLOT_TOP)
-    if shedSlots[1] is not None:
-        target.blit(shedPotImg, SHED_SLOT_BOTTOM)
-    target.blit(shedDoorImg,     (shedDoorX,     shedDoorY))
-    drawMoney(target, money, VIRTUAL_WIDTH)
+    # ── Draw shed pots with ferment contents ──────────────────────────────────
+    shedPositions = [shedSlotTop, shedSlotBottom]
+    for slotIdx, slotPos in enumerate(shedPositions):
+        slot = shedSlots[slotIdx]
+        if slot is None:
+            continue
+        if slot.get("crop") is not None:
+            fermImg = fermentImages[slot["crop"]]
+            target.blit(fermImg, (slotPos[0] + fermentOffsetX, slotPos[1] + fermentOffsetY))
+        target.blit(shedPotImg, slotPos)
+        if slot.get("crop") is not None and isFermentDone(slot):
+            target.blit(doneSparkleImg, slotPos)
 
-    for x in range(GRID_COLS):
-        for y in range(GRID_ROWS):
+    target.blit(shedDoorImg, (shedDoorX, shedDoorY))
+    drawMoney(target, money, virtualWidth)
+
+    # Draw crops on grid
+    for x in range(gridCols):
+        for y in range(gridRows):
             cell = grid[x][y]
             if cell:
                 crop   = crops[cell["crop"]]
                 sprite = crop["stages"][cell["stage"]]
-                if sprite.get_width() != CELL_SIZE or sprite.get_height() != CELL_SIZE:
-                    sprite = pygame.transform.scale(sprite, (CELL_SIZE, CELL_SIZE))
-                target.blit(sprite, (GRID_START_X + x * CELL_SIZE, GRID_START_Y + y * CELL_SIZE))
+                if sprite.get_width() != cellSize or sprite.get_height() != cellSize:
+                    sprite = pygame.transform.scale(sprite, (cellSize, cellSize))
+                target.blit(sprite, (gridStartX + x * cellSize, gridStartY + y * cellSize))
 
-    # Draw locked tiles and collect hover info
-    vMouseX, vMouseY = screenToVirtual(*pygame.mouse.get_pos())
+    # Draw locked tiles
+    vMouseX, vMouseY  = screenToVirtual(*pygame.mouse.get_pos())
     hoveredLockedTile = None
-    tekoopScaled = pygame.transform.scale(tekoopTileImg, (CELL_SIZE, CELL_SIZE))
-    for x in range(GRID_COLS):
-        for y in range(GRID_ROWS):
+    tekoopScaled      = pygame.transform.scale(tekoopTileImg, (cellSize, cellSize))
+    for x in range(gridCols):
+        for y in range(gridRows):
             if not tileOwned[x][y]:
-                tx = GRID_START_X + x * CELL_SIZE
-                ty = GRID_START_Y + y * CELL_SIZE
+                tx = gridStartX + x * cellSize
+                ty = gridStartY + y * cellSize
                 target.blit(tekoopScaled, (tx, ty))
-                tileRect = pygame.Rect(tx, ty, CELL_SIZE, CELL_SIZE)
+                tileRect = pygame.Rect(tx, ty, cellSize, cellSize)
                 if tileRect.collidepoint(vMouseX, vMouseY) and not paused and not showInfo:
                     hoveredLockedTile = (x, y)
 
     target.blit(calendarSprite, (176*8, 72*8))
     target.blit(calendarCircle, (spriteX, spriteY))
 
-    # Draw watered indicators on plants using the druppel sprite
-    for x in range(GRID_COLS):
-        for y in range(GRID_ROWS):
+    # Draw watered indicators
+    for x in range(gridCols):
+        for y in range(gridRows):
             cell = grid[x][y]
             if cell and cell.get("watered", False):
-                druppel = pygame.transform.scale(waterDropImg, (CELL_SIZE, CELL_SIZE))
-                target.blit(druppel, (GRID_START_X + x * CELL_SIZE, GRID_START_Y + y * CELL_SIZE))
+                druppel = pygame.transform.scale(waterDropImg, (cellSize, cellSize))
+                target.blit(druppel, (gridStartX + x * cellSize, gridStartY + y * cellSize))
 
-    # Draw cursor: seed bag, watering can, or ferm pot following mouse
-    if heldPot is not None:
-        potCursor = fermPotLargeImg
-        potScaled = pygame.transform.scale(potCursor, (potCursor.get_width(), potCursor.get_height()))
-        target.blit(potScaled, (vMouseX - potScaled.get_width() // 2, vMouseY - potScaled.get_height() // 2))
+    # ── Draw cursor ───────────────────────────────────────────────────────────
+    if heldFruit is not None:
+        cursorImg    = fermentImages[heldFruit["crop"]] if heldFruit["fermented"] else fruitImages[heldFruit["crop"]]
+        cursorScaled = pygame.transform.scale(cursorImg, (fruitCursorSize, fruitCursorSize))
+        target.blit(cursorScaled, (vMouseX - cursorScaled.get_width()  // 2,
+                                   vMouseY - cursorScaled.get_height() // 2))
+        pygame.mouse.set_visible(False)
+    elif heldPot is not None:
+        potScaled = pygame.transform.scale(fermPotLargeImg,
+                                           (fermPotLargeImg.get_width(), fermPotLargeImg.get_height()))
+        target.blit(potScaled, (vMouseX - potScaled.get_width()  // 2,
+                                vMouseY - potScaled.get_height() // 2))
         pygame.mouse.set_visible(False)
     elif selectedSeed is not None:
-        cursorImg = seedBagImages[selectedSeed]
-        cursorScaled = pygame.transform.scale(cursorImg, (CELL_SIZE // 2, CELL_SIZE // 2))
-        target.blit(cursorScaled, (vMouseX - cursorScaled.get_width() // 2, vMouseY - cursorScaled.get_height() // 2))
+        cursorScaled = pygame.transform.scale(seedBagImages[selectedSeed], (cellSize // 2, cellSize // 2))
+        target.blit(cursorScaled, (vMouseX - cursorScaled.get_width()  // 2,
+                                   vMouseY - cursorScaled.get_height() // 2))
         pygame.mouse.set_visible(False)
     elif wateringCanHeld:
-        canCursor = wateringCanFullImg if wateringCanFull else wateringCanEmptyImg
-        canScaled = pygame.transform.scale(canCursor, (CELL_SIZE // 2, CELL_SIZE // 2))
-        target.blit(canScaled, (vMouseX - canScaled.get_width() // 2, vMouseY - canScaled.get_height() // 2))
+        canImg       = wateringCanFullImg if wateringCanFull else wateringCanEmptyImg
+        canScaled    = pygame.transform.scale(canImg, (cellSize // 2, cellSize // 2))
+        target.blit(canScaled, (vMouseX - canScaled.get_width()  // 2,
+                                vMouseY - canScaled.get_height() // 2))
         pygame.mouse.set_visible(False)
     else:
         pygame.mouse.set_visible(True)
 
-
+    # ── Tooltips ──────────────────────────────────────────────────────────────
     def drawTooltip(surface, text, cx, cy):
-        """Draw a small dark tooltip centred at (cx, cy), shifted above that point."""
         tooltipSurf = saveDateFont.render(text, True, (255, 240, 160))
-        padX, padY = 16, 10
-        tooltipBg = pygame.Surface((tooltipSurf.get_width() + padX * 2, tooltipSurf.get_height() + padY * 2), pygame.SRCALPHA)
+        padX, padY  = 16, 10
+        tooltipBg   = pygame.Surface((tooltipSurf.get_width() + padX * 2,
+                                      tooltipSurf.get_height() + padY * 2), pygame.SRCALPHA)
         tooltipBg.fill((30, 20, 10, 210))
-        tx = cx - tooltipBg.get_width() // 2
-        ty = cy - tooltipBg.get_height() - 8
-        tx = max(0, min(tx, VIRTUAL_WIDTH - tooltipBg.get_width()))
-        ty = max(0, ty)
-        surface.blit(tooltipBg, (tx, ty))
+        tx = max(0, min(cx - tooltipBg.get_width() // 2, virtualWidth - tooltipBg.get_width()))
+        ty = max(0, cy - tooltipBg.get_height() - 8)
+        surface.blit(tooltipBg,   (tx, ty))
         surface.blit(tooltipSurf, (tx + padX, ty + padY))
 
-    # Tooltip: locked tile buy price
     if hoveredLockedTile is not None:
         hx, hy = hoveredLockedTile
-        cx = GRID_START_X + hx * CELL_SIZE + CELL_SIZE // 2
-        cy = GRID_START_Y + hy * CELL_SIZE
-        drawTooltip(target, f"Buy: {TILE_COL_PRICE[hx]} coins", cx, cy)
+        drawTooltip(target, f"Buy: {tileColPrice[hx]} coins",
+                    gridStartX + hx * cellSize + cellSize // 2,
+                    gridStartY + hy * cellSize)
 
-    # Tooltip: seed bag prices
     if not paused and not showInfo:
         for cropName, rect in seedRects.items():
             if rect.collidepoint(vMouseX, vMouseY):
-                cx = rect.centerx
-                cy = rect.top
-                drawTooltip(target, f"{cropName.capitalize()}: {cropPrice[cropName]} coins", cx, cy)
+                drawTooltip(target, f"{cropName.capitalize()}: {cropPrice[cropName]} coins",
+                            rect.centerx, rect.top)
                 break
 
-    # Tooltip: ferm pot prices
-    if not paused and not showInfo and heldPot is None and selectedSeed is None and not wateringCanHeld:
+    if not paused and not showInfo and heldPot is None and selectedSeed is None and not wateringCanHeld and heldFruit is None:
         if fermPotLargeRect.collidepoint(vMouseX, vMouseY):
-            drawTooltip(target, f"Large pot: {FERM_POT_LARGE_PRICE} coins",
+            drawTooltip(target, f"Large pot: {fermPotLargePrice} coins",
                         fermPotLargeRect.centerx, fermPotLargeRect.top)
+
+    if not paused and not showInfo and heldFruit is not None:
+        if shopChestRect.collidepoint(vMouseX, vMouseY):
+            val    = getFruitSellValue(heldFruit["crop"], heldFruit["fermented"])
+            suffix = " (fermented)" if heldFruit["fermented"] else ""
+            drawTooltip(target, f"Sell {heldFruit['crop'].capitalize()}{suffix}: {val} coins",
+                        shopChestRect.centerx, shopChestRect.top)
+
+    if not paused and not showInfo:
+        for slotIdx, slotRect in enumerate(shedSlotRects):
+            if slotRect.collidepoint(vMouseX, vMouseY):
+                slot = shedSlots[slotIdx]
+                if slot is not None and slot.get("crop") is not None:
+                    cropName = slot["crop"]
+                    if isFermentDone(slot):
+                        drawTooltip(target,
+                                    f"{cropName.capitalize()} ready! ({fermentData[cropName]['value']} coins)",
+                                    slotRect.centerx, slotRect.top)
+                    else:
+                        daysLeft = fermentData[cropName]["days"] - (daysPassed - slot.get("day_placed", daysPassed))
+                        drawTooltip(target, f"Fermenting {cropName}... ({max(0, daysLeft)}d left)",
+                                    slotRect.centerx, slotRect.top)
+                elif slot is not None:
+                    drawTooltip(target, "Empty pot (place a fruit)", slotRect.centerx, slotRect.top)
+                break
 
     if showInfo:
         pygame.mouse.set_visible(True)
@@ -815,10 +974,10 @@ while running:
         buildMenuSurface(hoverVx, hoverVy)
         target.blit(menuSurface, (0, 0))
 
-    scale    = min(screenW / VIRTUAL_WIDTH, screenH / VIRTUAL_HEIGHT)
-    scaledW  = int(VIRTUAL_WIDTH  * scale)
-    scaledH  = int(VIRTUAL_HEIGHT * scale)
-    scaled   = pygame.transform.scale(target, (scaledW, scaledH))
+    scale   = min(screenW / virtualWidth, screenH / virtualHeight)
+    scaledW = int(virtualWidth  * scale)
+    scaledH = int(virtualHeight * scale)
+    scaled  = pygame.transform.scale(target, (scaledW, scaledH))
     screen.fill((0, 0, 0))
     screen.blit(scaled, ((screenW - scaledW) // 2, (screenH - scaledH) // 2))
     pygame.display.flip()

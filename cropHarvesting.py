@@ -17,6 +17,11 @@ cropPrice = {
 }
 
 def harvest(grid, gx, gy, crops):
+    """
+    Right-click harvest: if the plant is fully grown, remove it from the grid
+    and return the crop name so the player can hold it.
+    Returns None if nothing was harvested.
+    """
     if 0 <= gx < len(grid) and 0 <= gy < len(grid[0]):
         cell = grid[gx][gy]
         if cell is None:
@@ -27,6 +32,6 @@ def harvest(grid, gx, gy, crops):
 
         if cell["stage"] >= cropData["max_stage"]:
             grid[gx][gy] = None
-            return cropName
+            return cropName   # caller now holds this fruit
 
     return None
