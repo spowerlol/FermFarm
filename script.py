@@ -57,10 +57,10 @@ shedDoorImg     = textures["shedDoor"]
 shedDoorX, shedDoorY       = 512, 264
 shopShelvesImg  = textures["shopShelves"]
 shopShelvesX, shopShelvesY = 185*8, 50*8
-fermPotSmallImg = textures["fermPotSmall"]
-fermPotSmallX, fermPotSmallY = 230*8, 0*8
+shopChestImg = textures["shopChest"]
+shopChestX, shopChestY = 225*8, 36*8
 fermPotLargeImg = textures["fermPotLarge"]
-fermPotLargeX, fermPotLargeY = 230*8, 42*8
+fermPotLargeX, fermPotLargeY = 230*8, 62*8
 carrotBagImg    = textures["carrotBag"]
 carrotBagX, carrotBagY     = 186*8, 54*8
 tomatoBagImg    = textures["tomatoBag"]
@@ -79,12 +79,10 @@ menuSprite = textures["menuSprite"]
 shedPotImg = textures["shedPot"]
 
 # Clickable rects for the two shop pots (small and large)
-fermPotSmallRect = pygame.Rect(fermPotSmallX, fermPotSmallY,
-                               fermPotSmallImg.get_width(), fermPotSmallImg.get_height())
+
 fermPotLargeRect = pygame.Rect(fermPotLargeX, fermPotLargeY,
                                fermPotLargeImg.get_width(), fermPotLargeImg.get_height())
 
-FERM_POT_SMALL_PRICE = 15
 FERM_POT_LARGE_PRICE = 30
 
 # Shed placement slots: top(440,280) bottom(464,360)
@@ -477,8 +475,6 @@ def buildInfoSurface(mouseVx=0, mouseVy=0):
 
 
 # ── Helper: get the shop sprite for a pot type ─────────────────────────────────
-def potShopImg(potType):
-    return fermPotSmallImg if potType == "small" else fermPotLargeImg
 
 def potShopPrice(potType):
     return FERM_POT_SMALL_PRICE if potType == "small" else FERM_POT_LARGE_PRICE
@@ -604,11 +600,6 @@ while running:
 
             # ── Ferm pot: buy from shop ───────────────────────────────────────
             if not wateringCanHeld and selectedSeed is None and heldPot is None:
-                if fermPotSmallRect.collidepoint(vx, vy):
-                    if money >= FERM_POT_SMALL_PRICE:
-                        money  -= FERM_POT_SMALL_PRICE
-                        heldPot = "small"
-                    continue
                 if fermPotLargeRect.collidepoint(vx, vy):
                     if money >= FERM_POT_LARGE_PRICE:
                         money  -= FERM_POT_LARGE_PRICE
@@ -708,7 +699,6 @@ while running:
 
     target.blit(background,      (0, 0))
     target.blit(shopShelvesImg,  (shopShelvesX,  shopShelvesY))
-    target.blit(fermPotSmallImg, (fermPotSmallX, fermPotSmallY))
     target.blit(fermPotLargeImg, (fermPotLargeX, fermPotLargeY))
     target.blit(carrotBagImg,    (carrotBagX,    carrotBagY))
     target.blit(tomatoBagImg,    (tomatoBagX,    tomatoBagY))
@@ -717,6 +707,7 @@ while running:
     target.blit(garlicBagImg,    (garlicBagX,    garlicBagY))
     target.blit(cabbageBagImg,   (cabbageBagX,   cabbageBagY))
     target.blit(shedDoorImg,     (shedDoorX,     shedDoorY))
+    target.blit(shopChestImg,    (shopChestX, shopChestY))
 
     # ── Draw shed pots: top slot first, then bottom overlays it ───────────────
     if shedSlots[0] is not None:
@@ -812,10 +803,7 @@ while running:
 
     # Tooltip: ferm pot prices
     if not paused and not showInfo and heldPot is None and selectedSeed is None and not wateringCanHeld:
-        if fermPotSmallRect.collidepoint(vMouseX, vMouseY):
-            drawTooltip(target, f"Small pot: {FERM_POT_SMALL_PRICE} coins",
-                        fermPotSmallRect.centerx, fermPotSmallRect.top)
-        elif fermPotLargeRect.collidepoint(vMouseX, vMouseY):
+        if fermPotLargeRect.collidepoint(vMouseX, vMouseY):
             drawTooltip(target, f"Large pot: {FERM_POT_LARGE_PRICE} coins",
                         fermPotLargeRect.centerx, fermPotLargeRect.top)
 

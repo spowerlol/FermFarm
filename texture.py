@@ -25,6 +25,7 @@ def loadTextures():
     textures["shopShelves"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-shopplanken.png")).convert_alpha()
     textures["shedPot"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-shedPot.png")).convert_alpha()
     textures["shedDoor"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-sheddoor.png")).convert_alpha()
+    textures["shopChest"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-verkoopKist.png")).convert_alpha()
 
     # Watering
     textures["wateringcanEmpty"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-waterBucketEmpty.png")).convert_alpha()
