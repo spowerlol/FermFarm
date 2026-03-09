@@ -53,6 +53,8 @@ buttonFont    = pygame.font.Font(fontPath, 96)
 infoTextFont  = pygame.font.Font(fontPath, 44)
 infoTitleFont = pygame.font.Font(fontPath, 72)
 
+shedDoorImg     = textures["shedDoor"]
+shedDoorX, shedDoorY       = 512, 264
 shopShelvesImg  = textures["shopShelves"]
 shopShelvesX, shopShelvesY = 185*8, 50*8
 fermPotSmallImg = textures["fermPotSmall"]
@@ -73,6 +75,27 @@ garlicBagImg    = textures["garlicBag"]
 garlicBagX, garlicBagY     = 209*8, 67*8
 menuSprite = textures["menuSprite"]
 
+# ── Ferm Pot Shop ──────────────────────────────────────────────────────────────
+shedPotImg = textures["shedPot"]
+
+# Clickable rects for the two shop pots (small and large)
+fermPotSmallRect = pygame.Rect(fermPotSmallX, fermPotSmallY,
+                               fermPotSmallImg.get_width(), fermPotSmallImg.get_height())
+fermPotLargeRect = pygame.Rect(fermPotLargeX, fermPotLargeY,
+                               fermPotLargeImg.get_width(), fermPotLargeImg.get_height())
+
+FERM_POT_SMALL_PRICE = 15
+FERM_POT_LARGE_PRICE = 30
+
+# Shed placement slots: top(440,280) bottom(464,360)
+SHED_SLOT_TOP    = (440, 280)
+SHED_SLOT_BOTTOM = (464, 360)
+shedSlots = [None, None]   # None | "small" | "large"  for top and bottom slot
+
+# Pot being held by the player: None | "small" | "large"
+heldPot = None
+# ──────────────────────────────────────────────────────────────────────────────
+
 seedRects = {
     "carrot":   pygame.Rect(carrotBagX,   carrotBagY,   carrotBagImg.get_width(),   carrotBagImg.get_height()),
     "tomato":   pygame.Rect(tomatoBagX,   tomatoBagY,   tomatoBagImg.get_width(),   tomatoBagImg.get_height()),
@@ -86,7 +109,7 @@ selectedSeed = None
 # ── Watering Can ───────────────────────────────────────────────────────────────
 wateringCanEmptyImg = textures["wateringcanEmpty"]
 wateringCanFullImg  = textures["wateringcanFull"]
-waterDropImg     = textures["waterDropPlant"]
+waterDropImg        = textures["waterDropPlant"]
 wateringCanFull     = False   # starts empty
 wateringCanHeld     = False   # player is holding the can
 
@@ -105,7 +128,7 @@ seedBagImages = {
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-money = 6
+money = 30
 background      = textures["background"]
 calendarSprite  = textures["calendar"]
 calendarCircle  = textures["calendarCircle"]
@@ -256,6 +279,7 @@ def saveGame(slotIndex, slotName):
         "current_column": currentColumn,
         "current_row": currentRow, "sprite_x": spriteX, "sprite_y": spriteY,
         "tile_owned": tileOwned,
+        "shed_slots": shedSlots,
     }
     saveSlots[slotIndex] = {
         "name": slotName,
@@ -271,6 +295,7 @@ def saveGame(slotIndex, slotName):
 def loadGame(slotIndex):
     global money, daysPassed, grid
     global currentColumn, currentRow, spriteX, spriteY, lastMoveTime, tileOwned
+    global shedSlots
     slot = saveSlots[slotIndex]
     if slot["data"] is None:
         return False
@@ -288,6 +313,10 @@ def loadGame(slotIndex):
             tileOwned = data["tile_owned"]
         else:
             tileOwned = makeTileOwned()
+        if "shed_slots" in data:
+            shedSlots = data["shed_slots"]
+        else:
+            shedSlots = [None, None]
         return True
     except:
         return False
@@ -296,6 +325,7 @@ def loadGame(slotIndex):
 def newGame():
     global money, daysPassed, grid
     global currentColumn, currentRow, spriteX, spriteY, lastMoveTime, tileOwned
+    global shedSlots, heldPot
     money         = 6
     daysPassed    = 0
     grid          = [[None for _ in range(GRID_ROWS)] for _ in range(GRID_COLS)]
@@ -305,6 +335,8 @@ def newGame():
     spriteY       = START_Y
     lastMoveTime  = pygame.time.get_ticks()
     tileOwned     = makeTileOwned()
+    shedSlots     = [None, None]
+    heldPot       = None
 
 
 def screenToVirtual(mx, my):
@@ -349,9 +381,8 @@ def drawSideButton(surface, rect, label, hovered=False):
 
 def buildMenuSurface(mouseVx=0, mouseVy=0):
     menuSurface.fill((0, 0, 0, 0))
-    overlay = pygame.Surface((MENU_REF_W, MENU_REF_H))
-    overlay.set_alpha(180)
-    overlay.fill((0, 0, 0))
+    overlay = pygame.Surface((MENU_REF_W, MENU_REF_H), pygame.SRCALPHA)
+    overlay.fill((0, 0, 0, 180))
     menuSurface.blit(overlay, (0, 0))
     menuSpriteScaled = pygame.transform.scale(menuSprite, (MENU_REF_W, MENU_REF_H))
     menuSurface.blit(menuSpriteScaled, (0, 0))
@@ -396,9 +427,8 @@ def buildInfoSurface(mouseVx=0, mouseVy=0):
     global infoScrollY
     infoSurface.fill((0, 0, 0, 0))
 
-    overlay = pygame.Surface((MENU_REF_W, MENU_REF_H))
-    overlay.set_alpha(180)
-    overlay.fill((0, 0, 0))
+    overlay = pygame.Surface((MENU_REF_W, MENU_REF_H), pygame.SRCALPHA)
+    overlay.fill((0, 0, 0, 180))
     infoSurface.blit(overlay, (0, 0))
     menuSpriteScaled = pygame.transform.scale(menuSprite, (MENU_REF_W, MENU_REF_H))
     infoSurface.blit(menuSpriteScaled, (0, 0))
@@ -446,6 +476,14 @@ def buildInfoSurface(mouseVx=0, mouseVy=0):
     drawSideButton(infoSurface, closeBtnRect, "Close", hovered=closeBtnRect.collidepoint(mouseVx, mouseVy))
 
 
+# ── Helper: get the shop sprite for a pot type ─────────────────────────────────
+def potShopImg(potType):
+    return fermPotSmallImg if potType == "small" else fermPotLargeImg
+
+def potShopPrice(potType):
+    return FERM_POT_SMALL_PRICE if potType == "small" else FERM_POT_LARGE_PRICE
+# ──────────────────────────────────────────────────────────────────────────────
+
 # Dim music on startup since info screen opens on boot
 setMusicVolume()
 
@@ -476,12 +514,15 @@ while running:
                     setMusicVolume()
             else:
                 if event.key == pygame.K_ESCAPE:
-                    # Drop held seed or can before pausing
+                    # Drop held seed, can, or pot before pausing
                     if selectedSeed is not None:
                         money += cropPrice[selectedSeed]  # refund
                         selectedSeed = None
                     elif wateringCanHeld:
                         wateringCanHeld = False
+                    elif heldPot is not None:
+                        money += potShopPrice(heldPot)   # refund
+                        heldPot = None
                     else:
                         paused = True
                         setMusicVolume()
@@ -534,7 +575,21 @@ while running:
 
             vx, vy = screenToVirtual(mx, my)
 
-            # Clicking the refill/water box picks up the can and fills it instantly
+            # ── Ferm pot: place into shed slot ────────────────────────────────
+            if heldPot is not None:
+                SLOT_HIT = 80   # generous hit area in virtual pixels
+                shedSlotRects = [
+                    pygame.Rect(SHED_SLOT_TOP[0]    - SLOT_HIT // 2, SHED_SLOT_TOP[1]    - SLOT_HIT // 2, SLOT_HIT, SLOT_HIT),
+                    pygame.Rect(SHED_SLOT_BOTTOM[0] - SLOT_HIT // 2, SHED_SLOT_BOTTOM[1] - SLOT_HIT // 2, SLOT_HIT, SLOT_HIT),
+                ]
+                for slotIdx, slotRect in enumerate(shedSlotRects):
+                    if slotRect.collidepoint(vx, vy) and shedSlots[slotIdx] is None:
+                        shedSlots[slotIdx] = heldPot
+                        heldPot = None
+                        break
+                continue
+
+            # ── Watering can refill ───────────────────────────────────────────
             if waterRefillRect.collidepoint(vx, vy) and not selectedSeed:
                 wateringCanHeld = True
                 wateringCanFull = True
@@ -548,16 +603,28 @@ while running:
                     wateringCanHeld = False
                     continue
 
+            # ── Ferm pot: buy from shop ───────────────────────────────────────
+            if not wateringCanHeld and selectedSeed is None and heldPot is None:
+                if fermPotSmallRect.collidepoint(vx, vy):
+                    if money >= FERM_POT_SMALL_PRICE:
+                        money  -= FERM_POT_SMALL_PRICE
+                        heldPot = "small"
+                    continue
+                if fermPotLargeRect.collidepoint(vx, vy):
+                    if money >= FERM_POT_LARGE_PRICE:
+                        money  -= FERM_POT_LARGE_PRICE
+                        heldPot = "large"
+                    continue
 
             clickedSeed = None
-            if not wateringCanHeld:
+            if not wateringCanHeld and heldPot is None:
                 for cropName, rect in seedRects.items():
                     if rect.collidepoint(vx, vy):
                         clickedSeed = cropName
                         break
 
             # Buy a locked tile when clicking it with nothing held
-            if clickedSeed is None and selectedSeed is None and not wateringCanHeld:
+            if clickedSeed is None and selectedSeed is None and not wateringCanHeld and heldPot is None:
                 gx = (vx - GRID_START_X) // CELL_SIZE
                 gy = (vy - GRID_START_Y) // CELL_SIZE
                 if 0 <= gx < GRID_COLS and 0 <= gy < GRID_ROWS:
@@ -650,6 +717,14 @@ while running:
     target.blit(chiliBagImg,     (chiliBagX,     chiliBagY))
     target.blit(garlicBagImg,    (garlicBagX,    garlicBagY))
     target.blit(cabbageBagImg,   (cabbageBagX,   cabbageBagY))
+    target.blit(shedDoorImg,     (shedDoorX,     shedDoorY))
+
+    # ── Draw shed pots: top slot first, then bottom overlays it ───────────────
+    if shedSlots[0] is not None:
+        target.blit(shedPotImg, SHED_SLOT_TOP)
+    if shedSlots[1] is not None:
+        target.blit(shedPotImg, SHED_SLOT_BOTTOM)
+
     drawMoney(target, money, VIRTUAL_WIDTH)
 
     for x in range(GRID_COLS):
@@ -672,7 +747,6 @@ while running:
                 tx = GRID_START_X + x * CELL_SIZE
                 ty = GRID_START_Y + y * CELL_SIZE
                 target.blit(tekoopScaled, (tx, ty))
-                # Check hover
                 tileRect = pygame.Rect(tx, ty, CELL_SIZE, CELL_SIZE)
                 if tileRect.collidepoint(vMouseX, vMouseY) and not paused and not showInfo:
                     hoveredLockedTile = (x, y)
@@ -688,8 +762,13 @@ while running:
                 druppel = pygame.transform.scale(waterDropImg, (CELL_SIZE, CELL_SIZE))
                 target.blit(druppel, (GRID_START_X + x * CELL_SIZE, GRID_START_Y + y * CELL_SIZE))
 
-    # Draw cursor: seed bag or watering can following mouse
-    if selectedSeed is not None:
+    # Draw cursor: seed bag, watering can, or ferm pot following mouse
+    if heldPot is not None:
+        potCursor = potShopImg(heldPot)
+        potScaled = pygame.transform.scale(potCursor, (potCursor.get_width() * 8, potCursor.get_height() * 8))
+        target.blit(potScaled, (vMouseX - potScaled.get_width() // 2, vMouseY - potScaled.get_height() // 2))
+        pygame.mouse.set_visible(False)
+    elif selectedSeed is not None:
         cursorImg = seedBagImages[selectedSeed]
         cursorScaled = pygame.transform.scale(cursorImg, (CELL_SIZE // 2, CELL_SIZE // 2))
         target.blit(cursorScaled, (vMouseX - cursorScaled.get_width() // 2, vMouseY - cursorScaled.get_height() // 2))
@@ -731,6 +810,15 @@ while running:
                 cy = rect.top
                 drawTooltip(target, f"{cropName.capitalize()}: {cropPrice[cropName]} coins", cx, cy)
                 break
+
+    # Tooltip: ferm pot prices
+    if not paused and not showInfo and heldPot is None and selectedSeed is None and not wateringCanHeld:
+        if fermPotSmallRect.collidepoint(vMouseX, vMouseY):
+            drawTooltip(target, f"Small pot: {FERM_POT_SMALL_PRICE} coins",
+                        fermPotSmallRect.centerx, fermPotSmallRect.top)
+        elif fermPotLargeRect.collidepoint(vMouseX, vMouseY):
+            drawTooltip(target, f"Large pot: {FERM_POT_LARGE_PRICE} coins",
+                        fermPotLargeRect.centerx, fermPotLargeRect.top)
 
     if showInfo:
         pygame.mouse.set_visible(True)
