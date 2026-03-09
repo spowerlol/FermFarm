@@ -764,7 +764,7 @@ while running:
     # Draw cursor: seed bag, watering can, or ferm pot following mouse
     if heldPot is not None:
         potCursor = potShopImg(heldPot)
-        potScaled = pygame.transform.scale(potCursor, (potCursor.get_width() * 8, potCursor.get_height() * 8))
+        potScaled = pygame.transform.scale(potCursor, (potCursor.get_width(), potCursor.get_height()))
         target.blit(potScaled, (vMouseX - potScaled.get_width() // 2, vMouseY - potScaled.get_height() // 2))
         pygame.mouse.set_visible(False)
     elif selectedSeed is not None:
