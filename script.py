@@ -128,7 +128,7 @@ seedBagImages = {
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-money = 30
+money = 60
 background      = textures["background"]
 calendarSprite  = textures["calendar"]
 calendarCircle  = textures["calendarCircle"]
@@ -577,10 +577,9 @@ while running:
 
             # ── Ferm pot: place into shed slot ────────────────────────────────
             if heldPot is not None:
-                SLOT_HIT = 80   # generous hit area in virtual pixels
                 shedSlotRects = [
-                    pygame.Rect(SHED_SLOT_TOP[0]    - SLOT_HIT // 2, SHED_SLOT_TOP[1]    - SLOT_HIT // 2, SLOT_HIT, SLOT_HIT),
-                    pygame.Rect(SHED_SLOT_BOTTOM[0] - SLOT_HIT // 2, SHED_SLOT_BOTTOM[1] - SLOT_HIT // 2, SLOT_HIT, SLOT_HIT),
+                    pygame.Rect(456, 336, 40, 40),   # top slot
+                    pygame.Rect(480, 416, 40, 40),   # bottom slot
                 ]
                 for slotIdx, slotRect in enumerate(shedSlotRects):
                     if slotRect.collidepoint(vx, vy) and shedSlots[slotIdx] is None:
