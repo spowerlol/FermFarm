@@ -58,9 +58,9 @@ shedDoorX, shedDoorY       = 512, 264
 shopShelvesImg  = textures["shopShelves"]
 shopShelvesX, shopShelvesY = 185*8, 50*8
 shopChestImg = textures["shopChest"]
-shopChestX, shopChestY = 225*8, 36*8
+shopChestX, shopChestY = 225*8, 56*8
 fermPotLargeImg = textures["fermPotLarge"]
-fermPotLargeX, fermPotLargeY = 230*8, 62*8
+fermPotLargeX, fermPotLargeY = 230*8, 42*8
 carrotBagImg    = textures["carrotBag"]
 carrotBagX, carrotBagY     = 186*8, 54*8
 tomatoBagImg    = textures["tomatoBag"]
@@ -706,7 +706,6 @@ while running:
     target.blit(chiliBagImg,     (chiliBagX,     chiliBagY))
     target.blit(garlicBagImg,    (garlicBagX,    garlicBagY))
     target.blit(cabbageBagImg,   (cabbageBagX,   cabbageBagY))
-    target.blit(shedDoorImg,     (shedDoorX,     shedDoorY))
     target.blit(shopChestImg,    (shopChestX, shopChestY))
 
     # ── Draw shed pots: top slot first, then bottom overlays it ───────────────
@@ -714,7 +713,7 @@ while running:
         target.blit(shedPotImg, SHED_SLOT_TOP)
     if shedSlots[1] is not None:
         target.blit(shedPotImg, SHED_SLOT_BOTTOM)
-
+    target.blit(shedDoorImg,     (shedDoorX,     shedDoorY))
     drawMoney(target, money, VIRTUAL_WIDTH)
 
     for x in range(GRID_COLS):
@@ -754,7 +753,7 @@ while running:
 
     # Draw cursor: seed bag, watering can, or ferm pot following mouse
     if heldPot is not None:
-        potCursor = potShopImg(heldPot)
+        potCursor = fermPotLargeImg
         potScaled = pygame.transform.scale(potCursor, (potCursor.get_width(), potCursor.get_height()))
         target.blit(potScaled, (vMouseX - potScaled.get_width() // 2, vMouseY - potScaled.get_height() // 2))
         pygame.mouse.set_visible(False)
