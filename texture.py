@@ -93,7 +93,7 @@ def loadTextures():
     textures["fermPotLarge"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-fermpot2.png")).convert_alpha()
 
     # -------------------------------------------------------------------------
-    # TOMATO  (raw fruit, fermented fruit, seed bag, and 4 plant growth stages)
+    # TOMATO  (raw fruit, fermented fruit, seed bag, and 4 plant growth stages and death stage)
     # -------------------------------------------------------------------------
     textures["tomato"]        = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-tomaat.png")).convert_alpha()           # harvested raw tomato icon
     textures["tomatoFerment"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-tomaatFerment.png")).convert_alpha()    # fermented tomato icon
@@ -102,7 +102,7 @@ def loadTextures():
     textures["tomatoPlant1"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-TomaatPlant1.png")).convert_alpha()     # growth stage 1
     textures["tomatoPlant2"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-TomaatPlant2.png")).convert_alpha()     # growth stage 2
     textures["tomatoPlant3"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-TomaatPlant3.png")).convert_alpha()     # growth stage 3 (harvestable)
-
+    textures["tomatoDeath"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-dodeTomaat.png")).convert_alpha()
     # -------------------------------------------------------------------------
     # CARROT
     # -------------------------------------------------------------------------
@@ -113,7 +113,7 @@ def loadTextures():
     textures["carrotPlant1"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-wortelPlant1.png")).convert_alpha()
     textures["carrotPlant2"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-wortelPlant2.png")).convert_alpha()
     textures["carrotPlant3"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-wortelPlant3.png")).convert_alpha()
-
+    textures["carrotDeath"]   = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-dodeWortel.png")).convert_alpha()
     # -------------------------------------------------------------------------
     # CABBAGE  "kool"
     # -------------------------------------------------------------------------
@@ -123,7 +123,7 @@ def loadTextures():
     textures["cabbagePlant1"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-colePlant1.png")).convert_alpha()
     textures["cabbagePlant2"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-colePlant2.png")).convert_alpha()
     textures["cabbagePlant3"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-colePlant3.png")).convert_alpha()
-
+    textures["cabbageDeath"]   = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-coleDeath.png")).convert_alpha()
     # -------------------------------------------------------------------------
     # GARLIC  "knoflook"
     # -------------------------------------------------------------------------
@@ -135,7 +135,7 @@ def loadTextures():
     textures["garlicPlant3"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-knoflookPlant3.png")).convert_alpha()
     textures["garlicPlant4"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-knoflookPlant4.png")).convert_alpha()
     textures["garlicPlant5"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-knoflookPlant5.png")).convert_alpha()
-
+    textures["garlicDeath"]   = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-dodeKnoflook.png")).convert_alpha()
     # -------------------------------------------------------------------------
     # CHILI
     # -------------------------------------------------------------------------
@@ -146,7 +146,7 @@ def loadTextures():
     textures["chiliPlant2"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-chiliPlant2.png")).convert_alpha()
     textures["chiliPlant3"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-chiliPlant3.png")).convert_alpha()
     textures["chiliPlant4"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-chiliPlant4.png")).convert_alpha()
-
+    textures["deathChili"]   = pygame.image.load(os.path.join(ASSETS_PATH, "dodeChili.png")).convert_alpha()
     # -------------------------------------------------------------------------
     # CUCUMBER  ("komkommer")
     # -------------------------------------------------------------------------
@@ -157,7 +157,7 @@ def loadTextures():
     textures["cucumberPlant2"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-komkommerPlant2.png")).convert_alpha()
     textures["cucumberPlant3"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-komkommerPlant3.png")).convert_alpha()
     textures["cucumberPlant4"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-komkommerPlant4.png")).convert_alpha()
-
+    textures["deathCucumber"]   = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-dodeKomkommer.png")).convert_alpha()
     # -------------------------------------------------------------------------
     # UI BUTTONS
     # -------------------------------------------------------------------------
