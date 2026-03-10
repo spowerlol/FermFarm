@@ -32,7 +32,7 @@ Shop_Item_H = 128
 # Design value: 2 tiles.  2 * 8 = 16 pixels.
 Shop_gap = 16
 
-# The coin cost of a single tomato seed — kept here as a named constant
+# The coin cost of a single tomato seed kept here as a named constant
 # so we never have to hunt for a magic number if we want to change the price.
 Tomato_Seed_Price = 5
 
@@ -51,7 +51,7 @@ Shop_items = [
         "id"   : "tomato_seed",
         "price": 5,
 
-        # pygame.Rect(x, y, width, height) — marks the clickable region on screen.
+        # pygame.Rect(x, y, width, height) marks the clickable region on screen.
         # x and y come from Shop_x_start / Shop_y_start (already scaled × 8).
         # Width and height come from Shop_Item_w / Shop_Item_H (also scaled × 8).
         "rect" : pygame.Rect(Shop_x_start, Shop_y_start, Shop_Item_w, Shop_Item_H),
@@ -71,7 +71,7 @@ Shop_items = [
 # the mouse-click event handler; here it is a self-contained snippet.
 # =============================================================================
 
-# Start by assuming nothing was clicked — we'll flip this flag inside the loop.
+# Start by assuming nothing was clicked we'll flip this flag inside the loop.
 Clicked_Shop = False
 
 # Go through each item in the shop list one by one.

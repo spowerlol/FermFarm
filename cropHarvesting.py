@@ -11,7 +11,7 @@
 # CROP SELL VALUES (raw, un-fermented)
 # These are the coin amounts the player receives when they sell a freshly
 # harvested crop directly into the shop chest WITHOUT fermenting it first.
-# Fermenting always gives a higher value — see ferment.py for those numbers.
+# Fermenting always gives a higher value see ferment.py for those numbers.
 # -----------------------------------------------------------------------------
 CROP_VALUES = {
     "tomato"  : 5,    # Cheapest to sell raw; best used fermented
@@ -25,7 +25,7 @@ CROP_VALUES = {
 # -----------------------------------------------------------------------------
 # SEED PURCHASE PRICES
 # How many coins the player must spend to buy one seed bag from the shop shelf.
-# Prices are designed so that buying and growing is always profitable —
+# Prices are designed so that buying and growing is always profitable
 # you always sell for more than you spent on the seed.
 # -----------------------------------------------------------------------------
 cropPrice = {
@@ -82,7 +82,7 @@ def harvest(grid, gx, gy, crops):
         # was watered; it caps at cropData["max_stage"].
         if cell["stage"] >= cropData["max_stage"]:
 
-            # Remove the plant from the grid — the tile is now empty again.
+            # Remove the plant from the grid the tile is now empty again.
             grid[gx][gy] = None
 
             # Return the crop name so the caller knows what was harvested.
@@ -90,5 +90,5 @@ def harvest(grid, gx, gy, crops):
             return cropName
 
     # Either the indices were out of bounds, the cell was empty,
-    # or the plant wasn't ripe yet — nothing was harvested.
+    # or the plant wasn't ripe yet nothing was harvested.
     return None

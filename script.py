@@ -1,5 +1,5 @@
 # =============================================================================
-# script.py  —  FermFarm  —  Main Entry Point
+# script.py FermFarm Main Entry Point
 #
 # This is the heart of the game. It:
 #   1. Initialises pygame and the display window.
@@ -35,8 +35,8 @@ pygame.mixer.init()
 # screen. The virtual size is 240 tiles wide and 135 tiles tall; each tile
 # is 8 pixels, giving us a 1920 x 1080 virtual canvas (Full HD).
 # =============================================================================
-virtualWidth  = 1920   #  — virtual canvas width in pixels
-virtualHeight = 1080   #  — virtual canvas height in pixels
+virtualWidth  = 1920   #  virtual canvas width in pixels
+virtualHeight = 1080   #  virtual canvas height in pixels
 fps           = 60     # target frames per second
 
 # Windowed-mode size (used when fullscreen is toggled off).
@@ -44,7 +44,7 @@ fps           = 60     # target frames per second
 windowWidth   = 960    # virtualWidth  // 2
 windowHeight  = 540    # virtualHeight // 2
 
-# These are used when building the pause menu UI — see buildMenuSurface().
+# These are used when building the pause menu UI see buildMenuSurface().
 menuRefW = virtualWidth   # 1920
 menuRefH = virtualHeight  # 1080
 
@@ -178,7 +178,7 @@ closeCrossY = 96
 # Lets us find any crop's icon by name rather than a long if/elif chain.
 # =============================================================================
 
-# Raw (un-fermented) fruit icons — shown on the cursor while the player
+# Raw (un-fermented) fruit icons shown on the cursor while the player
 # carries a harvested crop before placing it in a pot or selling it.
 fruitImages = {
     "tomato"  : textures["tomato"],
@@ -189,7 +189,7 @@ fruitImages = {
     "garlic"  : textures["garlic"],
 }
 
-# Fermented fruit icons — shown inside the shed pot and on the cursor when
+# Fermented fruit icons shown inside the shed pot and on the cursor when
 # the player picks up a finished fermented product.
 fermentImages = {
     "tomato"  : textures["tomatoFerment"],
@@ -315,11 +315,11 @@ calendarCircle = textures["calendarCircle"]
 # --- Farm grid ---
 # The farm is a 7-column × 3-row grid of tiles.
 # Each tile is 16 design-tiles wide/tall, which scales to 128 × 128 pixels.
-cellSize   = 128    # 16 * 8  — size of one farm tile in pixels
+cellSize   = 128    # 16 * 8  size of one farm tile in pixels
 gridCols   = 7      # number of columns in the farm grid
 gridRows   = 3      # number of rows    in the farm grid
 gridStartX = 0      # pixel X where the grid begins (left edge of the screen)
-gridStartY = 696    # 87 * 8  — pixel Y where the grid begins
+gridStartY = 696    # 87 * 8 pixel Y where the grid begins
 
 # The grid itself: a 2D list indexed as grid[col][row].
 # None = empty tile.  dict = planted crop with its state.
@@ -330,13 +330,13 @@ grid = [[None for _ in range(gridRows)] for _ in range(gridCols)]
 # All other tiles must be purchased. Prices are higher for tiles on the left
 # (further from the shop) to create a natural economic progression.
 tileColPrice = {
-    6: 3,    # rightmost column  — cheapest
+    6: 3,    # rightmost column cheapest
     5: 5,
     4: 10,
     3: 15,
     2: 20,
     1: 30,
-    0: 50,   # leftmost column   — most expensive
+    0: 50,   # leftmost column most expensive
 }
 
 def makeTileOwned():
@@ -353,9 +353,9 @@ tileOwned = makeTileOwned()
 # --- Calendar / day system ---
 # The calendar marker (calendarCircle) travels across a 4-column × 3-row path
 # that mirrors the calendar sprite graphic. It moves one step per in-game day.
-startX, startY = 1400, 696   # 175 * 8, 87 * 8  — first calendar marker position
+startX, startY = 1400, 696   # 175 * 8, 87 * 8 first calendar marker position
 spriteX, spriteY = startX, startY  # current marker position (updated each day tick)
-step          = 128    # 16 * 8  — pixels per calendar step (one tile)
+step          = 128    # 16 * 8 pixels per calendar step (one tile)
 columns       = 4      # number of columns in the calendar path
 rows          = 3      # number of rows    in the calendar path
 currentColumn = 0      # which calendar column the marker is currently on (0-3)
@@ -407,7 +407,7 @@ slotSpacing = 25     # vertical gap between save-slot buttons in pixels
 slotStartX = (virtualWidth  - slotWidth)  // 3.5
 # Vertically centre the three slots (plus gaps) in the upper portion of the screen.
 slotStartY = (virtualHeight - (3 * slotHeight + 2 * slotSpacing)) // 2.5
-# The Y coordinate of the bottom edge of the last slot — used to size side buttons.
+# The Y coordinate of the bottom edge of the last slot used to size side buttons.
 slotBottomY = slotStartY + 3 * slotHeight + 2 * slotSpacing
 
 def getSlotRect(i):
@@ -482,7 +482,7 @@ def wrapLines(rawLines, font, maxW):
             # Try appending the next word and measure the result.
             test = (current + " " + word).strip()
             if font.size(test)[0] <= maxW:
-                current = test   # still fits — keep building the line
+                current = test   # still fits keep building the line
             else:
                 if current:
                     wrapped.append(current)   # flush the current line
@@ -518,7 +518,7 @@ def saveGame(slotIndex, slotName):
     whole saveSlots list to saveslots.json.
 
     Parameters:
-        slotIndex (int): 0, 1, or 2 — which save slot to overwrite.
+        slotIndex (int): 0, 1, or 2 which save slot to overwrite.
         slotName  (str): the display name to give this save (e.g. "Farm 1").
     """
     global saveSlots
@@ -556,7 +556,7 @@ def loadGame(slotIndex):
     global shedSlots
     slot = saveSlots[slotIndex]
     if slot["data"] is None:
-        return False   # slot is empty — nothing to load
+        return False   # slot is empty nothing to load
     try:
         data          = slot["data"]
         money         = data["money"]
@@ -625,7 +625,7 @@ def screenToVirtual(mx, my):
 
 def screenToMenuRef(mx, my):
     """
-    Same as screenToVirtual — alias kept for clarity in menu-related code
+    Same as screenToVirtual alias kept for clarity in menu-related code
     to make it obvious we are working in menu-reference (virtual) coordinates.
     """
     return screenToVirtual(mx, my)
@@ -646,7 +646,7 @@ def toggleFullscreen():
 
 def drawSideButton(surface, rect, label, hovered=False):
     """
-    Draw a text-only side button (no background box — the menu sprite handles
+    Draw a text-only side button (no background box the menu sprite handles
     the background). When hovered the label turns bright yellow with a dark
     drop-shadow; when not hovered it is plain brown/grey.
 
@@ -723,7 +723,7 @@ def buildMenuSurface(mouseVx=0, mouseVy=0):
             menuSurface.blit(nameSurf, (slotRect.x + 20, slotRect.y + 20))
         menuSurface.set_clip(None)   # remove the clipping region
 
-    # Draw the close (X) button — swap to the "clicked" sprite on hover.
+    # Draw the close (X) button swap to the "clicked" sprite on hover.
     crossHovered = closeCrossRect.collidepoint(mouseVx, mouseVy)
     crossImg     = closeCrossClickImg if crossHovered else closeCrossImg
     menuSurface.blit(crossImg, (closeCrossX, closeCrossY))
@@ -850,7 +850,7 @@ def isFermentDone(slot):
         bool: True if fermentation is complete
     """
     if slot is None or slot.get("crop") is None:
-        return False   # empty slot or no crop placed — nothing to check
+        return False   # empty slot or no crop placed nothing to check
     if slot.get("done", False):
         return True    # already marked done on a previous tick
     daysRequired = fermentData[slot["crop"]]["days"]
@@ -931,7 +931,7 @@ while running:
                         money  += potShopPrice(heldPot)    # refund the pot cost
                         heldPot = None
                     elif heldFruit is not None:
-                        pass   # you cannot drop fruit — you must sell or ferment it
+                        pass   # you cannot drop fruit you must sell or ferment it
                     else:
                         paused = True
                         setMusicVolume()
@@ -1207,7 +1207,7 @@ while running:
                 spriteY      += step
                 currentRow   += 1
                 if currentRow >= rows:
-                    # Completed a full calendar cycle — wrap back to the start.
+                    # Completed a full calendar cycle wrap back to the start.
                     currentRow       = 0
                     spriteX, spriteY = startX, startY
 
@@ -1327,7 +1327,7 @@ while running:
         pygame.mouse.set_visible(False)
 
     else:
-        # Nothing held — show the normal OS mouse cursor.
+        # Nothing held show the normal OS mouse cursor.
         pygame.mouse.set_visible(True)
 
     # =========================================================================

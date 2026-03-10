@@ -115,7 +115,7 @@ def loadTextures():
     textures["carrotPlant3"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-wortelPlant3.png")).convert_alpha()
 
     # -------------------------------------------------------------------------
-    # CABBAGE  ("kool" in Dutch)
+    # CABBAGE  "kool"
     # -------------------------------------------------------------------------
     textures["cabbage"]        = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-kool.png")).convert_alpha()
     textures["cabbageFerment"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-koolFerment.png")).convert_alpha()
@@ -125,7 +125,7 @@ def loadTextures():
     textures["cabbagePlant3"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-colePlant3.png")).convert_alpha()
 
     # -------------------------------------------------------------------------
-    # GARLIC  ("knoflook" in Dutch)
+    # GARLIC  "knoflook"
     # -------------------------------------------------------------------------
     textures["garlic"]        = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-knoflook.png")).convert_alpha()
     textures["garlicFerment"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-knoflookFerment.png")).convert_alpha()
@@ -148,7 +148,7 @@ def loadTextures():
     textures["chiliPlant4"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-chiliPlant4.png")).convert_alpha()
 
     # -------------------------------------------------------------------------
-    # CUCUMBER  ("komkommer" in Dutch)
+    # CUCUMBER  ("komkommer")
     # -------------------------------------------------------------------------
     textures["cucumber"]        = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-komkommer.png")).convert_alpha()
     textures["cucumberFerment"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-komkommerFerment.png")).convert_alpha()

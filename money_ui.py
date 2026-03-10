@@ -53,7 +53,7 @@ def initMoneyUi(textures):
     for i in range(10):
 
         # subsurface(x, y, width, height) cuts a rectangular region out of
-        # fontImg without copying pixel data — it's efficient.
+        # fontImg without copying pixel data it's efficient.
         # The digits are laid out left-to-right, so digit i starts at
         # x = i * DIGIT_WIDTH on the sheet.
         numberFont[str(i)] = fontImg.subsurface(

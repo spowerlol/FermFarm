@@ -85,7 +85,7 @@ def runStartScreen(screen, fullscreen):
         # Process all queued events (keyboard, mouse, window close, etc.).
         for event in pygame.event.get():
 
-            # The player closed the window — quit immediately.
+            # The player closed the window quit immediately.
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
@@ -99,7 +99,7 @@ def runStartScreen(screen, fullscreen):
             offsetY += SLIDE_SPEED
 
             # Once the image has scrolled past the full canvas height,
-            # the start screen is gone — exit this function and return
+            # the start screen is gone exit this function and return
             # control to the main game loop.
             if offsetY >= VIRTUAL_HEIGHT:
                 return
