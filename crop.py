@@ -86,7 +86,8 @@ def loadCrops(textures):
                 textures["garlicDeath"],
             ],
             "growth_days_per_stage": 3,   # needs 3 watered days per stage
-            "max_stage": 4,
+            "max_stage": 5,
+
         },
 
         # -----------------------------------------------------------------
