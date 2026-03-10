@@ -123,7 +123,7 @@ def loadTextures():
     textures["cabbagePlant1"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-colePlant1.png")).convert_alpha()
     textures["cabbagePlant2"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-colePlant2.png")).convert_alpha()
     textures["cabbagePlant3"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-colePlant3.png")).convert_alpha()
-    textures["cabbageDeath"]   = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-coleDeath.png")).convert_alpha()
+    textures["cabbageDeath"]   = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-dodeKool.png")).convert_alpha()
     # -------------------------------------------------------------------------
     # GARLIC  "knoflook"
     # -------------------------------------------------------------------------
@@ -146,7 +146,7 @@ def loadTextures():
     textures["chiliPlant2"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-chiliPlant2.png")).convert_alpha()
     textures["chiliPlant3"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-chiliPlant3.png")).convert_alpha()
     textures["chiliPlant4"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-chiliPlant4.png")).convert_alpha()
-    textures["deathChili"]   = pygame.image.load(os.path.join(ASSETS_PATH, "dodeChili.png")).convert_alpha()
+    textures["chiliDeath"]   = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-dodeChili..png")).convert_alpha()
     # -------------------------------------------------------------------------
     # CUCUMBER  ("komkommer")
     # -------------------------------------------------------------------------
@@ -157,7 +157,7 @@ def loadTextures():
     textures["cucumberPlant2"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-komkommerPlant2.png")).convert_alpha()
     textures["cucumberPlant3"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-komkommerPlant3.png")).convert_alpha()
     textures["cucumberPlant4"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-komkommerPlant4.png")).convert_alpha()
-    textures["deathCucumber"]   = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-dodeKomkommer.png")).convert_alpha()
+    textures["cucumberDeath"]   = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-dodeKomkommer.png")).convert_alpha()
     # -------------------------------------------------------------------------
     # UI BUTTONS
     # -------------------------------------------------------------------------

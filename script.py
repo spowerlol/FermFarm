@@ -23,6 +23,7 @@ from startScreen    import runStartScreen
 import os
 import json
 from datetime import datetime
+from death_proces import plantState, getDeadPlantRefund, harvestDead
 
 # Initialise all pygame modules (display, audio, event system, etc.).
 pygame.init()
@@ -1106,6 +1107,8 @@ while running:
                             "stage"       : 0,
                             "watered"     : False,
                             "watered_days": 0,
+                            "dayRipe" : None,
+                            "dead" : False,
                         }
                         selectedSeed = None   # seed has been planted; hand is empty
                 continue
@@ -1116,9 +1119,11 @@ while running:
                 gy = (vy - gridStartY) // cellSize
                 if 0 <= gx < gridCols and 0 <= gy < gridRows:
                     cell = grid[gx][gy]
-                    if cell is not None and not cell.get("watered", False):
-                        cell["watered"] = True    # mark this plant as watered today
-                        wateringCanFull = False   # can is now empty; must refill
+                    if cell is not None:    # only continue if clicked tile contains plant
+                        plantState(cell)    # ensure plant has all required fields
+                        if not cell["watered"] and not cell["dead"]:  # deads plants cant be watered
+                            cell["watered"] = True    # mark this plant as watered today
+                            wateringCanFull = False   # can is now empty; must refill
 
         # =====================================================================
         # RIGHT MOUSE BUTTON CLICK
@@ -1164,9 +1169,12 @@ while running:
                 # Right-clicking a fully grown plant: harvest it.
                 gx        = (vx - gridStartX) // cellSize
                 gy        = (vy - gridStartY) // cellSize
-                harvested = harvest(grid, gx, gy, crops)
-                if harvested:
-                    heldFruit = {"crop": harvested, "fermented": False}
+                harvestResult = harvestDead(grid, gx, gy, crops)    # let death-system judge what happens
+                if harvestResult:
+                    if harvestResult["type"] == "dead_refund":
+                        money += getDeadPlantRefund(harvestResult["crop"])  #dead plant give refund instead of cropvalue
+                    elif harvestResult["type"] == "fruit":  # otherwise give normal cropvalue
+                        heldFruit = {"crop": harvestResult["crop"], "fermented": False}
 
     # =========================================================================
     # DAY TICK
@@ -1185,15 +1193,34 @@ while running:
             for x in range(gridCols):
                 for y in range(gridRows):
                     cell = grid[x][y]
-                    if cell:
-                        if cell.get("watered", False):
-                            cell["watered_days"] = cell.get("watered_days", 0) + 1
-                        cell["watered"] = False   # reset; must water again tomorrow
-                        crop        = crops[cell["crop"]]
-                        wateredDays = cell.get("watered_days", 0)
-                        # Advance stage based on total watered days, capped at max.
-                        stage       = wateredDays // crop["growth_days_per_stage"]
-                        cell["stage"] = min(stage, crop["max_stage"])
+                    if not cell:
+                        continue
+
+                    plantState(cell)   # ensure older save data also has new death-systme field
+
+                    if cell["dead"]:        # dead pplants remain dead and don't grow
+                        cell["watered"] = False # reset water  boolean
+                        continue
+
+                    if cell.get("watered", False): # if watered increase counter
+                        cell["watered_days"] = cell.get("watered_days", 0) + 1
+
+                    cell["watered"] = False   # reset; must water again tomorrow
+                    crop        = crops[cell["crop"]]
+                    wateredDays = cell.get("watered_days", 0)
+                    # Advance stage based on total watered days, capped at max.
+                    stage       = wateredDays // crop["growth_days_per_stage"]
+                    cell["stage"] = min(stage, crop["max_stage"])
+
+                    #check if plant = ripe
+                    if cell["stage"] >= crop["max_stage"]:  #if crop ripe track how long its ripe
+                        if cell["day_ripe"] is None: # if this is the first ripe day store the day
+                            cell["day_ripe"] = daysPassed
+
+                        elif daysPassed - cell["day_ripe"] >= 2:    # if plant stays too long mark it dead
+                            cell["dead"] = True
+                    else:                   # if the plant is no longer considered ripe clear ripe day
+                        cell["day_ripe"] = None
 
             # Check fermentation pots and mark any finished crops.
             tickFermentation()
@@ -1257,8 +1284,13 @@ while running:
         for y in range(gridRows):
             cell = grid[x][y]
             if cell:
-                crop   = crops[cell["crop"]]
-                sprite = crop["stages"][cell["stage"]]
+                plantState(cell)    # ensure the cell contains all keys
+                crop   = crops[cell["crop"]]    #look up crop data for plant
+
+                if cell["dead"]:        #choose correct sprite - dead foor deadsprite, moral stage sprite for living
+                    sprite = crop["death_sprite"]
+                else:
+                    sprite = crop["stages"][cell["stage"]]
                 # Scale the crop sprite to exactly fill one grid cell if needed.
                 if sprite.get_width() != cellSize or sprite.get_height() != cellSize:
                     sprite = pygame.transform.scale(sprite, (cellSize, cellSize))

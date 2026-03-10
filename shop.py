@@ -1,7 +1,7 @@
 # =============================================================================
 # shop.py
 # This file defines the layout of the in-game shop and handles what happens
-# when the player clicks on a shop item to buy it.
+# when the player clicks on a shop item to buy it
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -11,7 +11,8 @@
 # from the original tile-grid design is multiplied by 8 here, giving us the
 # actual pixel position on the virtual canvas.
 # -----------------------------------------------------------------------------
-
+from script import money
+import pygame
 # Horizontal (X) start position of the first shop item on screen.
 # Design value: 182 tiles.  182 * 8 = 1456 pixels.
 Shop_x_start = 1456
@@ -54,7 +55,7 @@ Shop_items = [
         # pygame.Rect(x, y, width, height) marks the clickable region on screen.
         # x and y come from Shop_x_start / Shop_y_start (already scaled × 8).
         # Width and height come from Shop_Item_w / Shop_Item_H (also scaled × 8).
-        "rect" : pygame.Rect(Shop_x_start, Shop_y_start, Shop_Item_w, Shop_Item_H),
+        "rect" :pygame.Rect(Shop_x_start, Shop_y_start, Shop_Item_w, Shop_Item_H),
 
         # "TomaatZaad" is Dutch for "TomatoSeed". This string is checked below
         # to decide which inventory flag to set after a successful purchase.

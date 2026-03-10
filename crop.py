@@ -47,8 +47,8 @@ def loadCrops(textures):
                 textures["tomatoPlant1"],   # Stage 1: small plant
                 textures["tomatoPlant2"],   # Stage 2: flowering
                 textures["tomatoPlant3"],   # Stage 3: ripe tomatoes (harvestable)
-                textures["tomatoDeath"],
             ],
+            "deathSprite": textures["tomatoDeath"], #deathstage
             "growth_days_per_stage": 1,   # needs 1 watered day per stage
             "max_stage": 3,               # harvest is available at stage 3
         },
@@ -64,9 +64,9 @@ def loadCrops(textures):
                 textures["carrotPlant1"],   # Stage 1: leafy tops visible
                 textures["carrotPlant2"],   # Stage 2: carrot bulge showing
                 textures["carrotPlant3"],   # Stage 3: fully grown (harvestable)
-                textures["deathCarrot"],
-                textures["cabbageDeath"],
+                textures["carrotDeath"],
             ],
+            "deathSprite": textures["carrotDeath"], #deathstage
             "growth_days_per_stage": 2,   # needs 2 watered days per stage
             "max_stage": 3,
         },
@@ -83,10 +83,10 @@ def loadCrops(textures):
                 textures["garlicPlant3"],   # Stage 2: growing well
                 textures["garlicPlant4"],   # Stage 3: almost ready
                 textures["garlicPlant5"],   # Stage 4: fully grown (harvestable)
-                textures["garlicDeath"],
             ],
+            "deathSprite" : textures["garlicDeath"], # deathstage
             "growth_days_per_stage": 3,   # needs 3 watered days per stage
-            "max_stage": 5,
+            "max_stage": 4,
 
         },
 
@@ -101,6 +101,7 @@ def loadCrops(textures):
                 textures["cabbagePlant2"],  # Stage 1: leafy head forming
                 textures["cabbagePlant3"],  # Stage 2: full cabbage (harvestable)
             ],
+            "deathSprite" : textures["cabbageDeath"], #deathstage
             "growth_days_per_stage": 1,   # needs 1 watered day per stage
             "max_stage": 2,
         },
@@ -117,6 +118,7 @@ def loadCrops(textures):
                 textures["chiliPlant3"],    # Stage 2: small peppers forming
                 textures["chiliPlant4"],    # Stage 3: ripe chilis (harvestable)
             ],
+            "deathSprite" : textures["chiliDeath"], #deathstage
             "growth_days_per_stage": 1,   # needs 1 watered day per stage
             "max_stage": 3,
         },
@@ -133,6 +135,7 @@ def loadCrops(textures):
                 textures["cucumberPlant3"], # Stage 2: cucumbers forming
                 textures["cucumberPlant4"], # Stage 3: ripe cucumbers (harvestable)
             ],
+            "deathSprite" : textures["cucumberDeath"], #deathstage
             "growth_days_per_stage": 2,   # needs 2 watered days per stage
             "max_stage": 3,
         },
