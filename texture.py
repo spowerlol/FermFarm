@@ -62,7 +62,7 @@ def loadTextures():
     # GOLD WATER BUCKET, THE GOLD WATERBUCKET IS AN ITEM YOU CAN BUY IN THE SHOP
     # THIS ITEM WILL NEED A WATERREFILL AFTER EVERY 10 POURS INSTEAD OF AFTER EVERY POUR
     #-----------------------------------------
-    textures["goldWaterBucket"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-goldwaterbucket.png")).convert_alpah()
+    textures["goldWaterBucket"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-goldwaterbucket.png")).convert_alpha()
     textures["goldWaterBucketFill"] = pygame.image.load(os.path.join(ASSETS_PATH,"Sprite-goldwaterbucketfill.png")).convert_alpha()
 
     # -------------------------------------------------------------------------
@@ -80,6 +80,11 @@ def loadTextures():
     textures["weatherReport1"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-WeerBericht1.png")).convert_alpha()
     textures["weatherReport2"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-WeerBericht2.png")).convert_alpha()
     textures["weatherReport3"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-WeerBericht3.png")).convert_alpha()
+    textures["rainBackground1"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-regenBackground1.png")).convert_alpha()
+    textures["rainBackground2"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-regenBackground2.png")).convert_alpha()
+    textures["rainBackground3"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-regenBackground3.png")).convert_alpha()
+    textures["rainBackground4"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-regenBackground4.png")).convert_alpha()
+    textures["rainBackground5"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-regenBackground5.png")).convert_alpha()
 
     # -------------------------------------------------------------------------
     # SHOP & SHED FURNITURE
@@ -156,7 +161,7 @@ def loadTextures():
     textures["chiliPlant2"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-chiliPlant2.png")).convert_alpha()
     textures["chiliPlant3"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-chiliPlant3.png")).convert_alpha()
     textures["chiliPlant4"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-chiliPlant4.png")).convert_alpha()
-    textures["chiliDeath"]   = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-dodeChili..png")).convert_alpha()
+    textures["chiliDeath"]   = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-dodeChili.png")).convert_alpha()
     # -------------------------------------------------------------------------
     # CUCUMBER  ("komkommer")
     # -------------------------------------------------------------------------
