@@ -17,13 +17,13 @@ import sys
 from texture        import loadTextures
 from crop           import loadCrops
 from money_ui       import initMoneyUi, drawMoney
-from cropHarvesting import harvest, CROP_VALUES as cropValues, cropPrice
+from cropHarvesting import CROP_VALUES as cropValues, cropPrice
 from ferment        import FERMENT_DATA as fermentData
 from startScreen    import runStartScreen
 import os
 import json
 from datetime import datetime
-from death_proces import plantState, getDeadPlantRefund, harvestDead
+from death_proces import plantState, getDeadPlantRefund, harvestDead, ripeDays
 
 # Initialise all pygame modules (display, audio, event system, etc.).
 pygame.init()
@@ -1214,13 +1214,13 @@ while running:
 
                     #check if plant = ripe
                     if cell["stage"] >= crop["max_stage"]:  #if crop ripe track how long its ripe
-                        if cell["day_ripe"] is None: # if this is the first ripe day store the day
-                            cell["day_ripe"] = daysPassed
+                        if cell["dayRipe"] is None: # if this is the first ripe day store the day
+                            cell["dayRipe"] = daysPassed
 
-                        elif daysPassed - cell["day_ripe"] >= 2:    # if plant stays too long mark it dead
+                        elif daysPassed - cell["dayRipe"] >= ripeDays:    # if plant stays too long mark it dead
                             cell["dead"] = True
                     else:                   # if the plant is no longer considered ripe clear ripe day
-                        cell["day_ripe"] = None
+                        cell["dayRipe"] = None
 
             # Check fermentation pots and mark any finished crops.
             tickFermentation()
