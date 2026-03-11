@@ -166,6 +166,7 @@ garlicBagY    = 536
 
 # --- Menu / UI sprites ---
 menuSprite         = textures["menuSprite"]
+menuSpriteInfo     = textures["menuSpriteInfo"]
 closeCrossImg      = textures["closeCross"]
 closeCrossClickImg = textures["closeCrossClick"]
 doneSparkleImg     = textures["doneSparkle"]
@@ -752,9 +753,10 @@ def buildInfoSurface(mouseVx=0, mouseVy=0):
     # Same dark overlay and stretched menu background as the pause menu.
     overlay = pygame.Surface((menuRefW, menuRefH), pygame.SRCALPHA)
     overlay.fill((0, 0, 0, 180))
+    overlay.fill((0, 0, 0, 180))
     infoSurface.blit(overlay, (0, 0))
     menuSpriteScaled = pygame.transform.scale(menuSprite, (menuRefW, menuRefH))
-    infoSurface.blit(menuSpriteScaled, (0, 0))
+    infoSurface.blit(menuSpriteInfo, (0, 0))
 
     # Draw the "How to Play" title centred near the top.
     titleSurf = infoTitleFont.render("How to Play", False, (255, 240, 180))
@@ -781,23 +783,6 @@ def buildInfoSurface(mouseVx=0, mouseVy=0):
 
     infoSurface.set_clip(None)   # remove the clip before drawing fade overlays
 
-    # Draw gradient fade bars at the top and bottom of the scroll region
-    # so text smoothly disappears as it goes out of view instead of hard-cutting.
-    fadeH   = 60   # height of the fade area in pixels
-
-    # Top fade: dark at the very top, transparent at the bottom of the fade.
-    topFade = pygame.Surface((virtualWidth - infoPadX * 2, fadeH), pygame.SRCALPHA)
-    for i in range(fadeH):
-        alpha = int(200 * (1 - i / fadeH))
-        pygame.draw.line(topFade, (20, 12, 5, alpha), (0, i), (topFade.get_width(), i))
-    infoSurface.blit(topFade, (infoPadX, infoScrollTop))
-
-    # Bottom fade: transparent at the top, dark at the very bottom.
-    botFade = pygame.Surface((virtualWidth - infoPadX * 2, fadeH), pygame.SRCALPHA)
-    for i in range(fadeH):
-        alpha = int(200 * (i / fadeH))
-        pygame.draw.line(botFade, (20, 12, 5, alpha), (0, i), (botFade.get_width(), i))
-    infoSurface.blit(botFade, (infoPadX, infoScrollBottom - fadeH))
 
     # Show "scroll up / scroll down" hints near the edges of the scroll region.
     if infoScrollY > 0:
