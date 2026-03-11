@@ -308,7 +308,7 @@ wateringCanWorldRect = pygame.Rect(887, 326, 90, 90)   # where the can sprite is
 # =============================================================================
 # CORE GAME STATE
 # =============================================================================
-money          = 60               # starting coin balance
+money          = 600               # starting coin balance
 background     = textures["background"]
 calendarSprite = textures["calendar"]
 calendarCircle = textures["calendarCircle"]
