@@ -166,6 +166,7 @@ garlicBagY    = 536
 
 # --- Menu / UI sprites ---
 menuSprite         = textures["menuSprite"]
+menuSpriteInfo     = textures["menuSpriteInfo"]
 closeCrossImg      = textures["closeCross"]
 closeCrossClickImg = textures["closeCrossClick"]
 doneSparkleImg     = textures["doneSparkle"]
@@ -754,7 +755,7 @@ def buildInfoSurface(mouseVx=0, mouseVy=0):
     overlay.fill((0, 0, 0, 180))
     infoSurface.blit(overlay, (0, 0))
     menuSpriteScaled = pygame.transform.scale(menuSprite, (menuRefW, menuRefH))
-    infoSurface.blit(menuSpriteScaled, (0, 0))
+    infoSurface.blit(menuSpriteInfo, (0, 0))
 
     # Draw the "How to Play" title centred near the top.
     titleSurf = infoTitleFont.render("How to Play", False, (255, 240, 180))

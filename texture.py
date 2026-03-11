@@ -45,6 +45,9 @@ def loadTextures():
     # The pause/options menu overlay sprite.
     textures["menuSprite"] = pygame.image.load(
         os.path.join(ASSETS_PATH, "optionsMenu.png")).convert_alpha()
+    # The info/tutorial background
+    textures["menuSpriteInfo"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "optionsMenuInfo.png")).convert_alpha()
 
     # The "For Sale" tile overlay drawn on locked (not yet purchased) grid tiles.
     textures["tekoopTile"] = pygame.image.load(
