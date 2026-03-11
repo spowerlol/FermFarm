@@ -58,6 +58,13 @@ def loadTextures():
     textures["numberFont"] = pygame.image.load(
         os.path.join(ASSETS_PATH, "Sprite-font.png")).convert_alpha()
 
+    # ---------------------------------------
+    # GOLD WATER BUCKET, THE GOLD WATERBUCKET IS AN ITEM YOU CAN BUY IN THE SHOP
+    # THIS ITEM WILL NEED A WATERREFILL AFTER EVERY 10 POURS INSTEAD OF AFTER EVERY POUR
+    #-----------------------------------------
+    textures["goldWaterBucket"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-goldwaterbucket.png")).convert_alpah()
+    textures["goldWaterBucketFill"] = pygame.image.load(os.path.join(ASSETS_PATH,"Sprite-goldwaterbucketfill.png")).convert_alpha()
+
     # -------------------------------------------------------------------------
     # CALENDAR
     # The calendar sprite shows which day of the season it is.
