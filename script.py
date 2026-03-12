@@ -306,6 +306,48 @@ wateringCanHeld  = False
 waterRefillRect      = pygame.Rect(887, 416, 90, 90)   # clickable area of the water source
 wateringCanWorldRect = pygame.Rect(887, 326, 90, 90)   # where the can sprite is drawn when idle  (416 - 90 = 326)
 
+#================================
+#gold waterbucket
+# Can be bought for 300 coins and owned permanant, also after 10x uses you have to refill
+#===================================
+goldWaterBucketEmptyImg = textures["goldWaterBucket"]
+goldWaterBucketFullImg = textures["goldWaterBucketFill"]
+
+# =============================================================================
+# GOLD WATER BUCKET
+# Permanent shop upgrade.
+# After buying it once, the player owns it forever.
+# It can be refilled at the water source and then used 10 times before another
+# refill is needed.
+# =============================================================================
+
+# Gold bucket sprites.
+# Empty sprite is shown in the shop or when the bucket has no water left.
+# Full sprite is shown while the bucket still has uses remaining.
+goldWaterBucketEmptyImg = textures["goldWaterBucket"]
+goldWaterBucketImg = textures["goldWaterBucketFill"]
+
+# Shop settings for the gold bucket.
+goldWaterBucketPrice = 300
+goldWaterBucketMax = 10
+
+# Ownership and current usage state.
+hasGoldWaterBucket = False
+goldWaterBucketHeld = False
+goldWaterBucketUsesLeft = 0
+
+# Position of the bucket in the shop.
+goldWaterBucketx = 1500
+goldWaterBuckety = 280
+
+# rect for the bucket.
+goldWaterBucketRect = pygame.Rect(
+    goldWaterBucketx,
+    goldWaterBuckety,
+    goldWaterBucketEmptyImg.get_width(),
+    goldWaterBucketEmptyImg.get_height()
+)
+
 # =============================================================================
 # CORE GAME STATE
 # =============================================================================
@@ -534,6 +576,9 @@ def saveGame(slotIndex, slotName):
         "sprite_y"      : spriteY,
         "tile_owned"    : tileOwned,
         "shed_slots"    : shedSlots,
+        "has_gold_water_bucket": hasGoldWaterBucket,
+        "gold_water_bucket_held": goldWaterBucketHeld,
+        "gold_water_bucket_uses_left": goldWaterBucketUsesLeft,
     }
     saveSlots[slotIndex] = {
         "name": slotName,
@@ -556,6 +601,7 @@ def loadGame(slotIndex):
     global money, daysPassed, grid
     global currentColumn, currentRow, spriteX, spriteY, lastMoveTime, tileOwned
     global shedSlots
+    global hasGoldWaterBucket, goldWaterBucketHeld, goldWaterBucketUsesLeft
     slot = saveSlots[slotIndex]
     if slot["data"] is None:
         return False   # slot is empty nothing to load
@@ -571,6 +617,9 @@ def loadGame(slotIndex):
         lastMoveTime  = pygame.time.get_ticks()   # reset the timer so we don't skip a day immediately
         tileOwned     = data.get("tile_owned") or makeTileOwned()
         shedSlots     = data.get("shed_slots") or [None, None]
+        hasGoldWaterBucket = data.get("has_gold_water_bucket", False)
+        goldWaterBucketHeld = data.get("gold_water_bucket_held", False)
+        goldWaterBucketUsesLeft = data.get("gold_water_bucket_uses_left", 0)
         return True
     except:
         return False   # data was malformed; fail gracefully
@@ -581,6 +630,7 @@ def newGame():
     global money, daysPassed, grid
     global currentColumn, currentRow, spriteX, spriteY, lastMoveTime, tileOwned
     global shedSlots, heldPot, heldFruit
+    global hasGoldWaterBucket, goldWaterBucketHeld, goldWaterBucketUsesLeft
     money         = 6     # players start with very little money to encourage careful spending
     daysPassed    = 0
     grid          = [[None for _ in range(gridRows)] for _ in range(gridCols)]
@@ -593,6 +643,9 @@ def newGame():
     shedSlots     = [None, None]
     heldPot       = None
     heldFruit     = None
+    hasGoldWaterBucket = False
+    goldWaterBucketHeld = False
+    goldWaterBucketUsesLeft = 0
 
 
 # =============================================================================
@@ -913,6 +966,8 @@ while running:
                         selectedSeed = None
                     elif wateringCanHeld:
                         wateringCanHeld = False
+                    elif goldWaterBucketHeld:
+                        goldWaterBucketHeld = False
                     elif heldPot is not None:
                         money  += potShopPrice(heldPot)    # refund the pot cost
                         heldPot = None
@@ -1017,17 +1072,22 @@ while running:
 
             # --- Watering can refill ---
             # Clicking the water source (when not carrying a seed) picks up the full can.
-            if waterRefillRect.collidepoint(vx, vy) and not selectedSeed:
-                wateringCanHeld = True
-                wateringCanFull = True
+            if waterRefillRect.collidepoint(vx, vy) and not selectedSeed and heldPot is None and heldFruit is None:
+                if goldWaterBucketHeld:
+                    goldWaterBucketUsesLeft = goldWaterBucketMax
+
+                else:
+                    wateringCanHeld = True
+                    wateringCanFull = True
                 continue
 
             # --- Watering can: drop if clicking outside the grid ---
-            if wateringCanHeld:
+            if wateringCanHeld or goldWaterBucketHeld:
                 gx = (vx - gridStartX) // cellSize
                 gy = (vy - gridStartY) // cellSize
                 if not (0 <= gx < gridCols and 0 <= gy < gridRows):
                     wateringCanHeld = False
+                    goldWaterBucketHeld = False
                     continue
 
             # --- Pick up finished fermented fruit from a shed pot ---
@@ -1051,6 +1111,26 @@ while running:
                         money  -= fermPotLargePrice
                         heldPot = "large"   # player is now carrying the pot
                     continue
+
+            #------- gold bucket in shop ------
+            if not wateringCanHeld and not goldWaterBucketHeld and selectedSeed is None and heldPot is None and heldFruit is None:
+                if goldWaterBucketRect.collidepoint(vx, vy):
+
+                    if not hasGoldWaterBucket:  # buying the can
+                        if money >= goldWaterBucketPrice:
+                                money -= goldWaterBucketPrice
+                                hasGoldWaterBucket = True
+                                goldWaterBucketHeld = True
+                                goldWaterBucketUsesLeft = goldWaterBucketMax
+                                wateringCanHeld = False
+                                wateringCanFull = False
+
+                    else:   # already owned then just pick it up
+                        goldWaterBucketUsesLeft = False
+                        wateringCanHeld = True
+                        wateringCanFull = True
+                    continue
+
 
             # --- Check if a seed bag was clicked ---
             clickedSeed = None
@@ -1096,6 +1176,20 @@ while running:
                             "dead" : False,
                         }
                         selectedSeed = None   # seed has been planted; hand is empty
+                continue
+
+            if goldWaterBucketHeld:
+                gx = (vx - gridStartX) // cellSize
+                gy = (vy - gridStartY) // cellSize
+
+                if 0 <= gx < gridCols and 0 <= gy < gridRows:
+                    cell = grid[gx][gy]
+                    if cell is not None:
+                        plantState(cell)
+
+                        if not cell["watered"] and not cell["dead"] and goldWaterBucketUsesLeft > 0:
+                            cell["watered"] = True
+                            goldWaterBucketUsesLeft -= 1
                 continue
 
             # --- Water a plant with the watering can ---
@@ -1243,6 +1337,10 @@ while running:
     target.blit(cabbageBagImg,  (cabbageBagX,  cabbageBagY))
     target.blit(shopChestImg,   (shopChestX,   shopChestY))
 
+    #---- draw golden bucket in shop --
+    if not goldWaterBucketHeld:
+        target.blit(goldWaterBucketEmptyImg,(goldWaterBucketx, goldWaterBuckety))
+
     # --- Shed pots: draw ferment contents first, then the pot on top ---
     # We draw ferment contents behind the pot sprite so they look like they're
     # sitting inside the pot rather than floating above it.
@@ -1335,6 +1433,15 @@ while running:
                                    vMouseY - cursorScaled.get_height() // 2))
         pygame.mouse.set_visible(False)
 
+    elif goldWaterBucketHeld:    # show correct goldenbucket (fill/empty) at cursor
+        bucketImg = goldWaterBucketImg if goldWaterBucketUsesLeft > 0 else goldWaterBucketEmptyImg
+        bucketScaled = pygame.transform.scale(bucketImg, (cellSize // 2, cellSize // 2))
+        target.blit(bucketScaled, (vMouseX - bucketScaled.get_width() // 2,
+                                   vMouseY - bucketScaled.get_height() // 2))
+        pygame.mouse.set_visible(False)
+
+
+
     elif wateringCanHeld:
         # Show the correct watering can (full or empty) at the cursor.
         canImg       = wateringCanFullImg if wateringCanFull else wateringCanEmptyImg
@@ -1401,6 +1508,18 @@ while running:
             suffix = " (fermented)" if heldFruit["fermented"] else ""
             drawTooltip(target, f"Sell {heldFruit['crop'].capitalize()}{suffix}: {val} coins",
                         shopChestRect.centerx, shopChestRect.top)
+    #tooltip: bucketvalue and uses before refill
+    if not paused and not showInfo and not goldWaterBucketHeld and heldFruit is None:
+        if goldWaterBucketRect.collidepoint(vMouseX, vMouseY):
+            if not hasGoldWaterBucket:
+                drawTooltip(target, f"Gold Bucket: {goldWaterBucketPrice} coins",
+                            goldWaterBucketRect.centerx, goldWaterBucketRect.top)
+            else:
+                drawTooltip(target, f"Pick up Gold Bucket",
+                goldWaterBucketRect.centerx, goldWaterBucketRect.top)
+    if not paused and not showInfo and goldWaterBucketHeld:
+        drawTooltip(target,f"uses: { goldWaterBucketUsesLeft} left",
+                    vMouseX, vMouseY)
 
     # Tooltip: fermentation pot status (time remaining / ready).
     if not paused and not showInfo:

@@ -62,7 +62,7 @@ def loadTextures():
     # GOLD WATER BUCKET, THE GOLD WATERBUCKET IS AN ITEM YOU CAN BUY IN THE SHOP
     # THIS ITEM WILL NEED A WATERREFILL AFTER EVERY 10 POURS INSTEAD OF AFTER EVERY POUR
     #-----------------------------------------
-    textures["goldWaterBucket"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-goldwaterbucket.png")).convert_alpah()
+    textures["goldWaterBucket"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-goldwaterbucket.png")).convert_alpha()
     textures["goldWaterBucketFill"] = pygame.image.load(os.path.join(ASSETS_PATH,"Sprite-goldwaterbucketfill.png")).convert_alpha()
 
     # -------------------------------------------------------------------------
@@ -156,7 +156,7 @@ def loadTextures():
     textures["chiliPlant2"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-chiliPlant2.png")).convert_alpha()
     textures["chiliPlant3"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-chiliPlant3.png")).convert_alpha()
     textures["chiliPlant4"]  = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-chiliPlant4.png")).convert_alpha()
-    textures["chiliDeath"]   = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-dodeChili..png")).convert_alpha()
+    textures["chiliDeath"]   = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-dodeChili.png")).convert_alpha()
     # -------------------------------------------------------------------------
     # CUCUMBER  ("komkommer")
     # -------------------------------------------------------------------------
