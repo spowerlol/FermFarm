@@ -23,6 +23,7 @@ from startScreen    import runStartScreen
 import os
 import json
 from datetime import datetime
+import random
 from death_proces import plantState, getDeadPlantRefund, harvestDead, ripeDays
 
 # Initialise all pygame modules (display, audio, event system, etc.).
@@ -305,6 +306,7 @@ wateringCanHeld  = False
 # Clicking here when NOT holding a seed refills and picks up the watering can.
 waterRefillRect      = pygame.Rect(887, 416, 90, 90)   # clickable area of the water source
 wateringCanWorldRect = pygame.Rect(887, 326, 90, 90)   # where the can sprite is drawn when idle  (416 - 90 = 326)
+
 
 #================================
 #gold waterbucket
@@ -1126,7 +1128,7 @@ while running:
                                 wateringCanFull = False
 
                     else:   # already owned then just pick it up
-                        goldWaterBucketUsesLeft = False
+                        goldWaterBucketHeld = True
                         wateringCanHeld = True
                         wateringCanFull = True
                     continue
@@ -1177,6 +1179,8 @@ while running:
                         }
                         selectedSeed = None   # seed has been planted; hand is empty
                 continue
+
+
 
             if goldWaterBucketHeld:
                 gx = (vx - gridStartX) // cellSize
