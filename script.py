@@ -872,6 +872,31 @@ def buildInfoSurface(mouseVx=0, mouseVy=0):
 # GAME LOGIC HELPERS
 # =============================================================================
 
+def getPlantToolTip(cell):
+    "Return correct hover text for planted crop"
+    "Uses watered_days becaus it depends on watering not just time"
+
+    plantState(cell)        #makes sure older plants saves
+    crop = crops[cell["crop"]]
+
+    if cell["dead"]:
+        return f"{cell["crop"].capitalize()} is dead"   # if plant = dead show
+
+    if cell["stage"] >= crop["max_stage"]:   #if the plant is fully grown show the player
+        if cell["dayRipe"] is not None: #calculate how many ingame days are left
+            daysLeftBeforDeath = max(0, ripeDays - (daysPassed - cell["dayRipe"]))
+            return f"{cell["crop"].capitalize():}: Harvest Now! ({daysLeftBeforDeath}d Left)"
+        return f"{cell["crop"].capitalize()}: Harvest Now!"
+    totalWaterNeeded = crop["growth_days_per_stage"] * crop["max_stage"]      #} the growth that focusses on thr waterstages
+    waterDone = cell.get("wateredDays",0)
+
+    waterDays = cell.get("watered_days",0)
+    if cell.get("watered", False):  # if plant got watered remember in the tooltip
+            waterDays += 1
+
+    waterLeft = max(0, totalWaterNeeded - waterDays)
+    return f"{cell["crop"].capitalize()}: {waterLeft} wateringsLeft"
+
 def potShopPrice(potType):
     """Return the coin cost to purchase a fermentation pot of the given type."""
     return fermPotLargePrice   # currently only "large" pots exist
@@ -932,6 +957,10 @@ def tickFermentation():
 
 # Apply the correct initial music volume before entering the main loop.
 setMusicVolume()
+
+
+
+
 
 # =============================================================================
 # MAIN GAME LOOP
@@ -1534,6 +1563,20 @@ while running:
                     gridStartX + hx * cellSize + cellSize // 2,
                     gridStartY + hy * cellSize)
 
+    # tooltip planted crop growth and harvest
+    if not paused and not showInfo:
+        gx = (vMouseX - gridStartX) // cellSize
+        gy = (vMouseY - gridStartY) // cellSize
+
+        if 0 <= gx < gridCols and 0 <= gy < gridRows:
+            cell = grid[gx][gy]
+
+            if cell is not None:
+                tooltipText  = getPlantToolTip(cell)
+                drawTooltip(target, tooltipText,
+                            gridStartX + gx * cellSize + cellSize // 2,
+                            gridStartY + gy * cellSize)
+
     # Tooltip: seed bag price.
     if not paused and not showInfo:
         for cropName, rect in seedRects.items():
@@ -1555,7 +1598,8 @@ while running:
             suffix = " (fermented)" if heldFruit["fermented"] else ""
             drawTooltip(target, f"Sell {heldFruit['crop'].capitalize()}{suffix}: {val} coins",
                         shopChestRect.centerx, shopChestRect.top)
-    #tooltip: bucketvalue and uses before refill
+
+    #tooltip: goldBucketvalue and uses before refill
     if not paused and not showInfo and not goldWaterBucketHeld and heldFruit is None:
         if goldWaterBucketRect.collidepoint(vMouseX, vMouseY):
             if not hasGoldWaterBucket:
