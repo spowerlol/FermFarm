@@ -307,6 +307,23 @@ wateringCanHeld  = False
 waterRefillRect      = pygame.Rect(887, 416, 90, 90)   # clickable area of the water source
 wateringCanWorldRect = pygame.Rect(887, 326, 90, 90)   # where the can sprite is drawn when idle  (416 - 90 = 326)
 
+# -------------------------------------------------------------------------------
+#RAIN SYSTEM
+#--------------------------------------------------------------------------------
+
+RAIN_FRAMES       = [textures["rainBackground1"], textures["rainBackground2"], textures["rainBackground3"], textures["rainBackground4"], textures["rainBackground5"]]
+RAIN_FRAME_MS     = 120          # milliseconds per frame (adjust for speed)
+rainDaysInCycle   = set()        # which days (mod 12) are rainy this cycle
+rainCurrentCycle  = -1           # tracks which 12-day cycle we're in
+rainFrameIndex    = 0
+rainLastFrameTime = 0
+
+def getRainDaysForCycle():
+    # Picks 2 unique rain days out of every 12
+    return set(random.sample(range(12), 2))
+
+def isRainingToday():
+    return (daysPassed % 12) in rainDaysInCycle
 
 #================================
 #gold waterbucket
@@ -928,6 +945,14 @@ running = True
 while running:
     clock.tick(fps)   # cap to target FPS
 
+    # Advance rain animation frame
+    if isRainingToday() and not paused and not showInfo:
+        now_ms = pygame.time.get_ticks()
+        if now_ms - rainLastFrameTime >= RAIN_FRAME_MS:
+            rainLastFrameTime = now_ms
+            rainFrameIndex = (rainFrameIndex + 1) % len(RAIN_FRAMES)
+
+
     # Get the current mouse position and convert to virtual coordinates.
     # We use these for hover-detection on menu buttons every frame.
     mx, my           = pygame.mouse.get_pos()
@@ -1271,6 +1296,19 @@ while running:
             lastMoveTime = now
             daysPassed  += 1
 
+            # Refresh rain schedule at the start of each 12-day cycle
+            cycleIndex = daysPassed // 12
+            if cycleIndex != rainCurrentCycle:
+                rainCurrentCycle = cycleIndex
+                rainDaysInCycle = getRainDaysForCycle()
+
+            # Rain auto-waters all the plants
+            if isRainingToday():
+                for x in range(gridCols):
+                    for y in range(gridRows):
+                        if grid[x][y] is not None:
+                            grid[x][y]["watered"] = True
+
             # Update every planted crop: increment watered_days if watered,
             # then reset the "watered today" flag for the new day.
             for x in range(gridCols):
@@ -1448,9 +1486,9 @@ while running:
 
     elif wateringCanHeld:
         # Show the correct watering can (full or empty) at the cursor.
-        canImg       = wateringCanFullImg if wateringCanFull else wateringCanEmptyImg
-        canScaled    = pygame.transform.scale(canImg, (cellSize // 2, cellSize // 2))
-        target.blit(canScaled, (vMouseX - canScaled.get_width()  // 2,
+        canImg = wateringCanFullImg if wateringCanFull else wateringCanEmptyImg
+        canScaled = pygame.transform.scale(canImg, (cellSize // 2, cellSize // 2))
+        target.blit(canScaled, (vMouseX - canScaled.get_width() // 2,
                                 vMouseY - canScaled.get_height() // 2))
         pygame.mouse.set_visible(False)
 
@@ -1458,10 +1496,15 @@ while running:
         # Nothing held show the normal OS mouse cursor.
         pygame.mouse.set_visible(True)
 
+        # --- Draw rain overlay ---
+        if isRainingToday() and not paused and not showInfo:
+            rainSprite = pygame.transform.scale(RAIN_FRAMES[rainFrameIndex], (virtualWidth, virtualHeight))
+            target.blit(rainSprite, (0, 0))
+
     # =========================================================================
     # TOOLTIPS
-    # Small pop-up labels that appear near the mouse when hovering over
-    # interactive objects, showing their name and price.
+        # Small pop-up labels that appear near the mouse when hovering over
+        # interactive objects, showing their name and price.
     # =========================================================================
     def drawTooltip(surface, text, cx, cy):
         """
@@ -1481,7 +1524,7 @@ while running:
         # Clamp so the tooltip never goes off the left or right edge.
         tx = max(0, min(cx - tooltipBg.get_width() // 2, virtualWidth - tooltipBg.get_width()))
         ty = max(0, cy - tooltipBg.get_height() - 8)
-        surface.blit(tooltipBg,   (tx, ty))
+        surface.blit(tooltipBg,  (tx, ty))
         surface.blit(tooltipSurf, (tx + padX, ty + padY))
 
     # Tooltip: locked tile purchase price.

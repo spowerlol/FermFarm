@@ -80,7 +80,16 @@ def loadTextures():
     textures["weatherReport1"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-WeerBericht1.png")).convert_alpha()
     textures["weatherReport2"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-WeerBericht2.png")).convert_alpha()
     textures["weatherReport3"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-WeerBericht3.png")).convert_alpha()
-
+    textures["rainBackground1"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-regenBackground1.png")).convert_alpha()
+    textures["rainBackground2"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-regenBackground2.png")).convert_alpha()
+    textures["rainBackground3"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-regenBackground3.png")).convert_alpha()
+    textures["rainBackground4"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-regenBackground4.png")).convert_alpha()
+    textures["rainBackground5"] = pygame.image.load(
+        os.path.join(ASSETS_PATH, "Sprite-regenBackground5.png")).convert_alpha()
     # -------------------------------------------------------------------------
     # SHOP & SHED FURNITURE
     # -------------------------------------------------------------------------
