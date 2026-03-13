@@ -80,7 +80,7 @@ On rainy days all planted crops are automatically watered. Rain occurs 2 out of 
 
 GOLDEN WATER BUCKET
 
-Once you have enough coins you can buy the Golden Water Bucket from the shop for 300 coins. Unlike the normal watering can which empties after every single use, the Golden Bucket holds enough water for 10 uses before it needs to be refilled. After buying it once you own it permanently. Hover over it in your hand to see how many uses remain.
+Once you have enough coins you can buy the Golden Water Bucket from the shop for 500 coins. Unlike the normal watering can which empties after every single use, the Golden Bucket holds enough water for 10 uses before it needs to be refilled. After buying it once you own it permanently. Hover over it in your hand to see how many uses remain.
 
 
 SAVING AND LOADING
