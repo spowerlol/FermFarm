@@ -175,7 +175,7 @@ kimchiFinishedImg = textures["kichiFerment"]
 # =============================================================================
 # KIMCHI CONSTANTS
 # A pot switches to kimchi mode the moment a second raw fruit is dropped into
-# it. All 6 crops must be placed on the SAME game-day — if the day ticks over
+# it. All 6 crops must be placed on the SAME game-day if the day ticks over
 # before the recipe is complete the pot resets and the crops are lost.
 # =============================================================================
 KIMCHI_CROPS        = {"tomato", "carrot", "cucumber", "chili", "cabbage", "garlic"}
@@ -568,7 +568,7 @@ def setMusicVolume():
 def saveGame(slotIndex, slotName):
     # Write the current game state to the chosen save slot and then to disk.
     global saveSlots
-    # kimchi_crops is a set — must convert to list for JSON serialization.
+    # kimchi_crops is a set must convert to list for JSON serialization.
     def serializeSlot(slot):
         if slot is None:
             return None
@@ -948,7 +948,7 @@ def tickFermentation():
 # =============================================================================
 # KIMCHI RECIPE DISPLAY
 # Drawn above a pot in kimchi mode that is not yet fermenting.
-# Shows all 6 crop icons — green-bordered if placed, greyed-out if not.
+# Shows all 6 crop icons green-bordered if placed, greyed-out if not.
 # =============================================================================
 KIMCHI_DISPLAY_CROPS = ["tomato", "carrot", "cucumber", "chili", "cabbage", "garlic"]
 KIMCHI_ICON_SIZE     = 28
@@ -1133,12 +1133,12 @@ while running:
                         cropName = heldFruit["crop"]
 
                         if isSlotKimchi(slot):
-                            # Pot is already in kimchi mode — add the next ingredient
+                            # Pot is already in kimchi mode add the next ingredient
                             if addCropToKimchiSlot(slot, cropName):
                                 heldFruit = None
 
                         elif slot.get("crop") is None:
-                            # Empty pot — start normal single-crop fermentation
+                            # Empty pot start normal single-crop fermentation
                             slot["crop"]       = cropName
                             slot["day_placed"] = daysPassed
                             slot["done"]       = False
@@ -1490,7 +1490,7 @@ while running:
             if isKimchiDone(slot):
                 target.blit(doneSparkleImg, slotPos)
             elif not slot.get("kimchi_fermenting"):
-                # Recipe in progress — show the ingredient checklist above the pot
+                # Recipe in progress show the ingredient checklist above the pot
                 drawKimchiRecipe(target, slot, slotPos)
         else:
             # Normal single-crop fermentation
