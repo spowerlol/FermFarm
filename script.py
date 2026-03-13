@@ -1,5 +1,5 @@
 # =============================================================================
-# script.py FermFarm Main Entry Point
+# script.py  FermFarm Main Entry Point
 #
 # This is the heart of the game. It:
 #   1. Initialises pygame and the display window.
@@ -26,34 +26,24 @@ from datetime import datetime
 import random
 from death_proces import plantState, getDeadPlantRefund, harvestDead, ripeDays
 
-# Initialise all pygame modules (display, audio, event system, etc.).
 pygame.init()
 pygame.mixer.init()
 
 # =============================================================================
 # VIRTUAL CANVAS SIZE
-# All game art is drawn at this resolution. The canvas is then scaled to fit
-# whatever real display size is available, so the game looks correct on any
-# screen. The virtual size is 240 tiles wide and 135 tiles tall; each tile
-# is 8 pixels, giving us a 1920 x 1080 virtual canvas (Full HD).
 # =============================================================================
-virtualWidth  = 1920   #  virtual canvas width in pixels
-virtualHeight = 1080   #  virtual canvas height in pixels
-fps           = 60     # target frames per second
+virtualWidth  = 1920
+virtualHeight = 1080
+fps           = 60
 
-# Windowed-mode size (used when fullscreen is toggled off).
-# We use half the virtual resolution so it fits on most laptop screens.
-windowWidth   = 960    # virtualWidth  // 2
-windowHeight  = 540    # virtualHeight // 2
+windowWidth   = 960
+windowHeight  = 540
 
-# These are used when building the pause menu UI see buildMenuSurface().
-menuRefW = virtualWidth   # 1920
-menuRefH = virtualHeight  # 1080
+menuRefW = virtualWidth
+menuRefH = virtualHeight
 
 # =============================================================================
 # DISPLAY SETUP
-# We default to true fullscreen. pygame.display.Info() gives us the actual
-# monitor resolution so the window fills the screen exactly.
 # =============================================================================
 fullscreen = True
 info   = pygame.display.Info()
@@ -62,127 +52,99 @@ pygame.display.set_caption("FermFarm")
 
 clock = pygame.time.Clock()
 
-# Show the splash/title screen and wait for the player to dismiss it.
 runStartScreen(screen, fullscreen)
 
 # =============================================================================
 # MUSIC SETTINGS
-# musicNormalVol: volume during normal gameplay.
-# musicDimVol   : reduced volume when the pause menu or info screen is open,
-#                 so the menu text is easier to read without muting the music.
-# musicEnabled  : whether music is playing at all (toggled in the pause menu).
 # =============================================================================
-musicNormalVol = 0.5   # 50 % volume during gameplay
-musicDimVol    = 0.2   # 20 % volume while a menu is open
+musicNormalVol = 0.5
+musicDimVol    = 0.2
 musicEnabled   = True
 
 # =============================================================================
 # ASSET LOADING
-# Load all sprites, initialise the money HUD font, and build the crop data.
 # =============================================================================
 textures = loadTextures()
-initMoneyUi(textures)          # slices the number-font sheet into digit surfaces
-crops    = loadCrops(textures) # builds the crop-growth dictionary
+initMoneyUi(textures)
+crops    = loadCrops(textures)
 
-tekoopTileImg = textures["tekoopTile"]  # "te koop" = Dutch "for sale" overlay on locked tiles
+tekoopTileImg = textures["tekoopTile"]
 
 # =============================================================================
 # OFF-SCREEN SURFACES
-# We draw the pause menu and info screen onto separate transparent surfaces
-# (menuSurface / infoSurface) and then blit them over the game world.
-# SRCALPHA means each pixel can be fully transparent, semi-transparent, or opaque.
 # =============================================================================
 menuSurface = pygame.Surface((menuRefW, menuRefH), pygame.SRCALPHA)
 infoSurface = pygame.Surface((menuRefW, menuRefH), pygame.SRCALPHA)
 
 # =============================================================================
 # FONTS
-# We use a custom pixel-art TTF font. If the file is missing we fall back to
-# pygame's default font (fontPath = None triggers that fallback).
-# The number argument to pygame.font.Font() is the font size in points.
 # =============================================================================
 fontPath = "sprites/babosorry.ttf"
 if not os.path.exists(fontPath):
     fontPath = None
 
-saveNameFont  = pygame.font.Font(fontPath, 60)   # save-slot name in the pause menu
-saveDateFont  = pygame.font.Font(fontPath, 36)   # date/time shown in save slots
-buttonFont    = pygame.font.Font(fontPath, 96)   # large side-buttons in the pause menu
-infoTextFont  = pygame.font.Font(fontPath, 44)   # body text on the info/how-to-play screen
-infoTitleFont = pygame.font.Font(fontPath, 72)   # "How to Play" heading on info screen
+saveNameFont  = pygame.font.Font(fontPath, 60)
+saveDateFont  = pygame.font.Font(fontPath, 36)
+buttonFont    = pygame.font.Font(fontPath, 96)
+infoTextFont  = pygame.font.Font(fontPath, 44)
+infoTitleFont = pygame.font.Font(fontPath, 72)
 
 # =============================================================================
-# SPRITE POSITIONS  (all coordinates are design-value * 8 = pixel position)
+# SPRITE POSITIONS
 # =============================================================================
 
-# --- Shed door ---
-# The shed door graphic sits at tile (64, 33) in the design.
 shedDoorImg = textures["shedDoor"]
-shedDoorX   = 512    # 64
-shedDoorY   = 264    # 33
+shedDoorX   = 512
+shedDoorY   = 264
 
-# --- Shop shelves ---
-# The seed-display shelves start at tile (185, 50).
 shopShelvesImg = textures["shopShelves"]
 shopShelvesX   = 1480
 shopShelvesY   = 400
 
-# --- Shop chest (sell chest) ---
-# The sell chest sits at tile (225, 56).
 shopChestImg = textures["shopChest"]
 shopChestX   = 1800
 shopChestY   = 448
 
-# --- Large fermentation pot (shop item, before purchase) ---
-# Shown at tile (230, 42) on the shop shelf.
 fermPotLargeImg = textures["fermPotLarge"]
 fermPotLargeX   = 1840
 fermPotLargeY   = 336
 
-# --- Seed bags displayed on shelves ---
-# Each seed bag sprite is positioned at its own tile coordinate.
-carrotBagImg  = textures["carrotBag"]
-carrotBagX    = 1488
-carrotBagY    = 432
+carrotBagImg   = textures["carrotBag"]
+carrotBagX     = 1488
+carrotBagY     = 432
 
-tomatoBagImg  = textures["tomatoBag"]
-tomatoBagX    = 1584
-tomatoBagY    = 432
+tomatoBagImg   = textures["tomatoBag"]
+tomatoBagX     = 1584
+tomatoBagY     = 432
 
-chiliBagImg   = textures["chiliBag"]
-chiliBagX     = 1488
-chiliBagY     = 536
+chiliBagImg    = textures["chiliBag"]
+chiliBagX      = 1488
+chiliBagY      = 536
 
 cucumberBagImg = textures["cucumberBag"]
 cucumberBagX   = 1680
 cucumberBagY   = 432
 
-cabbageBagImg = textures["cabbageBag"]
-cabbageBagX   = 1576
-cabbageBagY   = 536
+cabbageBagImg  = textures["cabbageBag"]
+cabbageBagX    = 1576
+cabbageBagY    = 536
 
-garlicBagImg  = textures["garlicBag"]
-garlicBagX    = 1672
-garlicBagY    = 536
+garlicBagImg   = textures["garlicBag"]
+garlicBagX     = 1672
+garlicBagY     = 536
 
-# --- Menu / UI sprites ---
 menuSprite         = textures["menuSprite"]
 menuSpriteInfo     = textures["menuSpriteInfo"]
 closeCrossImg      = textures["closeCross"]
 closeCrossClickImg = textures["closeCrossClick"]
 doneSparkleImg     = textures["doneSparkle"]
 
-# The close (X) button in the top-right of the pause menu.
 closeCrossX = 1392
 closeCrossY = 96
 
 # =============================================================================
 # FRUIT & FERMENTED FRUIT TEXTURE LOOKUP TABLES
-# Lets us find any crop's icon by name rather than a long if/elif chain.
 # =============================================================================
-
-# Raw (un-fermented) fruit icons shown on the cursor while the player
-# carries a harvested crop before placing it in a pot or selling it.
 fruitImages = {
     "tomato"  : textures["tomato"],
     "carrot"  : textures["carrot"],
@@ -192,8 +154,6 @@ fruitImages = {
     "garlic"  : textures["garlic"],
 }
 
-# Fermented fruit icons shown inside the shed pot and on the cursor when
-# the player picks up a finished fermented product.
 fermentImages = {
     "tomato"  : textures["tomatoFerment"],
     "carrot"  : textures["carrotFerment"],
@@ -206,66 +166,37 @@ fermentImages = {
 # =============================================================================
 # FERMENTATION POT STATE
 # =============================================================================
-
 shedPotImg = textures["shedPot"]
 
-# Clickable/interactable rect for the large pot on the shop shelf.
-# Derived from the pot's draw position and its sprite dimensions.
 fermPotLargeRect  = pygame.Rect(fermPotLargeX, fermPotLargeY,
                                 fermPotLargeImg.get_width(), fermPotLargeImg.get_height())
-fermPotLargePrice = 30   # coins to buy a large fermentation pot
+fermPotLargePrice = 30
 
-# Where the two shed pots are DRAWN on screen (pixel coordinates).
-# These are fixed visual anchor points; the actual click detection uses
-# shedSlotRects further below.
-shedSlotTop    = (440, 280)    # top    pot draw position (x, y) in pixels
-shedSlotBottom = (464, 360)    # bottom pot draw position (x, y) in pixels
+shedSlotTop    = (440, 280)
+shedSlotBottom = (464, 360)
 
-# shedSlots[0] = top pot, shedSlots[1] = bottom pot.
-# Each slot is either None (no pot placed yet) or a dict:
-#   { "pot": "large",
-#     "crop": "tomato" | None,   <- what fruit is currently fermenting
-#     "day_placed": int | None,  <- which game day the fruit was placed
-#     "done": bool               <- True once fermentation is complete
-#   }
 shedSlots = [None, None]
 
-# Visual offset: when we draw the ferment-fruit icon INSIDE the pot sprite,
-# we shift it slightly so it appears to sit inside the pot rather than above it.
-fermentOffsetX = 17   # pixels to shift the fruit icon horizontally inside the pot
-fermentOffsetY = 25   # pixels to shift the fruit icon vertically inside the pot
+fermentOffsetX = 17
+fermentOffsetY = 25
 
-# "heldPot"   = "large" while the player is carrying a pot from the shop shelf
-#               to a shed slot; None otherwise.
-heldPot  = None
-
-# "heldFruit" = a dict {"crop": str, "fermented": bool} while the player is
-#               carrying a harvested or fermented crop; None otherwise.
+heldPot   = None
 heldFruit = None
 
-# Size in pixels to draw the fruit icon on the cursor while the player holds it.
 fruitCursorSize = 48
 
-# Click detection rectangles for the two shed pot slots.
-# These are SEPARATE from shedSlotTop / shedSlotBottom because the visual
-# sprite and the interactable area don't have to be identical.
 shedSlotRects = [
-    pygame.Rect(456, 336, 40, 40),   # top    pot clickable area (x, y, w, h)
-    pygame.Rect(480, 416, 40, 40),   # bottom pot clickable area (x, y, w, h)
+    pygame.Rect(456, 336, 40, 40),
+    pygame.Rect(480, 416, 40, 40),
 ]
 
-# Clickable rect for the sell chest (derived from sprite size).
-shopChestRect = pygame.Rect(shopChestX, shopChestY,
-                            shopChestImg.get_width(), shopChestImg.get_height())
-
-# Clickable rect for the close (X) button on the pause menu.
+shopChestRect  = pygame.Rect(shopChestX, shopChestY,
+                             shopChestImg.get_width(), shopChestImg.get_height())
 closeCrossRect = pygame.Rect(closeCrossX, closeCrossY,
                              closeCrossImg.get_width(), closeCrossImg.get_height())
 
 # =============================================================================
 # SEED BAG CLICK RECTS
-# One rectangle per crop bag on the shop shelf.
-# Derived from each bag's draw position and sprite size.
 # =============================================================================
 seedRects = {
     "carrot"  : pygame.Rect(carrotBagX,   carrotBagY,   carrotBagImg.get_width(),   carrotBagImg.get_height()),
@@ -276,10 +207,8 @@ seedRects = {
     "garlic"  : pygame.Rect(garlicBagX,   garlicBagY,   garlicBagImg.get_width(),   garlicBagImg.get_height()),
 }
 
-# Which seed is currently selected (being carried on the cursor ready to plant).
 selectedSeed = None
 
-# Quick lookup from crop name to its bag sprite, used when drawing the cursor.
 seedBagImages = {
     "carrot"  : textures["carrotBag"],
     "tomato"  : textures["tomatoBag"],
@@ -296,29 +225,25 @@ wateringCanEmptyImg = textures["wateringcanEmpty"]
 wateringCanFullImg  = textures["wateringcanFull"]
 waterDropImg        = textures["waterDropPlant"]
 
-# Is the can currently full (has water to give to plants)?
 wateringCanFull  = False
-
-# Is the player currently holding the watering can (it follows the cursor)?
 wateringCanHeld  = False
 
-# The water source / refill point: the well or trough near the farm grid.
-# Clicking here when NOT holding a seed refills and picks up the watering can.
-waterRefillRect      = pygame.Rect(887, 416, 90, 90)   # clickable area of the water source
-wateringCanWorldRect = pygame.Rect(887, 326, 90, 90)   # where the can sprite is drawn when idle  (416 - 90 = 326)
+waterRefillRect      = pygame.Rect(887, 416, 90, 90)
+wateringCanWorldRect = pygame.Rect(887, 326, 90, 90)
 
 # =============================================================================
 # RAIN SYSTEM
 # =============================================================================
-RAIN_FRAMES       = [textures["rainBackground1"], textures["rainBackground2"], textures["rainBackground3"], textures["rainBackground4"], textures["rainBackground5"]]
-RAIN_FRAME_MS     = 120          # milliseconds per frame (adjust for speed)
-rainDaysInCycle   = set()        # which days (mod 12) are rainy this cycle
-rainCurrentCycle  = -1           # tracks which 12-day cycle we're in
+RAIN_FRAMES       = [textures["rainBackground1"], textures["rainBackground2"],
+                     textures["rainBackground3"], textures["rainBackground4"],
+                     textures["rainBackground5"]]
+RAIN_FRAME_MS     = 120
+rainDaysInCycle   = set()
+rainCurrentCycle  = -1
 rainFrameIndex    = 0
 rainLastFrameTime = 0
 
 def getRainDaysForCycle():
-    # Picks 2 unique rain days out of every 12
     return set(random.sample(range(12), 2))
 
 def isRainingToday():
@@ -326,19 +251,15 @@ def isRainingToday():
 
 # =============================================================================
 # TV WEATHER FORECAST
-# Click the TV on the background to see tomorrow's weather.
-# Click again to turn it off.
 # =============================================================================
-rainForecastImg = textures["weatherReport1"]   # shown when tomorrow is a rain day
-sunForecastImg  = textures["weatherReport2"]   # shown when tomorrow is a sun day
-tvX, tvY        = 141 * 8, 33 * 8    # pixel position of the TV on the background (adjust to match your art)
-tvRect          = pygame.Rect(tvX, tvY, 30 * 8, 17 * 8)   # clickable area (adjust w/h to match TV size)
-tvOn            = False      # True while the weather forecast image is visible
+rainForecastImg = textures["weatherReport1"]
+sunForecastImg  = textures["weatherReport2"]
+tvX, tvY        = 141 * 8, 33 * 8
+tvRect          = pygame.Rect(tvX, tvY, 30 * 8, 17 * 8)
+tvOn            = False
 
 # =============================================================================
 # GOLD WATER BUCKET
-# Permanent shop upgrade. Bought once, owned forever.
-# Holds 10 uses before needing a refill at the water source.
 # =============================================================================
 goldWaterBucketEmptyImg = textures["goldWaterBucket"]
 goldWaterBucketFullImg  = textures["goldWaterBucketFill"]
@@ -362,39 +283,96 @@ goldWaterBucketRect = pygame.Rect(
 )
 
 # =============================================================================
+# GNOME DONATION SYSTEM
+# =============================================================================
+# Clicking the big gnome donates coins and adds 6 seconds to every future day.
+# There are 21 donation levels. Price formula: price(n) = 5 + (n-1) * 5
+# After all 21 donations the big gnome turns gold.
+# Mini gnomes appear at thresholds 1 / 5 / 9 / 13 / 17 donations.
+# =============================================================================
+
+GNOME_MAX_DONATIONS = 21
+
+# Sprite images loaded from texture.py
+gnomeBigImg     = textures["gnomeBig"]       # Sprite-kabouter1.png
+gnomeBigGoldImg = textures["gnomeBigGold"]   # Sprite-goudenKabouter.png
+gnomeMiniImgs   = textures["gnomeMinis"]     # list of 5: Sprite-kabouterMini1-5.png
+
+# Position of the big gnome on the virtual canvas (pixels).
+gnomeBigX = 1045
+gnomeBigY = 640
+
+# Click rect auto-sized from the sprite so it always fits the actual art.
+gnomeBigRect = pygame.Rect(
+    gnomeBigX,
+    gnomeBigY,
+    gnomeBigImg.get_width(),
+    gnomeBigImg.get_height()
+)
+
+# (x, y) draw positions for each of the 5 mini gnomes.
+gnomeMiniPositions = [
+    (1000, 921),   # mini 1 — appears at  1 donation
+    ( 968, 724),   # mini 2 — appears at  5 donations
+    (1059, 564),   # mini 3 — appears at  9 donations
+    (1268, 636),   # mini 4 — appears at 13 donations
+    (1292, 828),   # mini 5 — appears at 17 donations
+]
+
+# How many donations are needed before each mini gnome becomes visible.
+gnomeMiniThresholds = [1, 5, 9, 13, 17]
+
+# Current donation count (0-21). Saved and loaded with game slots.
+gnomeDonations = 0
+
+
+def getNextGnomePrice():
+    """
+    Price of the next donation.  Formula: price(n) = 5 + (n-1) * 5
+    n is the next donation number (1-indexed), so when gnomeDonations = 0
+    the price is 5, when gnomeDonations = 1 the price is 10, and so on
+    up to donation 21 which costs 105 coins.
+    """
+    n = gnomeDonations + 1
+    return 5 + (n - 1) * 5
+
+
+def getDayInterval():
+    """
+    Length of one in-game day in milliseconds.
+    Base: 5 000 ms (5 s).  Each donation adds 6 000 ms (6 s).
+    At 0 donations: 5 s.  At 21 donations: ~2 min 11 s.
+    """
+    return 5000 + gnomeDonations * 6000
+
+
+# =============================================================================
 # CORE GAME STATE
 # =============================================================================
-money          = 600               # starting coin balance
+money          = 600
 background     = textures["background"]
 calendarSprite = textures["calendar"]
 calendarCircle = textures["calendarCircle"]
 
-# --- Farm grid ---
-# The farm is a 7-column x 3-row grid of tiles.
-# Each tile is 16 design-tiles wide/tall, which scales to 128 x 128 pixels.
-cellSize   = 128    # 16 * 8  size of one farm tile in pixels
-gridCols   = 7      # number of columns in the farm grid
-gridRows   = 3      # number of rows    in the farm grid
-gridStartX = 0      # pixel X where the grid begins (left edge of the screen)
-gridStartY = 696    # 87 * 8 pixel Y where the grid begins
+cellSize   = 128
+gridCols   = 7
+gridRows   = 3
+gridStartX = 0
+gridStartY = 696
 
-# The grid itself: a 2D list indexed as grid[col][row].
-# None = empty tile.  dict = planted crop with its state.
 grid = [[None for _ in range(gridRows)] for _ in range(gridCols)]
 
-# --- Tile ownership ---
 tileColPrice = {
-    6: 3,    # rightmost column cheapest
+    6: 3,
     5: 5,
     4: 10,
     3: 15,
     2: 20,
     1: 30,
-    0: 50,   # leftmost column most expensive
+    0: 50,
 }
 
 def makeTileOwned():
-    """Return a fresh 7x3 ownership grid with the starting tiles pre-unlocked."""
     owned = [[False for _ in range(gridRows)] for _ in range(gridCols)]
     for col in [5, 6]:
         for row in [0, 1]:
@@ -403,7 +381,6 @@ def makeTileOwned():
 
 tileOwned = makeTileOwned()
 
-# --- Calendar / day system ---
 startX, startY   = 1400, 696
 spriteX, spriteY = startX, startY
 step          = 128
@@ -412,11 +389,9 @@ rows          = 3
 currentColumn = 0
 currentRow    = 0
 
-moveInterval = 5_000
 lastMoveTime = pygame.time.get_ticks()
 daysPassed   = 0
 
-# --- UI state flags ---
 paused   = False
 showInfo = True
 
@@ -450,7 +425,6 @@ slotStartY  = (virtualHeight - (3 * slotHeight + 2 * slotSpacing)) // 2.5
 slotBottomY = slotStartY + 3 * slotHeight + 2 * slotSpacing
 
 def getSlotRect(i):
-    """Return the pygame.Rect for save-slot button number i (0, 1, or 2)."""
     sy = slotStartY + i * (slotHeight + slotSpacing)
     return pygame.Rect(slotStartX, sy, slotWidth, slotHeight)
 
@@ -533,18 +507,19 @@ def setMusicVolume():
 def saveGame(slotIndex, slotName):
     global saveSlots
     saveData = {
-        "money"         : money,
-        "days_passed"   : daysPassed,
-        "grid"          : grid,
-        "current_column": currentColumn,
-        "current_row"   : currentRow,
-        "sprite_x"      : spriteX,
-        "sprite_y"      : spriteY,
-        "tile_owned"    : tileOwned,
-        "shed_slots"    : shedSlots,
-        "has_gold_water_bucket"     : hasGoldWaterBucket,
-        "gold_water_bucket_held"    : goldWaterBucketHeld,
+        "money"                      : money,
+        "days_passed"                : daysPassed,
+        "grid"                       : grid,
+        "current_column"             : currentColumn,
+        "current_row"                : currentRow,
+        "sprite_x"                   : spriteX,
+        "sprite_y"                   : spriteY,
+        "tile_owned"                 : tileOwned,
+        "shed_slots"                 : shedSlots,
+        "has_gold_water_bucket"      : hasGoldWaterBucket,
+        "gold_water_bucket_held"     : goldWaterBucketHeld,
         "gold_water_bucket_uses_left": goldWaterBucketUsesLeft,
+        "gnome_donations"            : gnomeDonations,
     }
     saveSlots[slotIndex] = {
         "name": slotName,
@@ -563,6 +538,8 @@ def loadGame(slotIndex):
     global currentColumn, currentRow, spriteX, spriteY, lastMoveTime, tileOwned
     global shedSlots
     global hasGoldWaterBucket, goldWaterBucketHeld, goldWaterBucketUsesLeft
+    global gnomeDonations
+
     slot = saveSlots[slotIndex]
     if slot["data"] is None:
         return False
@@ -581,6 +558,8 @@ def loadGame(slotIndex):
         hasGoldWaterBucket      = data.get("has_gold_water_bucket", False)
         goldWaterBucketHeld     = data.get("gold_water_bucket_held", False)
         goldWaterBucketUsesLeft = data.get("gold_water_bucket_uses_left", 0)
+        # Older saves that don't have gnome_donations yet default to 0
+        gnomeDonations = data.get("gnome_donations", 0)
         return True
     except:
         return False
@@ -591,6 +570,8 @@ def newGame():
     global currentColumn, currentRow, spriteX, spriteY, lastMoveTime, tileOwned
     global shedSlots, heldPot, heldFruit
     global hasGoldWaterBucket, goldWaterBucketHeld, goldWaterBucketUsesLeft
+    global gnomeDonations
+
     money         = 6
     daysPassed    = 0
     grid          = [[None for _ in range(gridRows)] for _ in range(gridCols)]
@@ -606,6 +587,7 @@ def newGame():
     hasGoldWaterBucket      = False
     goldWaterBucketHeld     = False
     goldWaterBucketUsesLeft = 0
+    gnomeDonations          = 0
 
 
 def screenToVirtual(mx, my):
@@ -790,7 +772,6 @@ running = True
 while running:
     clock.tick(fps)
 
-    # Advance rain animation frame
     if isRainingToday() and not paused and not showInfo:
         now_ms = pygame.time.get_ticks()
         if now_ms - rainLastFrameTime >= RAIN_FRAME_MS:
@@ -890,12 +871,10 @@ while running:
 
             vx, vy = screenToVirtual(mx, my)
 
-            # --- TV click: toggle weather forecast ---
             if tvRect.collidepoint(vx, vy):
                 tvOn = not tvOn
                 continue
 
-            # --- Player is holding a fruit ---
             if heldFruit is not None:
                 if shopChestRect.collidepoint(vx, vy):
                     money    += getFruitSellValue(heldFruit["crop"], heldFruit["fermented"])
@@ -912,7 +891,6 @@ while running:
                         break
                 continue
 
-            # --- Player is carrying a pot ---
             if heldPot is not None:
                 for slotIdx, slotRect in enumerate(shedSlotRects):
                     if slotRect.collidepoint(vx, vy) and shedSlots[slotIdx] is None:
@@ -921,7 +899,6 @@ while running:
                         break
                 continue
 
-            # --- Watering can refill ---
             if waterRefillRect.collidepoint(vx, vy) and not selectedSeed and heldPot is None and heldFruit is None:
                 if goldWaterBucketHeld:
                     goldWaterBucketUsesLeft = goldWaterBucketMax
@@ -930,7 +907,6 @@ while running:
                     wateringCanFull = True
                 continue
 
-            # --- Drop can/bucket if clicking outside grid ---
             if wateringCanHeld or goldWaterBucketHeld:
                 gx = (vx - gridStartX) // cellSize
                 gy = (vy - gridStartY) // cellSize
@@ -939,7 +915,6 @@ while running:
                     goldWaterBucketHeld = False
                     continue
 
-            # --- Pick up finished fermented fruit ---
             if not wateringCanHeld and selectedSeed is None and heldPot is None and heldFruit is None:
                 for slotIdx, slotRect in enumerate(shedSlotRects):
                     if slotRect.collidepoint(vx, vy):
@@ -951,7 +926,6 @@ while running:
                             slot["done"]       = False
                         break
 
-            # --- Buy a fermentation pot ---
             if not wateringCanHeld and selectedSeed is None and heldPot is None and heldFruit is None:
                 if fermPotLargeRect.collidepoint(vx, vy):
                     if money >= fermPotLargePrice:
@@ -959,7 +933,6 @@ while running:
                         heldPot = "large"
                     continue
 
-            # --- Gold bucket shop ---
             if not wateringCanHeld and not goldWaterBucketHeld and selectedSeed is None and heldPot is None and heldFruit is None:
                 if goldWaterBucketRect.collidepoint(vx, vy):
                     if not hasGoldWaterBucket:
@@ -976,7 +949,24 @@ while running:
                         wateringCanFull     = True
                     continue
 
-            # --- Check seed bag click ---
+            # -----------------------------------------------------------------
+            # GNOME DONATION CLICK
+            # Only active when the player isn't holding anything else.
+            # Each successful click:
+            #   - Deducts getNextGnomePrice() coins
+            #   - Increments gnomeDonations (max 21)
+            #   - Next call to getDayInterval() returns a longer day
+            # -----------------------------------------------------------------
+            if (not wateringCanHeld and not goldWaterBucketHeld
+                    and selectedSeed is None and heldPot is None and heldFruit is None):
+                if gnomeBigRect.collidepoint(vx, vy):
+                    if gnomeDonations < GNOME_MAX_DONATIONS:
+                        nextPrice = getNextGnomePrice()
+                        if money >= nextPrice:
+                            money          -= nextPrice
+                            gnomeDonations += 1
+                    continue
+
             clickedSeed = None
             if not wateringCanHeld and heldPot is None and heldFruit is None:
                 for cropName, rect in seedRects.items():
@@ -984,7 +974,6 @@ while running:
                         clickedSeed = cropName
                         break
 
-            # --- Buy a locked tile ---
             if clickedSeed is None and selectedSeed is None and not wateringCanHeld and heldPot is None and heldFruit is None:
                 gx = (vx - gridStartX) // cellSize
                 gy = (vy - gridStartY) // cellSize
@@ -996,14 +985,12 @@ while running:
                             tileOwned[gx][gy] = True
                         continue
 
-            # --- Purchase a seed ---
             if clickedSeed and selectedSeed is None:
                 if money >= cropPrice[clickedSeed]:
                     money -= cropPrice[clickedSeed]
                     selectedSeed = clickedSeed
                 continue
 
-            # --- Plant the selected seed ---
             if selectedSeed is not None:
                 gx = (vx - gridStartX) // cellSize
                 gy = (vy - gridStartY) // cellSize
@@ -1021,7 +1008,6 @@ while running:
                         selectedSeed = None
                 continue
 
-            # --- Water with gold bucket ---
             if goldWaterBucketHeld:
                 gx = (vx - gridStartX) // cellSize
                 gy = (vy - gridStartY) // cellSize
@@ -1034,7 +1020,6 @@ while running:
                             goldWaterBucketUsesLeft -= 1
                 continue
 
-            # --- Water with normal can ---
             if wateringCanHeld and wateringCanFull:
                 gx = (vx - gridStartX) // cellSize
                 gy = (vy - gridStartY) // cellSize
@@ -1093,28 +1078,25 @@ while running:
                         heldFruit = {"crop": harvestResult["crop"], "fermented": False}
 
     # =========================================================================
-    # DAY TICK
+    # DAY TICK  — uses getDayInterval() so donations lengthen the day
     # =========================================================================
     if not paused and not showInfo:
         now = pygame.time.get_ticks()
-        if now - lastMoveTime >= moveInterval:
+        if now - lastMoveTime >= getDayInterval():
             lastMoveTime = now
             daysPassed  += 1
 
-            # Refresh rain schedule at the start of each 12-day cycle
             cycleIndex = daysPassed // 12
             if cycleIndex != rainCurrentCycle:
                 rainCurrentCycle = cycleIndex
                 rainDaysInCycle  = getRainDaysForCycle()
 
-            # Rain auto-waters all plants
             if isRainingToday():
                 for x in range(gridCols):
                     for y in range(gridRows):
                         if grid[x][y] is not None:
                             grid[x][y]["watered"] = True
 
-            # Update every planted crop
             for x in range(gridCols):
                 for y in range(gridRows):
                     cell = grid[x][y]
@@ -1163,7 +1145,6 @@ while running:
     screenW, screenH = screen.get_size()
     target = pygame.Surface((virtualWidth, virtualHeight))
 
-    # --- Background and shop furniture ---
     target.blit(background,     (0, 0))
     target.blit(shopShelvesImg, (shopShelvesX, shopShelvesY))
     target.blit(fermPotLargeImg,(fermPotLargeX, fermPotLargeY))
@@ -1174,11 +1155,28 @@ while running:
     target.blit(garlicBagImg,   (garlicBagX,   garlicBagY))
     target.blit(cabbageBagImg,  (cabbageBagX,  cabbageBagY))
     target.blit(shopChestImg,   (shopChestX,   shopChestY))
-    # Temporarily add this in the rendering section:
+
     pygame.draw.rect(target, (255, 0, 0), tvRect, 2)
 
     if not goldWaterBucketHeld:
         target.blit(goldWaterBucketShop, (goldWaterBucketx, goldWaterBuckety))
+
+    # -------------------------------------------------------------------------
+    # GNOME RENDERING
+    # Draw mini gnomes first (behind the big one), then the big gnome on top.
+    # Each mini gnome uses its own unique sprite from the gnomeMiniImgs list.
+    # -------------------------------------------------------------------------
+
+    # Mini gnomes: gnomeMiniImgs[i] appears when donations >= gnomeMiniThresholds[i]
+    for i, (miniX, miniY) in enumerate(gnomeMiniPositions):
+        if gnomeDonations >= gnomeMiniThresholds[i]:
+            target.blit(gnomeMiniImgs[i], (miniX, miniY))
+
+    # Big gnome: swap to gold sprite once all 21 donations are done
+    if gnomeDonations >= GNOME_MAX_DONATIONS:
+        target.blit(gnomeBigGoldImg, (gnomeBigX, gnomeBigY))
+    else:
+        target.blit(gnomeBigImg,     (gnomeBigX, gnomeBigY))
 
     # --- Shed pots ---
     shedPositions = [shedSlotTop, shedSlotBottom]
@@ -1238,8 +1236,7 @@ while running:
                 target.blit(druppel, (gridStartX + x * cellSize, gridStartY + y * cellSize))
 
     # --- TV weather forecast overlay ---
-    # Drawn after droplets so it appears on top of the game world.
-    tvSprite = textures["weatherReport3"]  # idle/off state — swap for a dedicated off sprite if you have one
+    tvSprite = textures["weatherReport3"]
     target.blit(tvSprite, (1120, 224))
     if tvOn:
         tomorrowDay = (daysPassed + 1) % 12
@@ -1247,7 +1244,6 @@ while running:
         target.blit(forecastImg, (1120, 224))
 
     # --- Rain overlay ---
-    # Always drawn regardless of what the player is holding.
     if isRainingToday() and not paused and not showInfo:
         rainSprite = pygame.transform.scale(RAIN_FRAMES[rainFrameIndex], (virtualWidth, virtualHeight))
         target.blit(rainSprite, (0, 0))
@@ -1372,6 +1368,29 @@ while running:
                 elif slot is not None:
                     drawTooltip(target, "Empty pot (place a fruit)", slotRect.centerx, slotRect.top)
                 break
+
+    # -------------------------------------------------------------------------
+    # GNOME TOOLTIP
+    # Shows cost, progress and day-length preview when hovering the big gnome.
+    # -------------------------------------------------------------------------
+    if (not paused and not showInfo
+            and not wateringCanHeld and not goldWaterBucketHeld
+            and selectedSeed is None and heldPot is None and heldFruit is None):
+        if gnomeBigRect.collidepoint(vMouseX, vMouseY):
+            if gnomeDonations >= GNOME_MAX_DONATIONS:
+                drawTooltip(target, "Gnome fully upgraded! Max day length reached.",
+                            gnomeBigRect.centerx, gnomeBigRect.top)
+            else:
+                nextPrice  = getNextGnomePrice()
+                daySeconds = getDayInterval() // 1000
+                nextDaySec = (getDayInterval() + 6000) // 1000
+                drawTooltip(
+                    target,
+                    f"Donate {nextPrice} coins  [{gnomeDonations}/{GNOME_MAX_DONATIONS}]"
+                    f"  day: {daySeconds}s -> {nextDaySec}s",
+                    gnomeBigRect.centerx,
+                    gnomeBigRect.top
+                )
 
     # =========================================================================
     # OVERLAY MENUS
