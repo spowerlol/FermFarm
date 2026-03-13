@@ -5,7 +5,8 @@
 from cropHarvesting import cropPrice, harvest
 
 ripeDays = 2  # number ingame days a plant may remain ripe before death
-deadPlantPenalty = 2 # amount subtracted from the seed price when refund as:"deathpenalty"
+deadPlantPenalty = 0.5
+
 def plantState(cell):
     "Ensure that a planted cell contains in fields"
     # if the tile = empty the is nothing to change
@@ -23,7 +24,7 @@ def getDeadPlantRefund(cropName):
     "return the amount of money tge player recieves for clearing plant"
     "rule : refund = seedprice - 2 ----> it never becomes zero"
     "returns: int: refund amount of dead plant"
-    return max(0, cropPrice[cropName] - deadPlantPenalty) # look up seedprice and - penalty + makes sure money >= 0
+    return max(0,(int( cropPrice[cropName] * deadPlantPenalty))) # look up seedprice and * penalty + makes sure money >= 0
 
 
 

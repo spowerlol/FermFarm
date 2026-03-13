@@ -1309,7 +1309,7 @@ while running:
                 harvestResult = harvestDead(grid, gx, gy, crops)    # let death-system judge what happens
                 if harvestResult:
                     if harvestResult["type"] == "dead_refund":
-                        money += getDeadPlantRefund(harvestResult["crop"])  #dead plant give refund instead of cropvalue
+                         money += getDeadPlantRefund(harvestResult["crop"])  #dead plant give refund instead of cropvalue
                     elif harvestResult["type"] == "fruit":  # otherwise give normal cropvalue
                         heldFruit = {"crop": harvestResult["crop"], "fermented": False}
 
