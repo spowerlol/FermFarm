@@ -1,4 +1,4 @@
-# script.py  —  FermFarm main entry point
+# script.py FermFarm main entry point
 #
 # This is the heart of the game. It:
 #   1. Initialises pygame and the display window.
@@ -204,7 +204,7 @@ heldFruit = None
 # How large (in pixels) to draw the fruit sprite when held on the cursor.
 fruitCursorSize = 48
 
-# Click areas for each shed slot — separate from the draw positions above
+# Click areas for each shed slot separate from the draw positions above
 # because click detection and drawing are independent concerns.
 shedSlotRects = [
     pygame.Rect(456, 336, 40, 40),
@@ -781,13 +781,13 @@ def getPlantToolTip(cell):
         return f"{cell['crop'].capitalize()} is dead"
 
     if cell["stage"] >= crop["max_stage"]:
-        # Plant is ripe — show how many days until it dies.
+        # Plant is ripe show how many days until it dies.
         if cell["dayRipe"] is not None:
             daysLeftBeforeDeath = max(0, ripeDays - (daysPassed - cell["dayRipe"]))
             return f"{cell['crop'].capitalize()}: Harvest Now! ({daysLeftBeforeDeath}d Left)"
         return f"{cell['crop'].capitalize()}: Harvest Now!"
 
-    # Plant is still growing — show how many more waterings it needs.
+    # Plant is still growing show how many more waterings it needs.
     totalWaterNeeded = crop["growth_days_per_stage"] * crop["max_stage"]
     waterDays = cell.get("watered_days", 0)
     if cell.get("watered", False):
