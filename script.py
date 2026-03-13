@@ -169,6 +169,19 @@ fermentImages = {
     "garlic"  : textures["garlicFerment"],
 }
 
+# The finished kimchi icon.
+kimchiFinishedImg = textures["kichiFerment"]
+
+# =============================================================================
+# KIMCHI CONSTANTS
+# A pot switches to kimchi mode the moment a second raw fruit is dropped into
+# it. All 6 crops must be placed on the SAME game-day — if the day ticks over
+# before the recipe is complete the pot resets and the crops are lost.
+# =============================================================================
+KIMCHI_CROPS        = {"tomato", "carrot", "cucumber", "chili", "cabbage", "garlic"}
+KIMCHI_VALUE        = 100   # coins for selling finished kimchi
+KIMCHI_FERMENT_DAYS = 4     # days to ferment once all 6 crops are in
+
 # ============================================================
 # FERMENTATION POT STATE
 # The shed has two slots where the player can place fermentation pots.
@@ -188,6 +201,15 @@ shedSlotTop    = (440, 280)
 shedSlotBottom = (464, 360)
 
 # The actual pot-contents data for each slot. None means the slot is empty.
+# Each slot dict has these keys for NORMAL fermentation:
+#   pot, crop, day_placed, done
+#
+# When kimchi mode is active, extra keys are added:
+#   mode             = "kimchi"
+#   kimchi_crops     : set of crop names placed so far
+#   kimchi_batch_day : daysPassed when the first crop was dropped (same-day check)
+#   kimchi_fermenting: True once all 6 crops are in
+#   kimchi_day_started: daysPassed when fermenting began
 shedSlots = [None, None]
 
 # How many pixels to offset the ferment-fruit sprite from the pot sprite
@@ -372,7 +394,7 @@ def getDayInterval():
 # ============================================================
 # CORE GAME STATE
 # ============================================================
-money          = 600
+money          = 6
 background     = textures["background"]
 calendarSprite = textures["calendar"]
 calendarCircle = textures["calendarCircle"]
@@ -546,6 +568,14 @@ def setMusicVolume():
 def saveGame(slotIndex, slotName):
     # Write the current game state to the chosen save slot and then to disk.
     global saveSlots
+    # kimchi_crops is a set — must convert to list for JSON serialization.
+    def serializeSlot(slot):
+        if slot is None:
+            return None
+        s = dict(slot)
+        if "kimchi_crops" in s and isinstance(s["kimchi_crops"], set):
+            s["kimchi_crops"] = list(s["kimchi_crops"])
+        return s
     saveData = {
         "money"                      : money,
         "days_passed"                : daysPassed,
@@ -555,7 +585,7 @@ def saveGame(slotIndex, slotName):
         "sprite_x"                   : spriteX,
         "sprite_y"                   : spriteY,
         "tile_owned"                 : tileOwned,
-        "shed_slots"                 : shedSlots,
+        "shed_slots"                 : [serializeSlot(s) for s in shedSlots],
         "has_gold_water_bucket"      : hasGoldWaterBucket,
         "gold_water_bucket_held"     : goldWaterBucketHeld,
         "gold_water_bucket_uses_left": goldWaterBucketUsesLeft,
@@ -596,7 +626,13 @@ def loadGame(slotIndex):
         spriteY       = data["sprite_y"]
         lastMoveTime  = pygame.time.get_ticks()
         tileOwned     = data.get("tile_owned") or makeTileOwned()
-        shedSlots     = data.get("shed_slots") or [None, None]
+        rawSlots      = data.get("shed_slots") or [None, None]
+        # Restore kimchi_crops as a set (was serialized as a list).
+        shedSlots = []
+        for s in rawSlots:
+            if s is not None and "kimchi_crops" in s:
+                s["kimchi_crops"] = set(s["kimchi_crops"])
+            shedSlots.append(s)
         hasGoldWaterBucket      = data.get("has_gold_water_bucket", False)
         goldWaterBucketHeld     = data.get("gold_water_bucket_held", False)
         goldWaterBucketUsesLeft = data.get("gold_water_bucket_uses_left", 0)
@@ -802,6 +838,8 @@ def potShopPrice(potType):
 def getFruitSellValue(cropName, fermented):
     # Returns how many coins selling this crop earns.
     # fermented=True gives the higher fermented price.
+    if cropName == "kimchi":
+        return KIMCHI_VALUE
     if fermented:
         return fermentData[cropName]["value"]
     return cropValues[cropName]
@@ -810,21 +848,140 @@ def isFermentDone(slot):
     # Returns True if the fruit in this shed slot has finished fermenting.
     if slot is None or slot.get("crop") is None:
         return False
+    if isSlotKimchi(slot):
+        return False
     if slot.get("done", False):
         return True
     daysRequired = fermentData[slot["crop"]]["days"]
     daysIn       = daysPassed - slot.get("day_placed", daysPassed)
     return daysIn >= daysRequired
 
+# =============================================================================
+# KIMCHI SLOT HELPERS
+# =============================================================================
+
+def isSlotKimchi(slot):
+    """True if this slot is currently in kimchi mode."""
+    return slot is not None and slot.get("mode") == "kimchi"
+
+def isKimchiDone(slot):
+    """True when the kimchi in this slot has finished fermenting."""
+    if not isSlotKimchi(slot):
+        return False
+    if slot.get("done", False):
+        return True
+    if slot.get("kimchi_fermenting", False) and slot.get("kimchi_day_started") is not None:
+        return daysPassed - slot["kimchi_day_started"] >= KIMCHI_FERMENT_DAYS
+    return False
+
+def enterKimchiMode(slot, firstCrop, secondCrop):
+    """
+    Convert a normal single-crop slot into kimchi mode.
+    Called the moment a second raw fruit is dropped onto an occupied pot.
+    """
+    slot["mode"]               = "kimchi"
+    slot["crop"]               = None
+    slot["day_placed"]         = None
+    slot["done"]               = False
+    slot["kimchi_crops"]       = {firstCrop, secondCrop}
+    slot["kimchi_batch_day"]   = daysPassed
+    slot["kimchi_fermenting"]  = False
+    slot["kimchi_day_started"] = None
+
+def addCropToKimchiSlot(slot, cropName):
+    """
+    Add one more crop to a kimchi-mode slot.
+    Returns True if accepted, False if rejected (wrong day, duplicate, full, done).
+    Automatically starts fermenting once all 6 crops are in.
+    """
+    if not isSlotKimchi(slot):
+        return False
+    if slot.get("kimchi_fermenting") or slot.get("done"):
+        return False
+    if cropName not in KIMCHI_CROPS:
+        return False
+    if cropName in slot["kimchi_crops"]:
+        return False
+    # Enforce same-day rule
+    if slot.get("kimchi_batch_day") != daysPassed:
+        return False
+    slot["kimchi_crops"].add(cropName)
+    if slot["kimchi_crops"] == KIMCHI_CROPS:
+        slot["kimchi_fermenting"]  = True
+        slot["kimchi_day_started"] = daysPassed
+    return True
+
+def resetKimchiSlotToEmpty(slot):
+    """Strip all kimchi keys off a slot, leaving an empty pot."""
+    slot["mode"]               = None
+    slot["crop"]               = None
+    slot["day_placed"]         = None
+    slot["done"]               = False
+    slot.pop("kimchi_crops",        None)
+    slot.pop("kimchi_batch_day",    None)
+    slot.pop("kimchi_fermenting",   None)
+    slot.pop("kimchi_day_started",  None)
+
 def tickFermentation():
     # Called once per day tick. Marks any finished fermentation slots as done.
     for slot in shedSlots:
-        if slot is not None and slot.get("crop") is not None:
-            if not slot.get("done", False):
+        if slot is None:
+            continue
+        if isSlotKimchi(slot):
+            if slot.get("kimchi_fermenting") and not slot.get("done", False):
+                if daysPassed - slot["kimchi_day_started"] >= KIMCHI_FERMENT_DAYS:
+                    slot["done"] = True
+            elif not slot.get("kimchi_fermenting") and not slot.get("done", False):
+                # Incomplete batch: if the day has moved on, reset the pot
+                if (slot.get("kimchi_batch_day") is not None
+                        and slot["kimchi_batch_day"] < daysPassed):
+                    resetKimchiSlotToEmpty(slot)
+        else:
+            # Normal single-crop ferment tick
+            if slot.get("crop") is not None and not slot.get("done", False):
                 daysRequired = fermentData[slot["crop"]]["days"]
                 daysIn       = daysPassed - slot.get("day_placed", daysPassed)
                 if daysIn >= daysRequired:
                     slot["done"] = True
+
+
+# =============================================================================
+# KIMCHI RECIPE DISPLAY
+# Drawn above a pot in kimchi mode that is not yet fermenting.
+# Shows all 6 crop icons — green-bordered if placed, greyed-out if not.
+# =============================================================================
+KIMCHI_DISPLAY_CROPS = ["tomato", "carrot", "cucumber", "chili", "cabbage", "garlic"]
+KIMCHI_ICON_SIZE     = 28
+KIMCHI_ICON_PAD      = 4
+
+def drawKimchiRecipe(target, slot, potDrawPos):
+    crops_in = slot.get("kimchi_crops", set())
+    panelW   = (KIMCHI_ICON_SIZE + KIMCHI_ICON_PAD) * 6 + KIMCHI_ICON_PAD
+    panelH   = KIMCHI_ICON_SIZE + KIMCHI_ICON_PAD * 2
+
+    px = potDrawPos[0] - (panelW - shedPotImg.get_width()) // 2
+    py = potDrawPos[1] - panelH - 6
+
+    # Semi-transparent dark background
+    panelSurf = pygame.Surface((panelW, panelH), pygame.SRCALPHA)
+    panelSurf.fill((20, 15, 10, 200))
+    target.blit(panelSurf, (px, py))
+
+    for i, cropName in enumerate(KIMCHI_DISPLAY_CROPS):
+        icon = pygame.transform.scale(fruitImages[cropName],
+                                      (KIMCHI_ICON_SIZE, KIMCHI_ICON_SIZE))
+        ix = px + KIMCHI_ICON_PAD + i * (KIMCHI_ICON_SIZE + KIMCHI_ICON_PAD)
+        iy = py + KIMCHI_ICON_PAD
+        if cropName in crops_in:
+            target.blit(icon, (ix, iy))
+            # Green border = ingredient already in the pot
+            pygame.draw.rect(target, (80, 220, 80),
+                             pygame.Rect(ix, iy, KIMCHI_ICON_SIZE, KIMCHI_ICON_SIZE), 2)
+        else:
+            # Greyed-out = still needs to be added today
+            grey = icon.copy()
+            grey.fill((80, 80, 80, 160), special_flags=pygame.BLEND_RGBA_MULT)
+            target.blit(grey, (ix, iy))
 
 
 setMusicVolume()
@@ -962,16 +1119,41 @@ while running:
                     money    += getFruitSellValue(heldFruit["crop"], heldFruit["fermented"])
                     heldFruit = None
                     continue
+
+                # Drop into a shed slot
                 for slotIdx, slotRect in enumerate(shedSlotRects):
                     if slotRect.collidepoint(vx, vy):
                         slot = shedSlots[slotIdx]
-                        # Place the fruit into the pot only if the slot has a pot but no fruit,
-                        # and the fruit is not already fermented.
-                        if slot is not None and slot.get("crop") is None and not heldFruit["fermented"]:
-                            slot["crop"]       = heldFruit["crop"]
+                        if slot is None:
+                            break  # no pot here yet
+
+                        if heldFruit["fermented"]:
+                            break  # never put a fermented crop back into a pot
+
+                        cropName = heldFruit["crop"]
+
+                        if isSlotKimchi(slot):
+                            # Pot is already in kimchi mode — add the next ingredient
+                            if addCropToKimchiSlot(slot, cropName):
+                                heldFruit = None
+
+                        elif slot.get("crop") is None:
+                            # Empty pot — start normal single-crop fermentation
+                            slot["crop"]       = cropName
                             slot["day_placed"] = daysPassed
                             slot["done"]       = False
                             heldFruit = None
+
+                        else:
+                            # Pot already has ONE crop and has not finished fermenting.
+                            # Dropping a SECOND different crop triggers kimchi mode!
+                            firstCrop = slot["crop"]
+                            if (cropName != firstCrop
+                                    and cropName in KIMCHI_CROPS
+                                    and firstCrop in KIMCHI_CROPS
+                                    and not slot.get("done", False)):
+                                enterKimchiMode(slot, firstCrop, cropName)
+                                heldFruit = None
                         break
                 continue
 
@@ -1002,12 +1184,17 @@ while running:
                     goldWaterBucketHeld = False
                     continue
 
-            # Picking up a finished ferment from a shed slot.
+            # Picking up finished kimchi or a finished normal ferment from a shed slot.
             if not wateringCanHeld and selectedSeed is None and heldPot is None and heldFruit is None:
                 for slotIdx, slotRect in enumerate(shedSlotRects):
                     if slotRect.collidepoint(vx, vy):
                         slot = shedSlots[slotIdx]
-                        if slot is not None and isFermentDone(slot):
+                        if slot is None:
+                            break
+                        if isKimchiDone(slot):
+                            heldFruit = {"crop": "kimchi", "fermented": True}
+                            resetKimchiSlotToEmpty(slot)
+                        elif isFermentDone(slot):
                             heldFruit          = {"crop": slot["crop"], "fermented": True}
                             slot["crop"]       = None
                             slot["day_placed"] = None
@@ -1288,14 +1475,27 @@ while running:
         slot = shedSlots[slotIdx]
         if slot is None:
             continue
-        # Draw the ferment-fruit sprite inside the pot, then the pot on top.
-        if slot.get("crop") is not None:
-            fermImg = fermentImages[slot["crop"]]
-            target.blit(fermImg, (slotPos[0] + fermentOffsetX, slotPos[1] + fermentOffsetY))
-        target.blit(shedPotImg, slotPos)
-        # Sparkle overlay when fermentation is complete.
-        if slot.get("crop") is not None and isFermentDone(slot):
-            target.blit(doneSparkleImg, slotPos)
+
+        if isSlotKimchi(slot):
+            # Draw kimchi sprite inside pot once all 6 crops are placed
+            if slot.get("kimchi_fermenting") or slot.get("done"):
+                target.blit(kimchiFinishedImg,
+                            (slotPos[0] + fermentOffsetX, slotPos[1] + fermentOffsetY))
+            target.blit(shedPotImg, slotPos)
+            if isKimchiDone(slot):
+                target.blit(doneSparkleImg, slotPos)
+            elif not slot.get("kimchi_fermenting"):
+                # Recipe in progress — show the ingredient checklist above the pot
+                drawKimchiRecipe(target, slot, slotPos)
+        else:
+            # Normal single-crop fermentation
+            if slot.get("crop") is not None:
+                fermImg = fermentImages[slot["crop"]]
+                target.blit(fermImg, (slotPos[0] + fermentOffsetX, slotPos[1] + fermentOffsetY))
+            target.blit(shedPotImg, slotPos)
+            # Sparkle overlay when fermentation is complete.
+            if slot.get("crop") is not None and isFermentDone(slot):
+                target.blit(doneSparkleImg, slotPos)
 
     target.blit(shedDoorImg, (shedDoorX, shedDoorY))
     drawMoney(target, money, virtualWidth)
@@ -1361,7 +1561,12 @@ while running:
     # draw the appropriate item sprite at the mouse position instead.
     # =========================================================
     if heldFruit is not None:
-        cursorImg    = fermentImages[heldFruit["crop"]] if heldFruit["fermented"] else fruitImages[heldFruit["crop"]]
+        if heldFruit["crop"] == "kimchi":
+            cursorImg = kimchiFinishedImg
+        elif heldFruit["fermented"]:
+            cursorImg = fermentImages[heldFruit["crop"]]
+        else:
+            cursorImg = fruitImages[heldFruit["crop"]]
         cursorScaled = pygame.transform.scale(cursorImg, (fruitCursorSize, fruitCursorSize))
         target.blit(cursorScaled, (vMouseX - cursorScaled.get_width()  // 2,
                                    vMouseY - cursorScaled.get_height() // 2))
@@ -1443,10 +1648,14 @@ while running:
 
     if not paused and not showInfo and heldFruit is not None:
         if shopChestRect.collidepoint(vMouseX, vMouseY):
-            val    = getFruitSellValue(heldFruit["crop"], heldFruit["fermented"])
-            suffix = " (fermented)" if heldFruit["fermented"] else ""
-            drawTooltip(target, f"Sell {heldFruit['crop'].capitalize()}{suffix}: {val} coins",
-                        shopChestRect.centerx, shopChestRect.top)
+            val = getFruitSellValue(heldFruit["crop"], heldFruit["fermented"])
+            if heldFruit["crop"] == "kimchi":
+                drawTooltip(target, f"Sell Kimchi: {val} coins",
+                            shopChestRect.centerx, shopChestRect.top)
+            else:
+                suffix = " (fermented)" if heldFruit["fermented"] else ""
+                drawTooltip(target, f"Sell {heldFruit['crop'].capitalize()}{suffix}: {val} coins",
+                            shopChestRect.centerx, shopChestRect.top)
 
     if not paused and not showInfo and not goldWaterBucketHeld and heldFruit is None:
         if goldWaterBucketRect.collidepoint(vMouseX, vMouseY):
@@ -1466,7 +1675,21 @@ while running:
         for slotIdx, slotRect in enumerate(shedSlotRects):
             if slotRect.collidepoint(vMouseX, vMouseY):
                 slot = shedSlots[slotIdx]
-                if slot is not None and slot.get("crop") is not None:
+                if slot is None:
+                    break
+                if isSlotKimchi(slot):
+                    if isKimchiDone(slot):
+                        drawTooltip(target, f"Kimchi ready! ({KIMCHI_VALUE} coins)",
+                                    slotRect.centerx, slotRect.top)
+                    elif slot.get("kimchi_fermenting"):
+                        dLeft = max(0, KIMCHI_FERMENT_DAYS - (daysPassed - slot["kimchi_day_started"]))
+                        drawTooltip(target, f"Kimchi fermenting... ({dLeft}d left)",
+                                    slotRect.centerx, slotRect.top)
+                    else:
+                        remaining = sorted(KIMCHI_CROPS - slot.get("kimchi_crops", set()))
+                        drawTooltip(target, f"Still need: {', '.join(remaining)}",
+                                    slotRect.centerx, slotRect.top)
+                elif slot.get("crop") is not None:
                     cropName = slot["crop"]
                     if isFermentDone(slot):
                         drawTooltip(target,
@@ -1476,7 +1699,7 @@ while running:
                         daysLeft = fermentData[cropName]["days"] - (daysPassed - slot.get("day_placed", daysPassed))
                         drawTooltip(target, f"Fermenting {cropName}... ({max(0, daysLeft)}d left)",
                                     slotRect.centerx, slotRect.top)
-                elif slot is not None:
+                else:
                     drawTooltip(target, "Empty pot (place a fruit)", slotRect.centerx, slotRect.top)
                 break
 
