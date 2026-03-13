@@ -64,6 +64,7 @@ def loadTextures():
     #-----------------------------------------
     textures["goldWaterBucket"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-goldwaterbucket.png")).convert_alpha()
     textures["goldWaterBucketFill"] = pygame.image.load(os.path.join(ASSETS_PATH,"Sprite-goldwaterbucketfill.png")).convert_alpha()
+    textures["goldWaterBucketShop"] = pygame.image.load(os.path.join(ASSETS_PATH,"Sprite-goldwaterbucketshop.png")).convert_alpha()
 
     # -------------------------------------------------------------------------
     # CALENDAR

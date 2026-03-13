@@ -331,6 +331,7 @@ def isRainingToday():
 #===================================
 goldWaterBucketEmptyImg = textures["goldWaterBucket"]
 goldWaterBucketFullImg = textures["goldWaterBucketFill"]
+goldWaterBucketShop = textures["goldWaterBucketShop"]
 
 # =============================================================================
 # GOLD WATER BUCKET
@@ -343,7 +344,6 @@ goldWaterBucketFullImg = textures["goldWaterBucketFill"]
 # Gold bucket sprites.
 # Empty sprite is shown in the shop or when the bucket has no water left.
 # Full sprite is shown while the bucket still has uses remaining.
-goldWaterBucketEmptyImg = textures["goldWaterBucket"]
 goldWaterBucketImg = textures["goldWaterBucketFill"]
 
 # Shop settings for the gold bucket.
@@ -356,8 +356,8 @@ goldWaterBucketHeld = False
 goldWaterBucketUsesLeft = 0
 
 # Position of the bucket in the shop.
-goldWaterBucketx = 1500
-goldWaterBuckety = 280
+goldWaterBucketx = 1488
+goldWaterBuckety = 328
 
 # rect for the bucket.
 goldWaterBucketRect = pygame.Rect(
@@ -959,9 +959,6 @@ def tickFermentation():
 setMusicVolume()
 
 
-
-
-
 # =============================================================================
 # MAIN GAME LOOP
 # Runs at ~60 FPS. Each iteration:
@@ -1410,7 +1407,7 @@ while running:
 
     #---- draw golden bucket in shop --
     if not goldWaterBucketHeld:
-        target.blit(goldWaterBucketEmptyImg,(goldWaterBucketx, goldWaterBuckety))
+        target.blit(goldWaterBucketShop,(goldWaterBucketx, goldWaterBuckety))
 
     # --- Shed pots: draw ferment contents first, then the pot on top ---
     # We draw ferment contents behind the pot sprite so they look like they're
@@ -1504,14 +1501,11 @@ while running:
                                    vMouseY - cursorScaled.get_height() // 2))
         pygame.mouse.set_visible(False)
 
-    elif goldWaterBucketHeld:    # show correct goldenbucket (fill/empty) at cursor
-        bucketImg = goldWaterBucketImg if goldWaterBucketUsesLeft > 0 else goldWaterBucketEmptyImg
-        bucketScaled = pygame.transform.scale(bucketImg, (cellSize // 2, cellSize // 2))
-        target.blit(bucketScaled, (vMouseX - bucketScaled.get_width() // 2,
-                                   vMouseY - bucketScaled.get_height() // 2))
+    elif goldWaterBucketHeld:    # show correct goldenbucket (fill/empty) at cursor, unscaled
+        bucketImg = goldWaterBucketFullImg if goldWaterBucketUsesLeft > 0 else goldWaterBucketEmptyImg
+        target.blit(bucketImg, (vMouseX - bucketImg.get_width() // 2,
+                                vMouseY - bucketImg.get_height() // 2))
         pygame.mouse.set_visible(False)
-
-
 
     elif wateringCanHeld:
         # Show the correct watering can (full or empty) at the cursor.
@@ -1609,8 +1603,9 @@ while running:
                 drawTooltip(target, f"Pick up Gold Bucket",
                 goldWaterBucketRect.centerx, goldWaterBucketRect.top)
     if not paused and not showInfo and goldWaterBucketHeld:
-        drawTooltip(target,f"uses: { goldWaterBucketUsesLeft} left",
-                    vMouseX, vMouseY)
+        bucketImg = goldWaterBucketFullImg if goldWaterBucketUsesLeft > 0 else goldWaterBucketEmptyImg
+        drawTooltip(target, f"uses: {goldWaterBucketUsesLeft} left",
+                    vMouseX, vMouseY - bucketImg.get_height() // 2)
 
     # Tooltip: fermentation pot status (time remaining / ready).
     if not paused and not showInfo:
