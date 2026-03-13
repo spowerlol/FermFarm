@@ -8,24 +8,28 @@ Click one of the seed bags in the shop on the right side of the screen to buy a 
 
 PLANTING
 
-With a seed selected, click any empty plot in the soil grid at the bottom of the screen to plant it. The seed will begin growing automatically as days pass.
+With a seed selected, click any empty plot in the soil grid at the bottom of the screen to plant it. The seed will begin growing as days pass, but you do need to water them each day.
 
 HARVESTING
 
-When a crop has fully grown right-click it in the grid to harvest it. Harvested crops are added to your inventory and you earn coins automatically.
+When a crop has fully grown right-click it in the grid to harvest it. Harvested crops are added to your inventory, and you earn coins by left-clicking on the chest.
+If you are too late with harvesting the plant will die, and you will get automatically a penalty of 2 coins from the seed price when you harvest the plant
 
 PURCHASING TILES
 
-To expand your farming empire you can purchase more tiles. This can be done by clicking with your left mouse button on the purchasable tiles with prices rangeing per coulumn.
+To expand your farming empire you can purchase more tiles. This can be done by clicking with your left mouse button on the purchasable tiles with prices ranging per column.
 going right to left: 3,5,10,15,20,30,50
 
 FERMENTATION
 
-You can ferment harvested crops for bonus coins using the two pots in the shop area. The small pot ferments one crop at a time. The large pot ferments two crops at once. Fermented crops are worth more than selling raw but you earn coins immediately when you place them in the pot.
+You can ferment harvested crops for bonus coins by buying a pot in the shop and placing the pot in the shed. after that you can place a harvested fruit in the pot.
+After the pot is filled you have to wait for 2 days and then with left mouse click you can click on the pot and the fermented fruit will follow the mouse.
+Then with left-click on the chest in the shop you can sell the fermented crop.
 
 THE CALENDAR
 
-The circle on the calendar in the top right tracks how many days have passed. Every few seconds a new day begins and your crops grow one stage closer to harvest.
+The circle on the calendar in the top right tracks how many days have passed. Every few seconds a new day begins and your crops grow one stage closer to harvest, if you have watered the crop.
+The day counter will keep going but the fruit stages will grow if watered.
 
 SAVING AND LOADING
 
@@ -35,6 +39,13 @@ FULLSCREEN AND WINDOWED
 
 Use the Windowed and Fullscreen buttons in the pause menu to switch display modes. You can also press F11 at any time.
 
+GOLDEN WATERBUCKET
+If you have achieved 500 coins, you can buy a GOLDEN waterbucket in the shop, with this bucket you can water the plant for 10 uses before refill instead of 1 use per refill.
+
+
 TIPS
+Look at the weather forecast, then you will know if you need to water your crops.
+Keep an eye on your crops, when they are dead there is no turning back.
+Try to use the fermentation as much as possible, the bonus is very rewarding and is only takes 2 DAYS.
 
 Good luck on your farm!
