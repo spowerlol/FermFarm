@@ -345,7 +345,7 @@ goldWaterBucketFullImg  = textures["goldWaterBucketFill"]
 goldWaterBucketShop     = textures["goldWaterBucketShop"]
 goldWaterBucketImg      = textures["goldWaterBucketFill"]
 
-goldWaterBucketPrice    = 500
+goldWaterBucketPrice    = 300
 goldWaterBucketMax      = 10
 
 hasGoldWaterBucket      = False
@@ -364,7 +364,7 @@ goldWaterBucketRect = pygame.Rect(
 # =============================================================================
 # CORE GAME STATE
 # =============================================================================
-money          = 600             # starting coin balance
+money          = 600               # starting coin balance
 background     = textures["background"]
 calendarSprite = textures["calendar"]
 calendarCircle = textures["calendarCircle"]
