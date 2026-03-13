@@ -20,7 +20,7 @@ import os
 import json
 from datetime       import datetime
 import random
-from death_proces   import plantState, getDeadPlantRefund, harvestDead, ripeDays
+from death_proces   import plantState, getDeadPlantRefund, harvestDead, ripeDays, droughtDays
 
 pygame.init()
 pygame.mixer.init()
@@ -1395,9 +1395,12 @@ while running:
                         cell["watered"] = False
                         continue
 
-                    # If the plant was watered today, count it as a watered day.
-                    if cell.get("watered", False):
+                    wasWatered = cell.get("watered", False)
+                    if wasWatered:
                         cell["watered_days"] = cell.get("watered_days", 0) + 1
+                        cell["dry_days"] = 0
+                    else:
+                        cell["dry_days"] = cell.get("dry_days", 0) + 1
 
                     # Reset the watered flag for tomorrow.
                     cell["watered"] = False
@@ -1416,6 +1419,8 @@ while running:
                             cell["dead"] = True
                     else:
                         cell["dayRipe"] = None
+                        if cell["dry_days"] >= droughtDays:
+                            cell["dead"] = True
 
             tickFermentation()
             tvOn = False   # close the TV forecast at the start of each new day
@@ -1712,16 +1717,9 @@ while running:
                 drawTooltip(target, "Gnome fully upgraded! Max day length reached.",
                             gnomeBigRect.centerx, gnomeBigRect.top)
             else:
-                nextPrice  = getNextGnomePrice()
-                daySeconds = getDayInterval() // 1000
-                nextDaySec = (getDayInterval() + 6000) // 1000
-                drawTooltip(
-                    target,
-                    f"Donate {nextPrice} coins  [{gnomeDonations}/{gnomeMaxDonations}]"
-                    f"  day: {daySeconds}s -> {nextDaySec}s",
-                    gnomeBigRect.centerx,
-                    gnomeBigRect.top
-                )
+                nextPrice = getNextGnomePrice()
+                drawTooltip(target, f"Donate {nextPrice} coins",
+                            gnomeBigRect.centerx, gnomeBigRect.top)
 
     # =========================================================
     # OVERLAY MENUS
