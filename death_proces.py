@@ -4,7 +4,8 @@
 #=============================================
 from cropHarvesting import cropPrice, harvest
 
-ripeDays = 2  # number ingame days a plant may remain ripe before death
+ripeDays = 2          # number ingame days a plant may remain ripe before death
+droughtDays = 2       # number ingame days a plant may go unwatered before death
 deadPlantPenalty = 0.5
 
 def plantState(cell):
@@ -18,6 +19,7 @@ def plantState(cell):
     cell.setdefault("watered_days", 0) #ensures the cell has watereddays counter
     cell.setdefault("day_ripe", None)   # ensures cell knows on wich day it became ripe
     cell.setdefault("dead", False) # ensures has a dead/alive boolean
+    cell.setdefault("dry_days", 0)  # consecutive days without water
     return cell
 
 def getDeadPlantRefund(cropName):
@@ -50,6 +52,3 @@ def harvestDead(grid, gx, gy, crops):
         return{"type": "fruit", "crop": harvested}
 
     return None # if not dead removal or harvets, return nothing
-
-
-

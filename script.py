@@ -24,7 +24,7 @@ import os
 import json
 from datetime import datetime
 import random
-from death_proces import plantState, getDeadPlantRefund, harvestDead, ripeDays
+from death_proces import plantState, getDeadPlantRefund, harvestDead, ripeDays, droughtDays
 
 # Initialise all pygame modules (display, audio, event system, etc.).
 pygame.init()
@@ -1233,8 +1233,12 @@ while running:
                         cell["watered"] = False
                         continue
 
-                    if cell.get("watered", False):
+                    wasWatered = cell.get("watered", False)
+                    if wasWatered:
                         cell["watered_days"] = cell.get("watered_days", 0) + 1
+                        cell["dry_days"] = 0
+                    else:
+                        cell["dry_days"] = cell.get("dry_days", 0) + 1
 
                     cell["watered"] = False
                     crop        = crops[cell["crop"]]
@@ -1249,6 +1253,8 @@ while running:
                             cell["dead"] = True
                     else:
                         cell["dayRipe"] = None
+                        if cell["dry_days"] >= droughtDays:
+                            cell["dead"] = True
 
             tickFermentation()
             tvOn = False
