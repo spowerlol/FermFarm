@@ -2,39 +2,116 @@ Welcome to FermFarm!
 
 In FermFarm you grow crops, ferment them, and sell your produce for coins. Here is everything you need to know to get started.
 
+
 BUYING SEEDS
 
-Click one of the seed bags in the shop on the right side of the screen to buy a seed. Each seed costs a small amount of coins. After clicking a bag your cursor is loaded with that seed type.
+Click one of the seed bags on the shop shelves on the right side of the screen to buy a seed. Hover over a bag to see its price. After clicking, your cursor is loaded with that seed type. Right-click or press ESC to cancel and get your coins back.
+
 
 PLANTING
 
-With a seed selected, click any empty plot in the soil grid at the bottom of the screen to plant it. The seed will begin growing automatically as days pass.
+With a seed selected, left-click any empty owned tile in the soil grid at the bottom of the screen to plant it. Seeds will not grow unless you water them each day. You can only plant on tiles you own.
+
+
+WATERING
+
+Click the water source near the shed to pick up the watering can. Then left-click a planted tile to water it. The normal watering can empties after a single use and must be refilled each time. A water droplet icon appears on tiles that have been watered today.
+
+On rainy days all your crops are watered automatically.
+
 
 HARVESTING
 
-When a crop has fully grown right-click it in the grid to harvest it. Harvested crops are added to your inventory and you earn coins automatically.
+When a crop has fully grown, right-click it in the grid to harvest it. The harvested crop will follow your cursor. Be careful: once ripe, a plant will die if left unharvested for 2 in-game days. Hover over a plant to see a tooltip showing how many waterings it still needs, or how many days you have left to harvest it.
 
-PURCHASING TILES
 
-To expand your farming empire you can purchase more tiles. This can be done by clicking with your left mouse button on the purchasable tiles with prices rangeing per coulumn.
-going right to left: 3,5,10,15,20,30,50
+DEAD PLANTS
+
+If you leave a ripe plant too long it will die and cannot be sold normally. Right-click a dead plant to clear it from the grid. You will receive a small refund equal to the seed price minus 2 coins. Dead plants cannot be watered or grown further.
+
+
+SELLING
+
+With a harvested crop following your cursor, left-click the chest in the shop to sell it for coins.
+
+
+CROP PRICES
+
+Seed prices and sell values (raw / fermented):
+  Tomato   - seed: 3   raw: 5    fermented: 18
+  Carrot   - seed: 6   raw: 10   fermented: 28
+  Cucumber - seed: 13  raw: 20   fermented: 45
+  Chili    - seed: 18  raw: 20   fermented: 38
+  Cabbage  - seed: 23  raw: 26   fermented: 60
+  Garlic   - seed: 28  raw: 42   fermented: 90
+
 
 FERMENTATION
 
-You can ferment harvested crops for bonus coins using the two pots in the shop area. The small pot ferments one crop at a time. The large pot ferments two crops at once. Fermented crops are worth more than selling raw but you earn coins immediately when you place them in the pot.
+Fermentation gives you much higher sell values than selling raw. To ferment a crop:
+
+1. Buy a fermentation pot from the shop shelf (costs 30 coins). It will follow your cursor.
+2. Left-click an empty slot in the shed to place the pot there.
+3. With a harvested crop on your cursor, left-click a pot in the shed to place the fruit inside.
+4. Wait for the fermentation to finish. A sparkle appears on the pot when it is done.
+5. Left-click the finished pot to pick up the fermented crop.
+6. Left-click the chest to sell it for the higher fermented value.
+
+Fermentation times by crop:
+  Tomato: 2 days, Chili: 2 days, Carrot: 3 days, Cucumber: 3 days, Cabbage: 4 days, Garlic: 5 days
+
+You can place up to 2 pots in the shed at the same time.
+
+
+PURCHASING TILES
+
+You start with 4 owned tiles in the top-right of the grid. To expand, left-click any locked tile showing a "for sale" sign. Tiles in columns closer to the left are more expensive. Hover over a locked tile to see its price. Prices per column, from right to left: 3, 5, 10, 15, 20, 30, 50 coins.
+
 
 THE CALENDAR
 
-The circle on the calendar in the top right tracks how many days have passed. Every few seconds a new day begins and your crops grow one stage closer to harvest.
+The circle on the calendar in the top right tracks how many days have passed. Every 5 real-time seconds a new in-game day begins. Crops only grow on days they were watered.
+
+
+RAIN
+
+On rainy days all planted crops are automatically watered. Rain occurs 2 out of every 12 days and the schedule is randomised each cycle. Check the weather report on screen to know if rain is coming.
+
+
+GOLDEN WATER BUCKET
+
+Once you have enough coins you can buy the Golden Water Bucket from the shop for 300 coins. Unlike the normal watering can which empties after every single use, the Golden Bucket holds enough water for 10 uses before it needs to be refilled. After buying it once you own it permanently. Hover over it in your hand to see how many uses remain.
+
 
 SAVING AND LOADING
 
-Press ESC to open the pause menu. Right-click any save slot to save your current farm to that slot. Left-click a filled slot to load it and resume from where you left off.
+Press ESC to open the pause menu. Right-click any save slot to save your current farm to that slot. Left-click a filled slot to load it and resume from where you left off. Left-click an empty slot to start a brand new game.
+
 
 FULLSCREEN AND WINDOWED
 
-Use the Windowed and Fullscreen buttons in the pause menu to switch display modes. You can also press F11 at any time.
+Use the Windowed or Fullscreen button in the pause menu to switch display modes. You can also press F11 at any time.
+
+
+MUSIC
+
+Use the Music button in the pause menu to toggle the background music on or off.
+
+
+CONTROLS SUMMARY
+
+  Left-click     Plant a seed, water a crop, buy an item, sell fruit, pick up pot
+  Right-click    Harvest a ripe or dead crop, cancel a held seed or pot
+  ESC            Cancel held item, or open the pause menu
+  F11            Toggle fullscreen
+
 
 TIPS
+
+Check the weather forecast before you water: on rainy days you can skip watering entirely.
+Fermented crops are always worth more. The longer a crop ferments the bigger the bonus.
+Keep a close eye on fully grown crops. You only have 2 days to harvest before they die.
+Buying tiles in the middle columns unlocks more growing space at a moderate cost.
+The Golden Bucket is a big upfront investment but saves a lot of time on large farms.
 
 Good luck on your farm!
