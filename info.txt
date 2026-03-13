@@ -42,8 +42,8 @@ Seed prices and sell values (raw / fermented):
   Carrot   - seed: 6   raw: 10   fermented: 28
   Cucumber - seed: 13  raw: 20   fermented: 45
   Chili    - seed: 18  raw: 20   fermented: 38
-  Cabbage  - seed: 23  raw: 26   fermented: 60
-  Garlic   - seed: 28  raw: 42   fermented: 90
+  Cabbage  - seed: 23  raw: 26   fermented: 60 #50
+  Garlic   - seed: 28  raw: 42 #35   fermented: 90 #60
 
 
 FERMENTATION

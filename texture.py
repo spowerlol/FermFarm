@@ -98,7 +98,7 @@ def loadTextures():
     textures["shedPot"]     = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-shedPot.png")).convert_alpha()      # fermentation pot inside the shed
     textures["shedDoor"]    = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-sheddoor.png")).convert_alpha()     # the shed door graphic
     textures["shopChest"]   = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-verkoopKist.png")).convert_alpha()  # "verkoop kist" = Dutch for "sell chest"
-
+    textures["kichiFerment"] = pygame.image.load(os.path.join(ASSETS_PATH, "Sprite-kimchiFerment.png")).convert_alpha()
     # -------------------------------------------------------------------------
     # WATERING CAN & WATER DROP
     # -------------------------------------------------------------------------
