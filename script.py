@@ -21,7 +21,8 @@ import json
 from datetime       import datetime
 import random
 from death_proces   import plantState, getDeadPlantRefund, harvestDead, ripeDays, droughtDays
-
+import ctypes
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("FermFarm")
 pygame.init()
 pygame.mixer.init()
 
@@ -67,6 +68,7 @@ textures = loadTextures()
 initMoneyUi(textures)
 crops    = loadCrops(textures)
 
+pygame.display.set_icon(textures["gnomeMinis"][2])
 tekoopTileImg = textures["tekoopTile"]
 
 # ============================================================
@@ -1328,10 +1330,19 @@ while running:
                 if heldFruit is not None:
                     if heldFruit["fermented"]:
                         for slot in shedSlots:
-                            if slot is not None and slot.get("crop") is None:
-                                slot["crop"]       = heldFruit["crop"]
-                                slot["day_placed"] = daysPassed
-                                slot["done"]       = True
+                            if slot is not None and slot.get("crop") is None and not isSlotKimchi(slot):
+                                if heldFruit["crop"] == "kimchi":
+                                    slot["mode"] = "kimchi"
+                                    slot["crop"] = None
+                                    slot["kimchi_crops"] = set(KIMCHI_CROPS)
+                                    slot["kimchi_fermenting"] = True
+                                    slot["kimchi_day_started"] = daysPassed
+                                    slot["kimchi_batch_day"] = daysPassed
+                                    slot["done"] = True
+                                else:
+                                    slot["crop"] = heldFruit["crop"]
+                                    slot["day_placed"] = daysPassed
+                                    slot["done"] = True
                                 heldFruit = None
                                 break
                     continue
