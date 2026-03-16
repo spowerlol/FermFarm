@@ -13,7 +13,7 @@ cropValues = {
     "cucumber": 20,
     "chili"   : 20,
     "cabbage" : 26,
-    "garlic"  : 42,
+    "garlic"  : 35,
 }
 
 # How many coins the player must spend to buy one seed bag from the shop shelf.
