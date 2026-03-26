@@ -367,11 +367,11 @@ gnomeBigRect = pygame.Rect(
 
 # (x, y) draw positions for each of the 5 mini gnomes.
 gnomeMiniPositions = [
-    (1000, 921),
-    ( 968, 724),
-    (1059, 564),
-    (1268, 636),
-    (1292, 828),
+    (1000, 920),
+    ( 968, 720),
+    (1056, 560),
+    (1264, 632),
+    (1288, 824),
 ]
 
 # gnomeMiniThresholds[i] is the donation count needed before mini gnome i appears.
@@ -1559,8 +1559,8 @@ while running:
                 target.blit(druppel, (gridStartX + x * cellSize, gridStartY + y * cellSize))
 
     # TV weather forecast overlay.
-    tvSprite = textures["weatherReport3"]
-    target.blit(tvSprite, (1120, 224))
+    if not tvOn:
+        target.blit(textures["weatherReport3"], (1120, 224))
     if tvOn:
         tomorrowDay = (daysPassed + 1) % 12
         forecastImg = rainForecastImg if tomorrowDay in rainDaysInCycle else sunForecastImg
