@@ -51,9 +51,6 @@ pygame.display.set_caption("FermFarm")
 
 clock = pygame.time.Clock()
 
-# Show the title screen and wait for the player to dismiss it.
-runStartScreen(screen, fullscreen)
-
 # ============================================================
 # MUSIC SETTINGS
 # ============================================================
@@ -70,6 +67,10 @@ crops    = loadCrops(textures)
 
 pygame.display.set_icon(textures["gnomeMinis"][2])
 tekoopTileImg = textures["tekoopTile"]
+
+# Show the title screen and wait for the player to dismiss it.
+runStartScreen(screen, fullscreen)
+
 
 # ============================================================
 # OFF-SCREEN SURFACES
@@ -297,9 +298,11 @@ rainCurrentCycle = -1    # which 12-day cycle we are in right now
 rainFrameIndex   = 0     # which frame of the rain animation is showing
 rainLastFrameTime = 0    # timestamp of the last rain frame change
 
-def getRainDaysForCycle():
-    # Pick 2 unique day numbers (0-11) to be rainy in the next 12-day cycle.
-    return set(random.sample(range(12), 2))
+def getRainDaysForCycle(cycleIndex):
+    # Pick 2 unique day numbers (0-11) to be rainy in the given 12-day cycle.
+    # Seeded by cycleIndex so the TV forecast peek always matches the actual result.
+    rng = random.Random(cycleIndex)
+    return set(rng.sample(range(12), 2))
 
 def isRainingToday():
     # Returns True if today (daysPassed mod 12) is one of the two rainy days.
@@ -366,6 +369,7 @@ gnomeBigRect = pygame.Rect(
 )
 
 # (x, y) draw positions for each of the 5 mini gnomes.
+# All positions snapped to the /8 pixel grid.
 gnomeMiniPositions = [
     (1000, 920),
     ( 968, 720),
@@ -1286,19 +1290,20 @@ while running:
 
             # Watering a plant with the gold bucket.
             if goldWaterBucketHeld:
-                gx = (vx - gridStartX) // cellSize
-                gy = (vy - gridStartY) // cellSize
-                if 0 <= gx < gridCols and 0 <= gy < gridRows:
-                    cell = grid[gx][gy]
-                    if cell is not None:
-                        plantState(cell)
-                        if not cell["watered"] and not cell["dead"] and goldWaterBucketUsesLeft > 0:
-                            cell["watered"] = True
-                            goldWaterBucketUsesLeft -= 1
+                if not isRainingToday():
+                    gx = (vx - gridStartX) // cellSize
+                    gy = (vy - gridStartY) // cellSize
+                    if 0 <= gx < gridCols and 0 <= gy < gridRows:
+                        cell = grid[gx][gy]
+                        if cell is not None:
+                            plantState(cell)
+                            if not cell["watered"] and not cell["dead"] and goldWaterBucketUsesLeft > 0:
+                                cell["watered"] = True
+                                goldWaterBucketUsesLeft -= 1
                 continue
 
             # Watering a plant with the normal watering can (waters one plant, then empties).
-            if wateringCanHeld and wateringCanFull:
+            if wateringCanHeld and wateringCanFull and not isRainingToday():
                 gx = (vx - gridStartX) // cellSize
                 gy = (vy - gridStartY) // cellSize
                 if 0 <= gx < gridCols and 0 <= gy < gridRows:
@@ -1384,16 +1389,11 @@ while running:
             cycleIndex = daysPassed // 12
             if cycleIndex != rainCurrentCycle:
                 rainCurrentCycle = cycleIndex
-                rainDaysInCycle  = getRainDaysForCycle()
-
-            # On rainy days all planted crops are watered automatically.
-            if isRainingToday():
-                for x in range(gridCols):
-                    for y in range(gridRows):
-                        if grid[x][y] is not None:
-                            grid[x][y]["watered"] = True
+                rainDaysInCycle  = getRainDaysForCycle(cycleIndex)
 
             # Update every planted crop.
+            # Rain is applied inside the per-cell loop so the watered flag is
+            # set before the growth tick reads it, and is then reset normally.
             for x in range(gridCols):
                 for y in range(gridRows):
                     cell = grid[x][y]
@@ -1406,7 +1406,9 @@ while running:
                         cell["watered"] = False
                         continue
 
-                    wasWatered = cell.get("watered", False)
+                    # Rain contributes to wasWatered without touching the flag, so
+                    # manual watering earlier the same day never causes a double count.
+                    wasWatered = cell.get("watered", False) or isRainingToday()
                     if wasWatered:
                         cell["watered_days"] = cell.get("watered_days", 0) + 1
                         cell["dry_days"] = 0
@@ -1551,19 +1553,30 @@ while running:
     target.blit(calendarCircle, (spriteX, spriteY))
 
     # Water-drop overlay on each crop that was watered today.
+    # Note: on rainy days cell["watered"] was already reset by the day tick,
+    # so the drop overlay is shown via the isRainingToday() check instead.
     for x in range(gridCols):
         for y in range(gridRows):
             cell = grid[x][y]
-            if cell and cell.get("watered", False):
+            if cell and (cell.get("watered", False) or isRainingToday()):
                 druppel = pygame.transform.scale(waterDropImg, (cellSize, cellSize))
                 target.blit(druppel, (gridStartX + x * cellSize, gridStartY + y * cellSize))
 
     # TV weather forecast overlay.
+    # weatherReport3 is the TV-off/static sprite, only shown when tvOn is False.
     if not tvOn:
         target.blit(textures["weatherReport3"], (1120, 224))
     if tvOn:
-        tomorrowDay = (daysPassed + 1) % 12
-        forecastImg = rainForecastImg if tomorrowDay in rainDaysInCycle else sunForecastImg
+        tomorrowDaysPassed = daysPassed + 1
+        tomorrowCycle      = tomorrowDaysPassed // 12
+        tomorrowDayIndex   = tomorrowDaysPassed % 12
+        if tomorrowCycle != rainCurrentCycle:
+            # Tomorrow is in the next cycle — peek using the same seeded RNG
+            # so the result is consistent with what the day tick will generate.
+            tomorrowRainDays = getRainDaysForCycle(tomorrowCycle)
+        else:
+            tomorrowRainDays = rainDaysInCycle
+        forecastImg = rainForecastImg if tomorrowDayIndex in tomorrowRainDays else sunForecastImg
         target.blit(forecastImg, (1120, 224))
 
     # Rain animation overlay on top of everything when it is raining.
